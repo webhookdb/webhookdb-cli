@@ -3,6 +3,7 @@ ifdef DEBUG
 endif
 
 XTRAARGS := ${DEBUGARG}
+BIN := ./webhookdb
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -44,3 +45,6 @@ update-lithic-deps:
 
 help:
 	@go run ./main.go help
+
+itest-auth-register:
+	$(BIN) auth register --username=x@y.com
