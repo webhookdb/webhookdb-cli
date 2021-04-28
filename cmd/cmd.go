@@ -1,11 +1,7 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
-	"github.com/lithictech/go-aperitif/convext"
-	"github.com/lithictech/go-aperitif/logctx"
-	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/urfave/cli/v2"
 	"log"
@@ -19,6 +15,7 @@ func Execute() {
 		},
 		Commands: []*cli.Command{
 			authCmd,
+			integrationsCmd,
 			{
 				Name: "version",
 				Action: func(c *cli.Context) error {
@@ -32,23 +29,4 @@ func Execute() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func newAppCtx(c *cli.Context) appcontext.AppContext {
-	if c.Bool("debug") {
-		convext.Must(os.Setenv("LOG_LEVEL", "debug"))
-	}
-	appCtx, err := appcontext.New(c.Command.FullName(), config.LoadConfig())
-	if err != nil {
-		log.Fatal(err)
-	}
-	return appCtx
-}
-
-func newCtx(appCtx appcontext.AppContext) context.Context {
-	c := context.Background()
-	c = logctx.WithLogger(c, appCtx.Logger())
-	c = logctx.WithTraceId(c, logctx.ProcessTraceIdKey)
-	c = logctx.WithTracingLogger(c)
-	return appcontext.InContext(c, appCtx)
 }

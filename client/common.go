@@ -1,9 +1,20 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-resty/resty/v2"
 )
+
+const RestyKey = "client.resty"
+
+func RestyInContext(c context.Context, r *resty.Client) context.Context {
+	return context.WithValue(c, RestyKey, r)
+}
+
+func RestyFromContext(c context.Context) *resty.Client {
+	return c.Value(RestyKey).(*resty.Client)
+}
 
 type ErrorResponse struct {
 	Message string `json:"message"`

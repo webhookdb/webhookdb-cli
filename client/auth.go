@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/appcontext"
 )
 
 type AuthRegisterInput struct {
@@ -14,8 +13,8 @@ type AuthRegisterOutput struct {
 }
 
 func AuthRegister(c context.Context, input AuthRegisterInput) (out AuthRegisterOutput, err error) {
-	actx := appcontext.FromContext(c)
-	resp, err := actx.Resty.R().
+	resty := RestyFromContext(c)
+	resp, err := resty.R().
 		SetBody(&input).
 		SetError(&ErrorResponse{}).
 		SetResult(&out).

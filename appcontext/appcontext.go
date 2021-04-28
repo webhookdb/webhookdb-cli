@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/logctx"
+	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
+	"github.com/lithictech/webhookdb-cli/statemachine"
 	"github.com/sirupsen/logrus"
 	"os"
 )
 
 type AppContext struct {
-	Config config.Config
-	Resty  *resty.Client
-	logger *logrus.Entry
+	Config       config.Config
+	Resty        *resty.Client
+	StateMachine statemachine.StateMachine
+	logger       *logrus.Entry
 }
 
 func (ac AppContext) Logger() *logrus.Entry {
@@ -23,6 +26,7 @@ func (ac AppContext) Logger() *logrus.Entry {
 func New(command string, cfg config.Config) (ac AppContext, err error) {
 	ac.Config = cfg
 	ac.Resty = newResty(cfg)
+	ac.StateMachine = client.NewStateMachine()
 	if ac.logger, err = logctx.NewLogger(logctx.NewLoggerInput{
 		Level:     cfg.LogLevel,
 		Format:    cfg.LogFormat,
