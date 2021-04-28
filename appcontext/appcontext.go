@@ -2,6 +2,8 @@ package appcontext
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/logctx"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/sirupsen/logrus"
@@ -10,6 +12,7 @@ import (
 
 type AppContext struct {
 	Config config.Config
+	Resty  *resty.Client
 	logger *logrus.Entry
 }
 
@@ -19,6 +22,7 @@ func (ac AppContext) Logger() *logrus.Entry {
 
 func New(command string, cfg config.Config) (ac AppContext, err error) {
 	ac.Config = cfg
+	ac.Resty = newResty(cfg)
 	if ac.logger, err = logctx.NewLogger(logctx.NewLoggerInput{
 		Level:     cfg.LogLevel,
 		Format:    cfg.LogFormat,
@@ -45,6 +49,7 @@ func NewTestContext() AppContext {
 	ac := AppContext{
 		logger: logger.WithFields(nil),
 		Config: cfg,
+		Resty:  newResty(cfg),
 	}
 	return ac
 }
@@ -57,4 +62,15 @@ func InContext(parent context.Context, ac AppContext) context.Context {
 
 func FromContext(c context.Context) AppContext {
 	return c.Value(ctxKey).(AppContext)
+}
+
+func newResty(cfg config.Config) *resty.Client {
+	r := resty.New().
+		SetHostURL(cfg.ApiHost).
+		SetHeader(
+			"User-Agent",
+			fmt.Sprintf("WebhookdbCLI/%s built %s", config.BuildSha, config.BuildTime),
+		)
+	r.Debug = cfg.Debug
+	return r
 }

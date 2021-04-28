@@ -1,9 +1,5 @@
-ifdef DEBUG
-	DEBUGARG := --log-level=debug
-endif
-
-XTRAARGS := ${DEBUGARG}
 BIN := ./webhookdb
+ARGS := API_HOST=http://localhost:19001
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -46,5 +42,5 @@ update-lithic-deps:
 help:
 	@go run ./main.go help
 
-itest-auth-register:
-	$(BIN) auth register --username=x@y.com
+itest-auth-register: build
+	$(ARGS) $(BIN) auth register --username=x@y.com

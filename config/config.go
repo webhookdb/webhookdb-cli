@@ -11,6 +11,8 @@ var BuildTime = "btime"
 var BuildSha = "bsha"
 
 type Config struct {
+	ApiHost   string
+	Debug     bool
 	LogFile   string
 	LogFormat string
 	LogLevel  string
@@ -19,6 +21,8 @@ type Config struct {
 func LoadConfig(filenames ...string) Config {
 	_ = godotenv.Overload(filenames...)
 	cfg := Config{
+		ApiHost:   os.Getenv("API_HOST"),
+		Debug:     os.Getenv("DEBUG") != "",
 		LogFile:   os.Getenv("LOG_FILE"),
 		LogFormat: os.Getenv("LOG_FORMAT"),
 		LogLevel:  MustEnvStr("LOG_LEVEL"),
@@ -42,4 +46,5 @@ func MustSetEnv(k string, v interface{}) {
 
 func init() {
 	MustSetEnv("LOG_LEVEL", "warn")
+	MustSetEnv("API_HOST", "https://api.webhookdb.com")
 }

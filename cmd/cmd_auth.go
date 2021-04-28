@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/ask"
+	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -38,7 +39,13 @@ var authCmd = &cli.Command{
 					}
 					fmt.Println("Sorry, those passwords don't match, try again.")
 				}
-				fmt.Println(ctx, c.String("username"), password)
+				if _, err := client.AuthRegister(ctx, client.AuthRegisterInput{
+					Username: c.String("username"),
+					Password: password,
+				}); err != nil {
+					return err
+				}
+				fmt.Println("Thanks! Your CLI is now authenticated.")
 				return nil
 			},
 		},
