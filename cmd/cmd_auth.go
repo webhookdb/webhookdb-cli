@@ -2,67 +2,60 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/lithictech/webhookdb-cli/ask"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 const PASSWORD_RETRY_ATTEMPTS = 3
 
 var authCmd = &cli.Command{
 	Name: "auth",
+	Description: "TODO",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "register",
+			Name: "login",
 			Description: "TODO",
 			Flags:       []cli.Flag{usernameFlag()},
 			Action: func(c *cli.Context) error {
 				ctx := newCtx(newAppCtx(c))
-				password, err := ask.HiddenAsk(ask.HiddenPrompt("Enter your password (12 or more characters):"))
+				output, err := client.AuthLogin(ctx, client.AuthLoginInput{
+					Username: c.String("username"),
+				})
 				if err != nil {
 					return err
 				}
-				attempt := 0
-				for {
-					confirmed, err := ask.HiddenAsk(ask.HiddenPrompt("Please repeat your password:"))
-					if err != nil {
-						return err
-					}
-					if password == confirmed {
-						break
-					}
-					attempt += 1
-					if attempt == PASSWORD_RETRY_ATTEMPTS {
-						fmt.Println("Sorry, those passwords don't match. Exiting.")
-						os.Exit(1)
-					}
-					fmt.Println("Sorry, those passwords don't match, try again.")
-				}
-				if _, err := client.AuthRegister(ctx, client.AuthRegisterInput{
-					Username: c.String("username"),
-					Password: password,
-				}); err != nil {
-					return err
-				}
-				fmt.Println("Thanks! Your CLI is now authenticated.")
+				fmt.Println(output.Message)
 				return nil
 			},
 		},
 		{
-			Name:        "login",
+			Name:        "otp",
 			Description: "TODO",
-			Flags:       []cli.Flag{usernameFlag()},
+			Flags:       []cli.Flag{usernameFlag(), tokenFlag()},
 			Action: func(c *cli.Context) error {
-				panic("TODO")
+				ctx := newCtx(newAppCtx(c))
+				output, err := client.AuthOTP(ctx, client.AuthOTPInput{
+					Username: c.String("username"),
+					Token: c.String("token"),
+				})
+				if err != nil {
+					return err
+				}
+				fmt.Println(output.Message)
+				return nil
 			},
 		},
 		{
 			Name:        "logout",
 			Description: "TODO",
-			Flags:       []cli.Flag{usernameFlag()},
 			Action: func(c *cli.Context) error {
-				panic("TODO")
+				ctx := newCtx(newAppCtx(c))
+				output, err := client.AuthLogout(ctx)
+				if err != nil {
+					return err
+				}
+				fmt.Println(output.Message)
+				return nil
 			},
 		},
 	},
@@ -72,6 +65,15 @@ func usernameFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:     "username",
 		Aliases:  s1("u"),
+		Required: true,
+		Usage:    "TODO",
+	}
+}
+
+func tokenFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:     "token",
+		Aliases:  s1("t"),
 		Required: true,
 		Usage:    "TODO",
 	}
