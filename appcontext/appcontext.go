@@ -13,10 +13,11 @@ import (
 )
 
 type AppContext struct {
-	Config       config.Config
-	Resty        *resty.Client
-	StateMachine statemachine.StateMachine
-	logger       *logrus.Entry
+	Config config.Config
+	Resty  *resty.Client
+	Prefs  prefs.Prefs
+	logger *logrus.Entry
+	//ActiveOrg    string (should be derived from a prefs dir)
 }
 
 func (ac AppContext) Logger() *logrus.Entry {
@@ -52,6 +53,7 @@ func NewTestContext() AppContext {
 	logger := logrus.New()
 	logger.SetLevel(logrus.DebugLevel)
 
+	pr := prefs.Prefs{}
 	ac := AppContext{
 		logger: logger.WithFields(nil),
 		Config: cfg,
