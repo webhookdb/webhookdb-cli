@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/logctx"
-	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/sirupsen/logrus"

@@ -16,6 +16,7 @@ func Execute() {
 		Commands: []*cli.Command{
 			authCmd,
 			integrationsCmd,
+			servicesCmd,
 			{
 				Name: "version",
 				Action: func(c *cli.Context) error {
