@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"strings"
 )
 
 type AuthLoginInput struct {
@@ -30,11 +31,16 @@ func AuthLogin(c context.Context, input AuthLoginInput) (out AuthLoginOutput, er
 
 type AuthOTPInput struct {
 	Username string `json:"email"`
-	Token string `json:"token"`
+	Token    string `json:"token"`
+}
+
+type AuthOTPResponseOutput struct {
+	Message string `json:"message"`
 }
 
 type AuthOTPOutput struct {
-	Message string `json:"message"`
+	Message    string
+	AuthCookie string
 }
 
 func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err error) {
@@ -47,6 +53,8 @@ func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err erro
 	if err != nil {
 		return out, err
 	}
+	setCookieHeader := resp.Header().Get("Set-Cookie")
+	out.AuthCookie = strings.Split(setCookieHeader, ";")[0]
 	if err := CoerceError(resp); err != nil {
 		return out, err
 	}
@@ -71,4 +79,3 @@ func AuthLogout(c context.Context) (out AuthLogoutOutput, err error) {
 	}
 	return out, nil
 }
-

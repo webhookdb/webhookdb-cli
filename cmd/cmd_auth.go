@@ -3,17 +3,18 @@ package cmd
 import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/client"
+	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
 )
 
 const PASSWORD_RETRY_ATTEMPTS = 3
 
 var authCmd = &cli.Command{
-	Name: "auth",
+	Name:        "auth",
 	Description: "TODO",
 	Subcommands: []*cli.Command{
 		{
-			Name: "login",
+			Name:        "login",
 			Description: "TODO",
 			Flags:       []cli.Flag{usernameFlag()},
 			Action: func(c *cli.Context) error {
@@ -36,11 +37,16 @@ var authCmd = &cli.Command{
 				ctx := newCtx(newAppCtx(c))
 				output, err := client.AuthOTP(ctx, client.AuthOTPInput{
 					Username: c.String("username"),
-					Token: c.String("token"),
+					Token:    c.String("token"),
 				})
 				if err != nil {
 					return err
 				}
+				p := prefs.Prefs{
+					AuthCookie: output.AuthCookie,
+					CurrentOrg: "", // TODO: Add default org information here
+				}
+				prefs.Save(p)
 				fmt.Println(output.Message)
 				return nil
 			},

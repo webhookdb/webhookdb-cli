@@ -44,3 +44,12 @@ help:
 
 itest-auth-register: build
 	$(ARGS) $(BIN) auth register --username=x@y.com
+itest-auth-login: build
+	$(ARGS) $(BIN) auth login --username=natalie@lithic.tech
+
+itest-auth-otp-%: build
+	$(ARGS) $(BIN) auth otp --username=natalie@lithic.tech --token=$(*)
+
+itest-auth-logout: build
+	$(ARGS) $(BIN) auth logout
+

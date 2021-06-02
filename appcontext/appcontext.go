@@ -7,7 +7,7 @@ import (
 	"github.com/lithictech/go-aperitif/logctx"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
-	"github.com/lithictech/webhookdb-cli/statemachine"
+	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/sirupsen/logrus"
 	"os"
 )
@@ -25,8 +25,10 @@ func (ac AppContext) Logger() *logrus.Entry {
 
 func New(command string, cfg config.Config) (ac AppContext, err error) {
 	ac.Config = cfg
-	ac.Resty = newResty(cfg)
-	ac.StateMachine = client.NewStateMachine()
+	if ac.Prefs, err = prefs.Load(); err != nil {
+		return
+	}
+	ac.Resty = newResty(cfg, ac.Prefs)
 	if ac.logger, err = logctx.NewLogger(logctx.NewLoggerInput{
 		Level:     cfg.LogLevel,
 		Format:    cfg.LogFormat,
@@ -53,7 +55,8 @@ func NewTestContext() AppContext {
 	ac := AppContext{
 		logger: logger.WithFields(nil),
 		Config: cfg,
-		Resty:  newResty(cfg),
+		Resty:  newResty(cfg, pr),
+		Prefs:  pr,
 	}
 	return ac
 }
@@ -68,13 +71,13 @@ func FromContext(c context.Context) AppContext {
 	return c.Value(ctxKey).(AppContext)
 }
 
-func newResty(cfg config.Config) *resty.Client {
+func newResty(cfg config.Config, pr prefs.Prefs) *resty.Client {
 	r := resty.New().
 		SetHostURL(cfg.ApiHost).
 		SetHeader(
 			"User-Agent",
 			fmt.Sprintf("WebhookdbCLI/%s built %s", config.BuildSha, config.BuildTime),
-		)
+		).SetHeader("Cookie", pr.AuthCookie)
 	r.Debug = cfg.Debug
 	return r
 }
