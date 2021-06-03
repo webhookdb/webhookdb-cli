@@ -16,6 +16,7 @@ func Execute() {
 		Commands: []*cli.Command{
 			authCmd,
 			integrationsCmd,
+			organizationsCmd,
 			servicesCmd,
 			{
 				Name: "version",

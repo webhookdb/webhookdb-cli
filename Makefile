@@ -53,3 +53,9 @@ itest-auth-otp-%: build
 itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout
 
+
+itest-services-list: build
+	$(ARGS) $(BIN) services list
+
+itest-org-list: build
+	$(ARGS) $(BIN) org list

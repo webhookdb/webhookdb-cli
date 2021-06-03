@@ -1,6 +1,9 @@
 package client
 
+type OrganizationEntity struct {
+	Key string `json:"key"`
+}
+
 type ServiceEntity struct {
-	Name    string `json:"name"`
-	message string `json:"message"`
+	Name string `json:"name"`
 }
