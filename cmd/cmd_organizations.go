@@ -22,7 +22,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				out, err := client.OrganizationsList(ctx, client.OrganizationsListInput{AuthCookie: p.AuthCookie})
+				out, err := client.OrgList(ctx, client.OrgListInput{AuthCookie: p.AuthCookie})
 				if err != nil {
 					return err
 				}
@@ -39,5 +39,51 @@ var organizationsCmd = &cli.Command{
 				return nil
 			},
 		},
+		{
+			Name:        "members",
+			Description: "TODO",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: func(c *cli.Context) error {
+				ac := newAppCtx(c)
+				ctx := newCtx(ac)
+				p, err := prefs.Load()
+				if err != nil {
+					return err
+				}
+
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
+
+				out, err := client.OrgMembers(ctx, client.OrgMembersInput{AuthCookie: p.AuthCookie, OrgKey: orgKey})
+				if err != nil {
+					return err
+				}
+				orgsLen := len(out.Data)
+				members := make([]string, orgsLen)
+				for i, value := range out.Data {
+					if value.Status != "" {
+						members[i] = (value.CustomerEmail + " (" + value.Status + ")")
+					} else {
+						members[i] = value.CustomerEmail
+					}
+				}
+				fmt.Println(strings.Join(members, "\n"))
+				return nil
+			},
+		},
 	},
+}
+
+func orgFlag() *cli.StringFlag {
+	// takes the org ID
+	return &cli.StringFlag{
+		Name:     "org",
+		Aliases:  s1("o"),
+		Required: false,
+		Usage:    "TODO",
+	}
 }

@@ -59,3 +59,9 @@ itest-services-list: build
 
 itest-org-list: build
 	$(ARGS) $(BIN) org list
+
+itest-org-members: build
+	$(ARGS) $(BIN) org members
+
+itest-org-members-%: build
+	$(ARGS) $(BIN) org members --org=$(*)
