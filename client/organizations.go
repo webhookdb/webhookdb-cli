@@ -108,3 +108,31 @@ func OrgMembers(c context.Context, input OrgMembersInput) (out OrgMembersOutput,
 	}
 	return out, nil
 }
+
+type OrgRemoveInput struct {
+	AuthCookie string
+	Email string `json:"email"`
+	OrgKey string
+}
+
+type OrgRemoveOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgRemove(c context.Context, input OrgRemoveInput) (out OrgRemoveOutput, err error) {
+	resty := RestyFromContext(c)
+	url := fmt.Sprintf("/v1/organizations/%v/remove", input.OrgKey)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", input.AuthCookie).
+		Post(url)
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}

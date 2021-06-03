@@ -109,6 +109,30 @@ var organizationsCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:        "remove",
+			Description: "TODO",
+			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
+				input := client.OrgRemoveInput{
+					AuthCookie: p.AuthCookie,
+					Email: c.String("username"),
+					OrgKey: orgKey,
+				}
+				out, err := client.OrgRemove(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out.Message)
+				return nil
+			}),
+		},
 	},
 }
 
