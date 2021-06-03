@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
@@ -15,13 +17,7 @@ var servicesCmd = &cli.Command{
 			Name:        "list",
 			Description: "TODO",
 			Flags:       []cli.Flag{},
-			Action: func(c *cli.Context) error {
-				ac := newAppCtx(c)
-				ctx := newCtx(ac)
-				p, err := prefs.Load()
-				if err != nil {
-					return err
-				}
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				out, err := client.ServicesList(ctx, client.ServicesListInput{AuthCookie: p.AuthCookie})
 				if err != nil {
 					return err
@@ -33,7 +29,7 @@ var servicesCmd = &cli.Command{
 				}
 				fmt.Println(strings.Join(names, "\n"))
 				return nil
-			},
+			}),
 		},
 	},
 }

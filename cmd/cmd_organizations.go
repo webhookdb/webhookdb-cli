@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
@@ -16,14 +18,7 @@ var organizationsCmd = &cli.Command{
 			Name:        "invite",
 			Description: "TODO",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
-			Action: func(c *cli.Context) error {
-				ac := newAppCtx(c)
-				ctx := newCtx(ac)
-				p, err := prefs.Load()
-				if err != nil {
-					return err
-				}
-
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				var orgKey string
 				if c.String("org") != "" {
 					orgKey = c.String("org")
@@ -41,24 +36,16 @@ var organizationsCmd = &cli.Command{
 				}
 				fmt.Println(out.Message)
 				return nil
-			},
+			}),
 		},
 		{
 			Name:        "join",
 			Description: "TODO",
 			Flags:       []cli.Flag{},
-			Action: func(c *cli.Context) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
 					return errors.New("You must enter an invitation code")
 				}
-
-				ac := newAppCtx(c)
-				ctx := newCtx(ac)
-				p, err := prefs.Load()
-				if err != nil {
-					return err
-				}
-
 				input := client.OrgJoinInput{
 					AuthCookie: p.AuthCookie,
 					InvitationCode: c.Args().Get(0),
@@ -69,19 +56,13 @@ var organizationsCmd = &cli.Command{
 				}
 				fmt.Println(out.Message)
 				return nil
-			},
+			}),
 		},
 		{
 			Name:        "list",
 			Description: "TODO",
 			Flags:       []cli.Flag{},
-			Action: func(c *cli.Context) error {
-				ac := newAppCtx(c)
-				ctx := newCtx(ac)
-				p, err := prefs.Load()
-				if err != nil {
-					return err
-				}
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				out, err := client.OrgList(ctx, client.OrgListInput{AuthCookie: p.AuthCookie})
 				if err != nil {
 					return err
@@ -97,20 +78,13 @@ var organizationsCmd = &cli.Command{
 				}
 				fmt.Println(strings.Join(keySlugs, "\n"))
 				return nil
-			},
+			}),
 		},
 		{
 			Name:        "members",
 			Description: "TODO",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: func(c *cli.Context) error {
-				ac := newAppCtx(c)
-				ctx := newCtx(ac)
-				p, err := prefs.Load()
-				if err != nil {
-					return err
-				}
-
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				var orgKey string
 				if c.String("org") != "" {
 					orgKey = c.String("org")
@@ -133,7 +107,7 @@ var organizationsCmd = &cli.Command{
 				}
 				fmt.Println(strings.Join(members, "\n"))
 				return nil
-			},
+			}),
 		},
 	},
 }

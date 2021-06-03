@@ -7,6 +7,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
+	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -35,4 +36,22 @@ func newCtx(appCtx appcontext.AppContext) context.Context {
 	c = logctx.WithTracingLogger(c)
 	c = client.RestyInContext(c, appCtx.Resty)
 	return appcontext.InContext(c, appCtx)
+}
+
+func cliAction(cb func(*cli.Context, appcontext.AppContext, context.Context, prefs.Prefs) error) cli.ActionFunc {
+	return func(c *cli.Context) error {
+		ac := newAppCtx(c)
+		ctx := newCtx(ac)
+		p, err := prefs.Load()
+		if err != nil {
+			return err
+		}
+		if err := cb(c, ac, ctx, p); err != nil {
+			if eresp, ok := err.(client.ErrorResponse); ok {
+				return cli.Exit(eresp.Err.Message, 2)
+			}
+			return err
+		}
+		return nil
+	}
 }
