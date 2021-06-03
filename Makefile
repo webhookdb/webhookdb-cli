@@ -54,8 +54,15 @@ itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout
 
 
+# SERVICES
+
 itest-services-list: build
 	$(ARGS) $(BIN) services list
+
+# ORGS
+
+itest-org-invite-%: build
+	$(ARGS) $(BIN) org invite --username=$(*)
 
 itest-org-list: build
 	$(ARGS) $(BIN) org list

@@ -75,6 +75,37 @@ var organizationsCmd = &cli.Command{
 				return nil
 			},
 		},
+		{
+			Name:        "invite",
+			Description: "TODO",
+			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
+			Action: func(c *cli.Context) error {
+				ac := newAppCtx(c)
+				ctx := newCtx(ac)
+				p, err := prefs.Load()
+				if err != nil {
+					return err
+				}
+
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
+				input := client.OrgInviteInput{
+					AuthCookie: p.AuthCookie,
+					Email: c.String("username"),
+					OrgKey: orgKey,
+				}
+				out, err := client.OrgInvite(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out.Message)
+				return nil
+			},
+		},
 	},
 }
 

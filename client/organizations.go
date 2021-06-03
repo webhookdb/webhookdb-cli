@@ -5,6 +5,34 @@ import (
 	"fmt"
 )
 
+type OrgInviteInput struct {
+	AuthCookie string
+	Email string `json:"email"`
+	OrgKey string
+}
+
+type OrgInviteOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgInvite(c context.Context, input OrgInviteInput) (out OrgInviteOutput, err error) {
+	resty := RestyFromContext(c)
+	url := fmt.Sprintf("/v1/organizations/%v/invite", input.OrgKey)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", input.AuthCookie).
+		Post(url)
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
 type OrgListInput struct {
 	AuthCookie string
 }
