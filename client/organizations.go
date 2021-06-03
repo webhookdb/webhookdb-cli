@@ -33,6 +33,32 @@ func OrgInvite(c context.Context, input OrgInviteInput) (out OrgInviteOutput, er
 	return out, nil
 }
 
+type OrgJoinInput struct {
+	AuthCookie string
+	InvitationCode string `json:"invitation_code"`
+}
+
+type OrgJoinOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgJoin(c context.Context, input OrgJoinInput) (out OrgJoinOutput, err error) {
+	resty := RestyFromContext(c)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", input.AuthCookie).
+		Post("/v1/organizations/join")
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
 type OrgListInput struct {
 	AuthCookie string
 }

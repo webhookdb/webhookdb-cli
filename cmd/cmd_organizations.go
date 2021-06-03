@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
@@ -11,6 +12,65 @@ import (
 var organizationsCmd = &cli.Command{
 	Name: "org",
 	Subcommands: []*cli.Command{
+		{
+			Name:        "invite",
+			Description: "TODO",
+			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
+			Action: func(c *cli.Context) error {
+				ac := newAppCtx(c)
+				ctx := newCtx(ac)
+				p, err := prefs.Load()
+				if err != nil {
+					return err
+				}
+
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
+				input := client.OrgInviteInput{
+					AuthCookie: p.AuthCookie,
+					Email: c.String("username"),
+					OrgKey: orgKey,
+				}
+				out, err := client.OrgInvite(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out.Message)
+				return nil
+			},
+		},
+		{
+			Name:        "join",
+			Description: "TODO",
+			Flags:       []cli.Flag{},
+			Action: func(c *cli.Context) error {
+				if c.NArg() != 1 {
+					return errors.New("You must enter an invitation code")
+				}
+
+				ac := newAppCtx(c)
+				ctx := newCtx(ac)
+				p, err := prefs.Load()
+				if err != nil {
+					return err
+				}
+
+				input := client.OrgJoinInput{
+					AuthCookie: p.AuthCookie,
+					InvitationCode: c.Args().Get(0),
+				}
+				out, err := client.OrgJoin(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out.Message)
+				return nil
+			},
+		},
 		{
 			Name:        "list",
 			Description: "TODO",
@@ -72,37 +132,6 @@ var organizationsCmd = &cli.Command{
 					}
 				}
 				fmt.Println(strings.Join(members, "\n"))
-				return nil
-			},
-		},
-		{
-			Name:        "invite",
-			Description: "TODO",
-			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
-			Action: func(c *cli.Context) error {
-				ac := newAppCtx(c)
-				ctx := newCtx(ac)
-				p, err := prefs.Load()
-				if err != nil {
-					return err
-				}
-
-				var orgKey string
-				if c.String("org") != "" {
-					orgKey = c.String("org")
-				} else {
-					orgKey = p.CurrentOrg
-				}
-				input := client.OrgInviteInput{
-					AuthCookie: p.AuthCookie,
-					Email: c.String("username"),
-					OrgKey: orgKey,
-				}
-				out, err := client.OrgInvite(ctx, input)
-				if err != nil {
-					return err
-				}
-				fmt.Println(out.Message)
 				return nil
 			},
 		},

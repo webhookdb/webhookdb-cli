@@ -64,6 +64,9 @@ itest-services-list: build
 itest-org-invite-%: build
 	$(ARGS) $(BIN) org invite --username=$(*)
 
+itest-org-join-%: build
+	$(ARGS) $(BIN) org join $(*)
+
 itest-org-list: build
 	$(ARGS) $(BIN) org list
 
