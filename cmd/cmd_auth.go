@@ -44,7 +44,7 @@ var authCmd = &cli.Command{
 				}
 				p := prefs.Prefs{
 					AuthCookie: output.AuthCookie,
-					CurrentOrg: "", // TODO: Add default org information here
+					CurrentOrg: output.DefaultOrgKey,
 				}
 				prefs.Save(p)
 				fmt.Println(output.Message)
@@ -60,6 +60,7 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
+				prefs.Delete()
 				fmt.Println(output.Message)
 				return nil
 			},

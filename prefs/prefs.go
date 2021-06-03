@@ -49,3 +49,13 @@ func Save(p Prefs) error {
 	}
 	return nil
 }
+
+func Delete() error {
+	err := os.Remove(getPath())
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	return err
+}
