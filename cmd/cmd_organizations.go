@@ -15,6 +15,27 @@ var organizationsCmd = &cli.Command{
 	Name: "org",
 	Subcommands: []*cli.Command{
 		{
+			Name:        "activate",
+			Description: "TODO",
+			Flags:       []cli.Flag{},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				if c.NArg() != 1 {
+					return errors.New("You must enter an organization key.")
+				}
+				orgKey := c.Args().Get(0)
+				newPrefs := prefs.Prefs{
+					AuthCookie: p.AuthCookie,
+					CurrentOrg: c.Args().Get(0),
+				}
+				err := prefs.Save(newPrefs)
+				if err != nil {
+					return err
+				}
+				fmt.Println(fmt.Sprintf("%v is now your active organization. ", orgKey))
+				return nil
+			}),
+		},
+		{
 			Name:        "invite",
 			Description: "TODO",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
