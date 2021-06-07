@@ -6,7 +6,7 @@ type OrganizationEntity struct {
 
 type OrganizationMembershipEntity struct {
 	CustomerEmail string `json:"email"`
-	Status string `json:"status"`
+	Status        string `json:"status"`
 }
 
 type ServiceEntity struct {

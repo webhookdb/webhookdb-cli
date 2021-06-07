@@ -7,8 +7,8 @@ import (
 
 type OrgInviteInput struct {
 	AuthCookie string
-	Email string `json:"email"`
-	OrgKey string
+	Email      string `json:"email"`
+	OrgKey     string
 }
 
 type OrgInviteOutput struct {
@@ -34,7 +34,7 @@ func OrgInvite(c context.Context, input OrgInviteInput) (out OrgInviteOutput, er
 }
 
 type OrgJoinInput struct {
-	AuthCookie string
+	AuthCookie     string
 	InvitationCode string `json:"invitation_code"`
 }
 
@@ -85,7 +85,7 @@ func OrgList(c context.Context, input OrgListInput) (out OrgListOutput, err erro
 
 type OrgMembersInput struct {
 	AuthCookie string
-	OrgKey string
+	OrgKey     string
 }
 
 type OrgMembersOutput struct {
@@ -111,8 +111,8 @@ func OrgMembers(c context.Context, input OrgMembersInput) (out OrgMembersOutput,
 
 type OrgRemoveInput struct {
 	AuthCookie string
-	Email string `json:"email"`
-	OrgKey string
+	Email      string `json:"email"`
+	OrgKey     string
 }
 
 type OrgRemoveOutput struct {

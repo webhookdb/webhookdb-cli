@@ -48,8 +48,8 @@ var organizationsCmd = &cli.Command{
 				}
 				input := client.OrgInviteInput{
 					AuthCookie: p.AuthCookie,
-					Email: c.String("username"),
-					OrgKey: orgKey,
+					Email:      c.String("username"),
+					OrgKey:     orgKey,
 				}
 				out, err := client.OrgInvite(ctx, input)
 				if err != nil {
@@ -65,10 +65,10 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
-					return errors.New("You must enter an invitation code")
+					return errors.New("You must enter an invitation code.")
 				}
 				input := client.OrgJoinInput{
-					AuthCookie: p.AuthCookie,
+					AuthCookie:     p.AuthCookie,
 					InvitationCode: c.Args().Get(0),
 				}
 				out, err := client.OrgJoin(ctx, input)
@@ -143,8 +143,8 @@ var organizationsCmd = &cli.Command{
 				}
 				input := client.OrgRemoveInput{
 					AuthCookie: p.AuthCookie,
-					Email: c.String("username"),
-					OrgKey: orgKey,
+					Email:      c.String("username"),
+					OrgKey:     orgKey,
 				}
 				out, err := client.OrgRemove(ctx, input)
 				if err != nil {

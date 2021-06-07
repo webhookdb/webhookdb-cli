@@ -36,13 +36,13 @@ type AuthOTPInput struct {
 
 type AuthOTPResponseOutput struct {
 	DefaultOrgKey string `json:"default_org_key"`
-	Message string `json:"message"`
+	Message       string `json:"message"`
 }
 
 type AuthOTPOutput struct {
-	AuthCookie string
+	AuthCookie    string
 	DefaultOrgKey string
-	Message    string
+	Message       string
 }
 
 func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err error) {
