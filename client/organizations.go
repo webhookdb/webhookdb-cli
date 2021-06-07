@@ -5,6 +5,32 @@ import (
 	"fmt"
 )
 
+type OrgCreateInput struct {
+	AuthCookie  string
+	OrgName string `json:"name"`
+}
+
+type OrgCreateOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgCreate(c context.Context, input OrgCreateInput) (out OrgCreateOutput, err error) {
+	resty := RestyFromContext(c)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", input.AuthCookie).
+		Post("/v1/organizations/create")
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
 type OrgInviteInput struct {
 	AuthCookie string
 	Email      string `json:"email"`

@@ -36,6 +36,26 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:        "create",
+			Description: "TODO",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				if c.NArg() != 1 {
+					return errors.New("Organization name required.")
+				}
+				input := client.OrgCreateInput{
+					AuthCookie: p.AuthCookie,
+					OrgName:    c.Args().Get(0),
+				}
+				out, err := client.OrgCreate(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out.Message)
+				return nil
+			}),
+		},
+		{
 			Name:        "invite",
 			Description: "TODO",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
