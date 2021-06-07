@@ -19,7 +19,7 @@ var integrationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
-					return errors.New("service name required. Use 'webhookdb services list'.")
+					return errors.New("Service name required. Use 'webhookdb services list' to view all available services.")
 				}
 				var orgKey string
 				if c.String("org") != "" {
@@ -68,7 +68,7 @@ var integrationsCmd = &cli.Command{
 				// TODO: Get this spacing correct
 				fmt.Println("service name \t\t\t\t\t id")
 				for _, value := range out.Data {
-					fmt.Println(value.ServiceName + " \t\t\t\t " + value.OpaqueId + "\n")
+					fmt.Println(value.ServiceName + " \t\t\t\t " + value.OpaqueId)
 				}
 				return nil
 			}),

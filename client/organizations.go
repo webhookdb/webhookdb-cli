@@ -6,8 +6,8 @@ import (
 )
 
 type OrgCreateInput struct {
-	AuthCookie  string
-	OrgName string `json:"name"`
+	AuthCookie string
+	OrgName    string `json:"name"`
 }
 
 type OrgCreateOutput struct {

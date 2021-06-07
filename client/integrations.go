@@ -11,10 +11,6 @@ type IntegrationsCreateInput struct {
 	ServiceName string `json:"service_name"`
 }
 
-type IntegrationsCreateOutput struct {
-	Step Step `json:"step"`
-}
-
 func IntegrationsCreate(c context.Context, input IntegrationsCreateInput) (step Step, err error) {
 	resty := RestyFromContext(c)
 	url := fmt.Sprintf("/v1/organizations/%v/service_integrations/create", input.OrgKey)
