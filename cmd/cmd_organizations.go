@@ -156,13 +156,3 @@ var organizationsCmd = &cli.Command{
 		},
 	},
 }
-
-func orgFlag() *cli.StringFlag {
-	// takes the org ID
-	return &cli.StringFlag{
-		Name:     "org",
-		Aliases:  s1("o"),
-		Required: false,
-		Usage:    "TODO",
-	}
-}

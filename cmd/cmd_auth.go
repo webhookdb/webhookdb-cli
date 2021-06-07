@@ -67,21 +67,3 @@ var authCmd = &cli.Command{
 		},
 	},
 }
-
-func usernameFlag() *cli.StringFlag {
-	return &cli.StringFlag{
-		Name:     "username",
-		Aliases:  s1("u"),
-		Required: true,
-		Usage:    "TODO",
-	}
-}
-
-func tokenFlag() *cli.StringFlag {
-	return &cli.StringFlag{
-		Name:     "token",
-		Aliases:  s1("t"),
-		Required: true,
-		Usage:    "TODO",
-	}
-}
