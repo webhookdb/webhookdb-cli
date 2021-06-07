@@ -25,7 +25,6 @@ var backfillCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		// TODO: eliminate state machine stuff altogether
 		if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
 			return err
 		}

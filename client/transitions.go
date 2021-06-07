@@ -6,8 +6,8 @@ import (
 
 type TransitionStepInput struct {
 	AuthCookie string
-	PostUrl string
-	Value string `json:"value"`
+	PostUrl    string
+	Value      string `json:"value"`
 }
 
 func TransitionStep(c context.Context, input TransitionStepInput) (step Step, err error) {

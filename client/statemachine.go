@@ -19,14 +19,12 @@ type Step struct {
 
 type Prompt func(string) (string, error)
 type Println func(...interface{})
-//type TransitionStep func(c context.Context, input TransitionStepInput) (Step, error)
-//
+
 func NewStateMachine() StateMachine {
 	return StateMachine{
-		Ask:            ask.Ask,
-		HiddenAsk:      ask.HiddenAsk,
-		Println:        func(a ...interface{}) { fmt.Println(a...) },
-		//TransitionStep: transition,
+		Ask:       ask.Ask,
+		HiddenAsk: ask.HiddenAsk,
+		Println:   func(a ...interface{}) { fmt.Println(a...) },
 	}
 }
 
@@ -34,7 +32,6 @@ type StateMachine struct {
 	Ask       Prompt
 	HiddenAsk Prompt
 	Println   Println
-	//TransitionStep TransitionStep
 }
 
 func (sm StateMachine) Run(c context.Context, p prefs.Prefs, startingStep Step) error {
@@ -60,7 +57,7 @@ func (sm StateMachine) Run(c context.Context, p prefs.Prefs, startingStep Step) 
 		}
 		transitionInput := TransitionStepInput{
 			AuthCookie: p.AuthCookie,
-			PostUrl: step.PostToUrl,
+			PostUrl:    step.PostToUrl,
 			Value:      value,
 		}
 		newStep, err := TransitionStep(c, transitionInput)
