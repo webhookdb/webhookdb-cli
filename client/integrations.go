@@ -34,21 +34,22 @@ func IntegrationsCreate(c context.Context, input IntegrationsCreateInput) (step 
 }
 
 type IntegrationsListInput struct {
-	OrgId string `json:"org_id"`
+	AuthCookie string
+	OrgKey     string
 }
 
 type IntegrationsListOutput struct {
-	Step Step `json:"step"`
+	Data []ServiceIntegrationEntity `json:"items"`
 }
 
 func IntegrationsList(c context.Context, input IntegrationsListInput) (out IntegrationsListOutput, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/service_integrations/create")
+	url := fmt.Sprintf("/v1/organizations/%v/service_integrations", input.OrgKey)
 	resp, err := resty.R().
-		SetBody(&input).
 		SetError(&ErrorResponse{}).
 		SetResult(&out).
-		Post(url)
+		SetHeader("Cookie", input.AuthCookie).
+		Get(url)
 	if err != nil {
 		return out, err
 	}
