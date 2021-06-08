@@ -11,7 +11,7 @@ import (
 )
 
 var servicesCmd = &cli.Command{
-	Name: "services",
+	Name:        "services",
 	Description: "We use the term \"services\" to describe all of the platforms currently available for integration",
 	Subcommands: []*cli.Command{
 		{

@@ -25,7 +25,7 @@ var backfillCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
- 		if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
+		if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
 			return err
 		}
 		return nil

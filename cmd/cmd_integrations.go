@@ -11,7 +11,7 @@ import (
 )
 
 var integrationsCmd = &cli.Command{
-	Name: "integrations",
+	Name:        "integrations",
 	Description: "Make sure that you're working on the correct organization when you create an integration.",
 	Subcommands: []*cli.Command{
 		{

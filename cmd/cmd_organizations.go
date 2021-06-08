@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
+	"github.com/lithictech/webhookdb-cli/ask"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
@@ -12,7 +13,7 @@ import (
 )
 
 var organizationsCmd = &cli.Command{
-	Name: "org",
+	Name:        "org",
 	Description: "To set up integrations, you need to be part of an Organization. These commands will allow you to see and manipulate membership status for your organization.",
 	Subcommands: []*cli.Command{
 		{
@@ -39,14 +40,15 @@ var organizationsCmd = &cli.Command{
 		{
 			Name:        "create",
 			Description: "create an organization",
-			Flags:       []cli.Flag{orgFlag()},
+			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				if c.NArg() != 1 {
-					return errors.New("Organization name required.")
+				orgName, err := ask.Ask("What is your organization name? ")
+				if err != nil {
+					return err
 				}
 				input := client.OrgCreateInput{
 					AuthCookie: p.AuthCookie,
-					OrgName:    c.Args().Get(0),
+					OrgName:    orgName,
 				}
 				out, err := client.OrgCreate(ctx, input)
 				if err != nil {
