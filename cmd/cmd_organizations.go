@@ -13,10 +13,11 @@ import (
 
 var organizationsCmd = &cli.Command{
 	Name: "org",
+	Description: "To set up integrations, you need to be part of an Organization. These commands will allow you to see and manipulate membership status for your organization.",
 	Subcommands: []*cli.Command{
 		{
 			Name:        "activate",
-			Description: "TODO",
+			Description: "change the default organization for any command you run",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
@@ -37,7 +38,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:        "create",
-			Description: "TODO",
+			Description: "create an organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
@@ -57,7 +58,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:        "invite",
-			Description: "TODO",
+			Description: "invite a user to your organization",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				var orgKey string
@@ -81,7 +82,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:        "join",
-			Description: "TODO",
+			Description: "join an organization using a join code",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
@@ -101,7 +102,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:        "list",
-			Description: "TODO",
+			Description: "list all organizations that you're a member of",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				out, err := client.OrgList(ctx, client.OrgListInput{AuthCookie: p.AuthCookie})
@@ -123,7 +124,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:        "members",
-			Description: "TODO",
+			Description: "list all members of the given organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				var orgKey string
@@ -152,7 +153,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:        "remove",
-			Description: "TODO",
+			Description: "remove a member from an organization",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				var orgKey string

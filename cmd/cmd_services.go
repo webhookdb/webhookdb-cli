@@ -12,10 +12,11 @@ import (
 
 var servicesCmd = &cli.Command{
 	Name: "services",
+	Description: "We use the term \"services\" to describe all of the platforms currently available for integration",
 	Subcommands: []*cli.Command{
 		{
 			Name:        "list",
-			Description: "TODO",
+			Description: "list all available services",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				out, err := client.ServicesList(ctx, client.ServicesListInput{AuthCookie: p.AuthCookie})

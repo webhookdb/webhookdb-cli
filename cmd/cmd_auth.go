@@ -11,11 +11,11 @@ const PASSWORD_RETRY_ATTEMPTS = 3
 
 var authCmd = &cli.Command{
 	Name:        "auth",
-	Description: "TODO",
+	Description: "These commands control the auth process.",
 	Subcommands: []*cli.Command{
 		{
 			Name:        "login",
-			Description: "TODO",
+			Description: "logs a user in, sends them an otp",
 			Flags:       []cli.Flag{usernameFlag()},
 			Action: func(c *cli.Context) error {
 				ctx := newCtx(newAppCtx(c))
@@ -31,7 +31,7 @@ var authCmd = &cli.Command{
 		},
 		{
 			Name:        "otp",
-			Description: "TODO",
+			Description: "registers the user's otp",
 			Flags:       []cli.Flag{usernameFlag(), tokenFlag()},
 			Action: func(c *cli.Context) error {
 				ctx := newCtx(newAppCtx(c))
@@ -53,7 +53,7 @@ var authCmd = &cli.Command{
 		},
 		{
 			Name:        "logout",
-			Description: "TODO",
+			Description: "logs the current user out",
 			Action: func(c *cli.Context) error {
 				ctx := newCtx(newAppCtx(c))
 				output, err := client.AuthLogout(ctx)

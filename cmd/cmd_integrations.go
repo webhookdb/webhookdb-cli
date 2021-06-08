@@ -12,10 +12,11 @@ import (
 
 var integrationsCmd = &cli.Command{
 	Name: "integrations",
+	Description: "Make sure that you're working on the correct organization when you create an integration.",
 	Subcommands: []*cli.Command{
 		{
 			Name:        "create",
-			Description: "TODO",
+			Description: "create an integration for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
@@ -44,7 +45,7 @@ var integrationsCmd = &cli.Command{
 		},
 		{
 			Name:        "list",
-			Description: "TODO",
+			Description: "list all integrations for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				var orgKey string

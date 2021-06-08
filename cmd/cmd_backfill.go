@@ -11,7 +11,7 @@ import (
 
 var backfillCmd = &cli.Command{
 	Name:        "backfill",
-	Description: "TODO",
+	Description: "You can run this command to start a backfill of all the resources available to an integration.",
 	Flags:       []cli.Flag{},
 	Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 		if c.NArg() != 1 {
@@ -25,7 +25,7 @@ var backfillCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
+ 		if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
 			return err
 		}
 		return nil

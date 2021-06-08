@@ -8,7 +8,7 @@ func orgFlag() *cli.StringFlag {
 		Name:     "org",
 		Aliases:  s1("o"),
 		Required: false,
-		Usage:    "TODO",
+		Usage:    "Takes an org key. Run `webhook org list` to see a list of all your org keys.",
 	}
 }
 
@@ -17,7 +17,7 @@ func roleFlag() *cli.StringFlag {
 		Name:     "role",
 		Aliases:  s1("r"),
 		Required: true,
-		Usage:    "TODO",
+		Usage:    "Takes a role name.",
 	}
 }
 
@@ -26,7 +26,7 @@ func tokenFlag() *cli.StringFlag {
 		Name:     "token",
 		Aliases:  s1("t"),
 		Required: true,
-		Usage:    "TODO",
+		Usage:    "Takes a one time password—only used during auth.",
 	}
 }
 
@@ -35,7 +35,7 @@ func usernameFlag() *cli.StringFlag {
 		Name:     "username",
 		Aliases:  s1("u"),
 		Required: true,
-		Usage:    "TODO",
+		Usage:    "Takes an email.",
 	}
 }
 
@@ -44,6 +44,6 @@ func usernamesFlag() *cli.StringSliceFlag {
 		Name:     "usernames",
 		Aliases:  nil,
 		Required: true,
-		Usage:    "TODO",
+		Usage:    "Takes multiple emails.",
 	}
 }
