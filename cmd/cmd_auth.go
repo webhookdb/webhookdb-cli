@@ -44,9 +44,11 @@ var authCmd = &cli.Command{
 				}
 				p := prefs.Prefs{
 					AuthCookie: output.AuthCookie,
-					CurrentOrg: output.DefaultOrgKey,
+					CurrentOrg: output.DefaultOrg,
 				}
-				prefs.Save(p)
+				if err := prefs.Save(p); err != nil {
+					return err
+				}
 				fmt.Println(output.Message)
 				return nil
 			},
@@ -60,7 +62,9 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				prefs.Delete()
+				if err := prefs.Delete(); err != nil {
+					return err
+				}
 				fmt.Println(output.Message)
 				return nil
 			},

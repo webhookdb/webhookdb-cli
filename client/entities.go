@@ -1,9 +1,5 @@
 package client
 
-type OrganizationEntity struct {
-	Key string `json:"key"`
-}
-
 type OrganizationMembershipEntity struct {
 	CustomerEmail string `json:"email"`
 	Status        string `json:"status"`

@@ -78,7 +78,7 @@ func newResty(cfg config.Config, pr prefs.Prefs) *resty.Client {
 		SetHeader(
 			"User-Agent",
 			fmt.Sprintf("WebhookdbCLI/%s built %s", config.BuildSha, config.BuildTime),
-		).SetHeader("Cookie", pr.AuthCookie)
+		).SetHeader("Cookie", string(pr.AuthCookie))
 	r.Debug = cfg.Debug
 	return r
 }

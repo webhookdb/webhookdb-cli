@@ -42,36 +42,48 @@ update-lithic-deps:
 help:
 	@go run ./main.go help
 
-itest-auth-register: build
+itest-auth-register: build _itest-auth-register
+_itest-auth-register:
 	$(ARGS) $(BIN) auth register --username=x@y.com
-itest-auth-login: build
+itest-auth-login: build _itest-auth-login
+_itest-auth-login:
 	$(ARGS) $(BIN) auth login --username=natalie@lithic.tech
 
-itest-auth-otp-%: build
+itest-auth-otp-%: build _itest-auth-otp-%
+_itest-auth-otp-%:
 	$(ARGS) $(BIN) auth otp --username=natalie@lithic.tech --token=$(*)
 
-itest-auth-logout: build
+itest-auth-logout: build _itest-auth-logout
+_itest-auth-logout:
 	$(ARGS) $(BIN) auth logout
 
 
 # SERVICES
 
-itest-services-list: build
+itest-services-list: build _itest-services-list
+_itest-services-list:
 	$(ARGS) $(BIN) services list
 
 # ORGS
 
-itest-org-invite-%: build
+itest-org-invite-%: build _itest-org-invite-%
+_itest-org-invite-%:
 	$(ARGS) $(BIN) org invite --username=$(*)
 
-itest-org-join-%: build
+itest-org-join-%: build _itest-org-join-%
+_itest-org-join-%:
 	$(ARGS) $(BIN) org join $(*)
 
-itest-org-list: build
+itest-org-list: build _itest-org-list
+_itest-org-list:
 	$(ARGS) $(BIN) org list
 
-itest-org-members: build
+itest-org-members: build _itest-org-members
+_itest-org-members:
 	$(ARGS) $(BIN) org members
 
-itest-org-members-%: build
+itest-org-members-%: build _itest-org-members-%
+_itest-org-members-%:
 	$(ARGS) $(BIN) org members --org=$(*)
+
+itest-all: build _itest-auth-register _itest-auth-login

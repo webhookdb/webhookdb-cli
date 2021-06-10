@@ -22,16 +22,10 @@ var integrationsCmd = &cli.Command{
 				if c.NArg() != 1 {
 					return errors.New("Service name required. Use 'webhookdb services list' to view all available services.")
 				}
-				var orgKey string
-				if c.String("org") != "" {
-					orgKey = c.String("org")
-				} else {
-					orgKey = p.CurrentOrg
-				}
 				input := client.IntegrationsCreateInput{
-					AuthCookie:  p.AuthCookie,
-					OrgKey:      orgKey,
-					ServiceName: c.Args().Get(0),
+					AuthCookie:    p.AuthCookie,
+					OrgIdentifier: getOrgFlag(c, p),
+					ServiceName:   c.Args().Get(0),
 				}
 				step, err := client.IntegrationsCreate(ctx, input)
 				if err != nil {
@@ -48,15 +42,9 @@ var integrationsCmd = &cli.Command{
 			Description: "list all integrations for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				var orgKey string
-				if c.String("org") != "" {
-					orgKey = c.String("org")
-				} else {
-					orgKey = p.CurrentOrg
-				}
 				input := client.IntegrationsListInput{
-					AuthCookie: p.AuthCookie,
-					OrgKey:     orgKey,
+					AuthCookie:    p.AuthCookie,
+					OrgIdentifier: getOrgFlag(c, p),
 				}
 				out, err := client.IntegrationsList(ctx, input)
 				if err != nil {
