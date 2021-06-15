@@ -38,6 +38,31 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:        "changerole",
+			Description: "perform a bulk change of the roles for a list of usernames",
+			Flags:       []cli.Flag{roleFlag(), usernamesFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
+				input := client.OrgChangeRolesInput{
+					AuthCookie: p.AuthCookie,
+					Emails:     c.StringSlice("usernames"),
+					OrgKey:     orgKey,
+					RoleName:   c.String("role"),
+				}
+				out, err := client.OrgChangeRoles(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out)
+				return nil
+			}),
+		},
+		{
 			Name:        "create",
 			Description: "create an organization",
 			Flags:       []cli.Flag{},

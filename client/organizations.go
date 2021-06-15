@@ -5,6 +5,35 @@ import (
 	"fmt"
 )
 
+type OrgChangeRolesInput struct {
+	AuthCookie string
+	Emails     []string `json:"emails"`
+	OrgKey     string
+	RoleName   string `json:"role_name"`
+}
+
+type OrgChangeRolesOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgChangeRoles(c context.Context, input OrgChangeRolesInput) (out []OrgChangeRolesOutput, err error) {
+	resty := RestyFromContext(c)
+	url := fmt.Sprintf("/v1/organizations/%v/change_roles", input.OrgKey)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", input.AuthCookie).
+		Post(url)
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
 type OrgCreateInput struct {
 	AuthCookie string
 	OrgName    string `json:"name"`
