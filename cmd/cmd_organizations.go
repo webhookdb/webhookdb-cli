@@ -41,6 +41,25 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:        "changerole",
+			Description: "TODO",
+			Flags:       []cli.Flag{roleFlag(), usernamesFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				input := client.OrgChangeRolesInput{
+					AuthCookie: p.AuthCookie,
+					Emails: c.StringSlice("usernames"),
+					OrgIdentifier: getOrgFlag(c, p),
+					RoleName: c.String("role"),
+				}
+				out, err := client.OrgChangeRoles(ctx, input)
+				if err != nil {
+					return err
+				}
+				fmt.Println(out)
+				return nil
+			}),
+		},
+		{
 			Name:        "create",
 			Description: "create an organization",
 			Flags:       []cli.Flag{},

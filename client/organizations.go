@@ -32,6 +32,35 @@ func OrgCreate(c context.Context, input OrgCreateInput) (out OrgCreateOutput, er
 	return out, nil
 }
 
+type OrgChangeRolesInput struct {
+	AuthCookie types.AuthCookie `json:"-"`
+	Emails     []string `json:"emails"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	RoleName   string `json:"role_name"`
+}
+
+type OrgChangeRolesOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgChangeRoles(c context.Context, input OrgChangeRolesInput) (out []OrgChangeRolesOutput, err error) {
+	resty := RestyFromContext(c)
+	url := fmt.Sprintf("/v1/organizations/%v/change_roles", input.OrgIdentifier)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", string(input.AuthCookie)).
+		Post(url)
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
 type OrgGetInput struct {
 	AuthCookie    types.AuthCookie    `json:"-"`
 	OrgIdentifier types.OrgIdentifier `json:"-"`

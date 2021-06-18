@@ -24,7 +24,7 @@ type Organization struct {
 	// The name of the org. Can change.
 	Name string `json:"name"`
 	// URL-safe version of the organization name.
-	Slug string `json:"slug"`
+	Slug string `json:"key"`
 }
 
 func (o Organization) DisplayString() string {
