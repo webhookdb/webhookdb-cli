@@ -16,6 +16,7 @@ func Execute() {
 		Commands: []*cli.Command{
 			authCmd,
 			backfillCmd,
+			dbCmd,
 			integrationsCmd,
 			organizationsCmd,
 			servicesCmd,

@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/types"
 )
 
 type OrgChangeRolesInput struct {
@@ -35,8 +36,8 @@ func OrgChangeRoles(c context.Context, input OrgChangeRolesInput) (out []OrgChan
 }
 
 type OrgCreateInput struct {
-	AuthCookie string
-	OrgName    string `json:"name"`
+	AuthCookie types.AuthCookie `json:"-"`
+	OrgName    string           `json:"name"`
 }
 
 type OrgCreateOutput struct {
@@ -49,7 +50,7 @@ func OrgCreate(c context.Context, input OrgCreateInput) (out OrgCreateOutput, er
 		SetError(&ErrorResponse{}).
 		SetBody(&input).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Post("/v1/organizations/create")
 	if err != nil {
 		return out, err
@@ -60,10 +61,67 @@ func OrgCreate(c context.Context, input OrgCreateInput) (out OrgCreateOutput, er
 	return out, nil
 }
 
+type OrgChangeRolesInput struct {
+	AuthCookie    types.AuthCookie    `json:"-"`
+	Emails        string              `json:"emails"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	RoleName      string              `json:"role_name"`
+}
+
+type OrgChangeRolesOutput struct {
+	Message string `json:"message"`
+}
+
+func OrgChangeRoles(c context.Context, input OrgChangeRolesInput) (out []OrgChangeRolesOutput, err error) {
+	resty := RestyFromContext(c)
+	url := fmt.Sprintf("/v1/organizations/%v/change_roles", input.OrgIdentifier)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", string(input.AuthCookie)).
+		Post(url)
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
+type OrgGetInput struct {
+	AuthCookie    types.AuthCookie    `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+}
+
+type OrgGetOutput struct {
+	Org     types.Organization `json:"organization"`
+	Message string             `json:"message"`
+}
+
+func OrgGet(c context.Context, input OrgGetInput) (out OrgGetOutput, err error) {
+	resty := RestyFromContext(c)
+	url := fmt.Sprintf("/v1/organizations/%v", input.OrgIdentifier)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetBody(&input).
+		SetResult(&out).
+		SetHeader("Cookie", string(input.AuthCookie)).
+		Get(url)
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
 type OrgInviteInput struct {
-	AuthCookie string
-	Email      string `json:"email"`
-	OrgKey     string
+	AuthCookie    types.AuthCookie    `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	Email         string              `json:"email"`
 }
 
 type OrgInviteOutput struct {
@@ -72,12 +130,12 @@ type OrgInviteOutput struct {
 
 func OrgInvite(c context.Context, input OrgInviteInput) (out OrgInviteOutput, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/invite", input.OrgKey)
+	url := fmt.Sprintf("/v1/organizations/%v/invite", input.OrgIdentifier)
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetBody(&input).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Post(url)
 	if err != nil {
 		return out, err
@@ -89,8 +147,8 @@ func OrgInvite(c context.Context, input OrgInviteInput) (out OrgInviteOutput, er
 }
 
 type OrgJoinInput struct {
-	AuthCookie     string
-	InvitationCode string `json:"invitation_code"`
+	AuthCookie     types.AuthCookie `json:"-"`
+	InvitationCode string           `json:"invitation_code"`
 }
 
 type OrgJoinOutput struct {
@@ -103,7 +161,7 @@ func OrgJoin(c context.Context, input OrgJoinInput) (out OrgJoinOutput, err erro
 		SetError(&ErrorResponse{}).
 		SetBody(&input).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Post("/v1/organizations/join")
 	if err != nil {
 		return out, err
@@ -115,11 +173,11 @@ func OrgJoin(c context.Context, input OrgJoinInput) (out OrgJoinOutput, err erro
 }
 
 type OrgListInput struct {
-	AuthCookie string
+	AuthCookie types.AuthCookie `json:"-"`
 }
 
 type OrgListOutput struct {
-	Data []OrganizationEntity `json:"items"`
+	Items []types.Organization `json:"items"`
 }
 
 func OrgList(c context.Context, input OrgListInput) (out OrgListOutput, err error) {
@@ -127,7 +185,7 @@ func OrgList(c context.Context, input OrgListInput) (out OrgListOutput, err erro
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Get("/v1/organizations/")
 	if err != nil {
 		return out, err
@@ -139,8 +197,8 @@ func OrgList(c context.Context, input OrgListInput) (out OrgListOutput, err erro
 }
 
 type OrgMembersInput struct {
-	AuthCookie string
-	OrgKey     string
+	AuthCookie    types.AuthCookie    `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
 type OrgMembersOutput struct {
@@ -149,11 +207,11 @@ type OrgMembersOutput struct {
 
 func OrgMembers(c context.Context, input OrgMembersInput) (out OrgMembersOutput, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/members", input.OrgKey)
+	url := fmt.Sprintf("/v1/organizations/%v/members", input.OrgIdentifier)
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Get(url)
 	if err != nil {
 		return out, err
@@ -165,9 +223,9 @@ func OrgMembers(c context.Context, input OrgMembersInput) (out OrgMembersOutput,
 }
 
 type OrgRemoveInput struct {
-	AuthCookie string
-	Email      string `json:"email"`
-	OrgKey     string
+	AuthCookie    types.AuthCookie    `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	Email         string              `json:"email"`
 }
 
 type OrgRemoveOutput struct {
@@ -176,12 +234,12 @@ type OrgRemoveOutput struct {
 
 func OrgRemove(c context.Context, input OrgRemoveInput) (out OrgRemoveOutput, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/remove", input.OrgKey)
+	url := fmt.Sprintf("/v1/organizations/%v/remove", input.OrgIdentifier)
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetBody(&input).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Post(url)
 	if err != nil {
 		return out, err
