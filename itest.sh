@@ -68,15 +68,18 @@ whtest org members
 echo "\n*** testing integrations create..."
 whtest integrations create fake_v1
 echo "What is the opaque_id of the new integration?"
-read $opaque_id
+read opaqueId
 
 echo "\n*** testing integrations list..."
 whtest integrations list
+echo "*** What is the table name listed above?"
+read tableName
 
 echo "\n*** testing backfill..."
-whtest backfill $opaque_id
+whtest backfill $opaqueId
 
 echo "\n*** testing db tables..."
-#whtest db tables
+whtest db tables
+
 echo "\n*** testing db sql..."
-#whtest db sql
+whtest db sql "SELECT * FROM $tableName"

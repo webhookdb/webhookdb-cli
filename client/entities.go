@@ -12,4 +12,5 @@ type ServiceEntity struct {
 type ServiceIntegrationEntity struct {
 	OpaqueId    string `json:"opaque_id"`
 	ServiceName string `json:"service_name"`
+	TableName   string `json:"table_name"`
 }

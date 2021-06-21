@@ -55,9 +55,9 @@ var integrationsCmd = &cli.Command{
 					return errors.New("This organization doesn't have any integrations set up yet.")
 				}
 				// TODO: Get this spacing correct
-				fmt.Println("service name \t\t\t\t\t id")
+				fmt.Println("service name \t\t\t\t table name \t\t\t\t id")
 				for _, value := range out.Data {
-					fmt.Println(value.ServiceName + " \t\t\t\t " + value.OpaqueId)
+					fmt.Println(value.ServiceName + " \t\t\t " + value.TableName + " \t\t\t " +value.OpaqueId)
 				}
 				return nil
 			}),
