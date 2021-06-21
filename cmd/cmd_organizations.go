@@ -46,10 +46,10 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{roleFlag(), usernamesFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				input := client.OrgChangeRolesInput{
-					AuthCookie: p.AuthCookie,
-					Emails: c.String("usernames"),
+					AuthCookie:    p.AuthCookie,
+					Emails:        c.String("usernames"),
 					OrgIdentifier: getOrgFlag(c, p),
-					RoleName: c.String("role"),
+					RoleName:      c.String("role"),
 				}
 				out, err := client.OrgChangeRoles(ctx, input)
 				if err != nil {
