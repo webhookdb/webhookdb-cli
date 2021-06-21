@@ -51,8 +51,8 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
-func usernamesFlag() *cli.StringSliceFlag {
-	return &cli.StringSliceFlag{
+func usernamesFlag() *cli.StringFlag {
+	return &cli.StringFlag{
 		Name:     "usernames",
 		Aliases:  nil,
 		Required: true,

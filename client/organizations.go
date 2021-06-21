@@ -34,7 +34,7 @@ func OrgCreate(c context.Context, input OrgCreateInput) (out OrgCreateOutput, er
 
 type OrgChangeRolesInput struct {
 	AuthCookie types.AuthCookie `json:"-"`
-	Emails     []string `json:"emails"`
+	Emails     string `json:"emails"`
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 	RoleName   string `json:"role_name"`
 }
