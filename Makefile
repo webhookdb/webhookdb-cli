@@ -1,5 +1,5 @@
 BIN := ./webhookdb
-ARGS := API_HOST=http://localhost:19001
+ARGS := API_HOST=http://localhost:18001
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -42,48 +42,37 @@ update-lithic-deps:
 help:
 	@go run ./main.go help
 
-itest-auth-register: build _itest-auth-register
-_itest-auth-register:
-	$(ARGS) $(BIN) auth register --username=x@y.com
-itest-auth-login: build _itest-auth-login
-_itest-auth-login:
-	$(ARGS) $(BIN) auth login --username=natalie@lithic.tech
+itest-auth-login: build
+	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech
 
-itest-auth-otp-%: build _itest-auth-otp-%
-_itest-auth-otp-%:
-	$(ARGS) $(BIN) auth otp --username=natalie@lithic.tech --token=$(*)
+itest-auth-otp-%: build
+	$(ARGS) $(BIN) auth otp --username=alpha@lithic.tech --token=$(*)
 
-itest-auth-logout: build _itest-auth-logout
-_itest-auth-logout:
+itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout
 
+#
+#itest-integrations-create: build
+#	$(ARGS) $(BIN) integrations create fake_v1
 
 # SERVICES
 
-itest-services-list: build _itest-services-list
-_itest-services-list:
+itest-services-list: build
 	$(ARGS) $(BIN) services list
 
 # ORGS
 
-itest-org-invite-%: build _itest-org-invite-%
-_itest-org-invite-%:
+itest-org-invite-%: build
 	$(ARGS) $(BIN) org invite --username=$(*)
 
-itest-org-join-%: build _itest-org-join-%
-_itest-org-join-%:
+itest-org-join-%: build
 	$(ARGS) $(BIN) org join $(*)
 
-itest-org-list: build _itest-org-list
-_itest-org-list:
+itest-org-list: build
 	$(ARGS) $(BIN) org list
 
-itest-org-members: build _itest-org-members
-_itest-org-members:
+itest-org-members: build
 	$(ARGS) $(BIN) org members
 
-itest-org-members-%: build _itest-org-members-%
-_itest-org-members-%:
+itest-org-members-%: build
 	$(ARGS) $(BIN) org members --org=$(*)
-
-itest-all: build _itest-auth-register _itest-auth-login
