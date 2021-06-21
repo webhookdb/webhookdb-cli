@@ -3,19 +3,13 @@ package prefs
 import (
 	"encoding/json"
 	"github.com/lithictech/go-aperitif/convext"
-	"github.com/lithictech/webhookdb-cli/types"
 	"os"
 	"path/filepath"
 )
 
 type Prefs struct {
-	AuthCookie types.AuthCookie `json:"auth_cookie"`
-	CurrentOrg types.Organization
-}
-
-func (p Prefs) ChangeOrg(org types.Organization) Prefs {
-	p.CurrentOrg = org
-	return p
+	AuthCookie string `json:"auth_cookie"`
+	CurrentOrg string `json:"current_org"`
 }
 
 func getDir() string {

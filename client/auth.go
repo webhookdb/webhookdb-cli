@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/types"
 	"strings"
 )
 
@@ -36,14 +35,14 @@ type AuthOTPInput struct {
 }
 
 type AuthOTPResponseOutput struct {
-	DefaultOrg types.Organization `json:"organization"`
-	Message    string             `json:"message"`
+	DefaultOrgKey string `json:"default_org_key"`
+	Message       string `json:"message"`
 }
 
 type AuthOTPOutput struct {
-	AuthCookie types.AuthCookie
-	DefaultOrg types.Organization
-	Message    string
+	AuthCookie    string
+	DefaultOrgKey string
+	Message       string
 }
 
 func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err error) {
@@ -58,8 +57,8 @@ func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err erro
 		return AuthOTPOutput{}, err
 	}
 	setCookieHeader := resp.Header().Get("Set-Cookie")
-	out.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
-	out.DefaultOrg = respOut.DefaultOrg
+	out.AuthCookie = strings.Split(setCookieHeader, ";")[0]
+	out.DefaultOrgKey = respOut.DefaultOrgKey
 	out.Message = respOut.Message
 	if err := CoerceError(resp); err != nil {
 		return out, err

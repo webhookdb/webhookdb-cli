@@ -22,10 +22,16 @@ var integrationsCmd = &cli.Command{
 				if c.NArg() != 1 {
 					return errors.New("Service name required. Use 'webhookdb services list' to view all available services.")
 				}
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
 				input := client.IntegrationsCreateInput{
-					AuthCookie:    p.AuthCookie,
-					OrgIdentifier: getOrgFlag(c, p),
-					ServiceName:   c.Args().Get(0),
+					AuthCookie:  p.AuthCookie,
+					OrgKey:      orgKey,
+					ServiceName: c.Args().Get(0),
 				}
 				step, err := client.IntegrationsCreate(ctx, input)
 				if err != nil {
@@ -42,9 +48,15 @@ var integrationsCmd = &cli.Command{
 			Description: "list all integrations for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				var orgKey string
+				if c.String("org") != "" {
+					orgKey = c.String("org")
+				} else {
+					orgKey = p.CurrentOrg
+				}
 				input := client.IntegrationsListInput{
-					AuthCookie:    p.AuthCookie,
-					OrgIdentifier: getOrgFlag(c, p),
+					AuthCookie: p.AuthCookie,
+					OrgKey:     orgKey,
 				}
 				out, err := client.IntegrationsList(ctx, input)
 				if err != nil {
@@ -55,9 +67,9 @@ var integrationsCmd = &cli.Command{
 					return errors.New("This organization doesn't have any integrations set up yet.")
 				}
 				// TODO: Get this spacing correct
-				fmt.Println("service name \t\t\t\t table name \t\t\t\t id")
+				fmt.Println("service name \t\t\t\t\t id")
 				for _, value := range out.Data {
-					fmt.Println(value.ServiceName + " \t\t\t " + value.TableName + " \t\t\t " + value.OpaqueId)
+					fmt.Println(value.ServiceName + " \t\t\t\t " + value.OpaqueId)
 				}
 				return nil
 			}),

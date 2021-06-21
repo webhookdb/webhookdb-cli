@@ -3,12 +3,11 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/lithictech/webhookdb-cli/types"
 )
 
 type BackfillInput struct {
-	AuthCookie types.AuthCookie `json:"-"`
-	OpaqueId   string           `json:"-"`
+	AuthCookie string
+	OpaqueId   string
 }
 
 func Backfill(c context.Context, input BackfillInput) (step Step, err error) {
@@ -18,7 +17,7 @@ func Backfill(c context.Context, input BackfillInput) (step Step, err error) {
 		SetBody(&input).
 		SetError(&ErrorResponse{}).
 		SetResult(&step).
-		SetHeader("Cookie", string(input.AuthCookie)).
+		SetHeader("Cookie", input.AuthCookie).
 		Post(url)
 	if err != nil {
 		return step, err

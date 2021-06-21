@@ -2,11 +2,10 @@ package client
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/types"
 )
 
 type ServicesListInput struct {
-	AuthCookie types.AuthCookie `json:"-"`
+	AuthCookie string
 }
 
 type ServicesListOutput struct {
@@ -18,7 +17,7 @@ func ServicesList(c context.Context, input ServicesListInput) (out ServicesListO
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetResult(&out).
-		SetHeader("Cookie", string(input.AuthCookie)).
+		SetHeader("Cookie", input.AuthCookie).
 		Get("/v1/services/")
 	if err != nil {
 		return out, err

@@ -1,10 +1,6 @@
 package cmd
 
-import (
-	"github.com/lithictech/webhookdb-cli/prefs"
-	"github.com/lithictech/webhookdb-cli/types"
-	"github.com/urfave/cli/v2"
-)
+import "github.com/urfave/cli/v2"
 
 func orgFlag() *cli.StringFlag {
 	// takes the org key
@@ -14,14 +10,6 @@ func orgFlag() *cli.StringFlag {
 		Required: false,
 		Usage:    "Takes an org key. Run `webhook org list` to see a list of all your org keys.",
 	}
-}
-
-func getOrgFlag(c *cli.Context, p prefs.Prefs) types.OrgIdentifier {
-	slug := c.String("org")
-	if slug == "" {
-		return types.OrgIdentifierFromId(p.CurrentOrg.Id)
-	}
-	return types.OrgIdentifierFromSlug(slug)
 }
 
 func roleFlag() *cli.StringFlag {
@@ -51,8 +39,8 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
-func usernamesFlag() *cli.StringFlag {
-	return &cli.StringFlag{
+func usernamesFlag() *cli.StringSliceFlag {
+	return &cli.StringSliceFlag{
 		Name:     "usernames",
 		Aliases:  nil,
 		Required: true,
