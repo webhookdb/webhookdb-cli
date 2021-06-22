@@ -1,5 +1,5 @@
 BIN := ./webhookdb
-ARGS := API_HOST=http://localhost:19001
+ARGS := API_HOST=http://localhost:18001
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -42,17 +42,18 @@ update-lithic-deps:
 help:
 	@go run ./main.go help
 
-itest-auth-register: build
-	$(ARGS) $(BIN) auth register --username=x@y.com
 itest-auth-login: build
-	$(ARGS) $(BIN) auth login --username=natalie@lithic.tech
+	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech
 
 itest-auth-otp-%: build
-	$(ARGS) $(BIN) auth otp --username=natalie@lithic.tech --token=$(*)
+	$(ARGS) $(BIN) auth otp --username=alpha@lithic.tech --token=$(*)
 
 itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout
 
+#
+#itest-integrations-create: build
+#	$(ARGS) $(BIN) integrations create fake_v1
 
 # SERVICES
 

@@ -3,22 +3,23 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/types"
 )
 
 type IntegrationsCreateInput struct {
-	AuthCookie  string
-	OrgKey      string
-	ServiceName string `json:"service_name"`
+	AuthCookie    types.AuthCookie    `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	ServiceName   string              `json:"service_name"`
 }
 
 func IntegrationsCreate(c context.Context, input IntegrationsCreateInput) (step Step, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/service_integrations/create", input.OrgKey)
+	url := fmt.Sprintf("/v1/organizations/%v/service_integrations/create", input.OrgIdentifier)
 	resp, err := resty.R().
 		SetBody(&input).
 		SetError(&ErrorResponse{}).
 		SetResult(&step).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Post(url)
 	if err != nil {
 		return step, err
@@ -30,8 +31,8 @@ func IntegrationsCreate(c context.Context, input IntegrationsCreateInput) (step 
 }
 
 type IntegrationsListInput struct {
-	AuthCookie string
-	OrgKey     string
+	AuthCookie    types.AuthCookie
+	OrgIdentifier types.OrgIdentifier
 }
 
 type IntegrationsListOutput struct {
@@ -40,11 +41,11 @@ type IntegrationsListOutput struct {
 
 func IntegrationsList(c context.Context, input IntegrationsListInput) (out IntegrationsListOutput, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/service_integrations", input.OrgKey)
+	url := fmt.Sprintf("/v1/organizations/%v/service_integrations", input.OrgIdentifier)
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetResult(&out).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Get(url)
 	if err != nil {
 		return out, err

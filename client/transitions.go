@@ -2,12 +2,13 @@ package client
 
 import (
 	"context"
+	"github.com/lithictech/webhookdb-cli/types"
 )
 
 type TransitionStepInput struct {
-	AuthCookie string
-	PostUrl    string
-	Value      string `json:"value"`
+	AuthCookie types.AuthCookie `json:"-"`
+	PostUrl    string           `json:"-"`
+	Value      string           `json:"value"`
 }
 
 func TransitionStep(c context.Context, input TransitionStepInput) (step Step, err error) {
@@ -16,7 +17,7 @@ func TransitionStep(c context.Context, input TransitionStepInput) (step Step, er
 		SetBody(&input).
 		SetError(&ErrorResponse{}).
 		SetResult(&step).
-		SetHeader("Cookie", input.AuthCookie).
+		SetHeader("Cookie", string(input.AuthCookie)).
 		Post(input.PostUrl)
 	if err != nil {
 		return step, err
