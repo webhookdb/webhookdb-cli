@@ -8,7 +8,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/pkg/browser"
 	"github.com/urfave/cli/v2"
-	"strings"
 )
 
 var subscriptionsCmd = &cli.Command{
@@ -23,14 +22,7 @@ var subscriptionsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println("Organization name: " + out.OrgName)
-				fmt.Println("Billing email: " + out.BillingEmail)
-				fmt.Println("Integrations used: " + out.IntegrationsUsed)
-				fmt.Println("Plan name: " + out.PlanName)
-				fmt.Println("Integrations left: " + out.IntegrationsLeft)
-				if strings.TrimSpace(out.SubStatus) != "" {
-					fmt.Println("Subscription status: " + out.SubStatus)
-				}
+				out.PrintTo()
 				return nil
 			}),
 		},
