@@ -95,3 +95,24 @@ itest-org-members: build
 
 itest-org-members-%: build
 	$(ARGS) $(BIN) org members --org=$(*)
+
+# building tools
+
+notarize-%: guardcmd-gon
+	@if !(test -e gon_config_$(*).json); then echo 'ERROR: gon config file for $* not found' && exit 1; fi
+	gon gon_config_$(*).json
+
+build-binaries: guardcmd-gox
+	gox --osarch="darwin/amd64" --output="webhookdb_{{.OS}}_{{.Arch}}/webhookdb"
+	gox --osarch="darwin/arm64" --output="webhookdb_{{.OS}}_{{.Arch}}/webhookdb"
+	gox --osarch="linux/amd64" --output="webhookdb_{{.OS}}_{{.Arch}}/webhookdb"
+	gox --osarch="linux/arm64" --output="webhookdb_{{.OS}}_{{.Arch}}/webhookdb"
+	gox --osarch="windows/amd64" --output="webhookdb_{{.OS}}_{{.Arch}}/webhookdb"
+
+
+zip-binaries: guardcmd-zip notarize-darwin_amd64 notarize-darwin_arm64
+	@zip -r webhookdb_linux_amd64.zip webhookdb_linux_amd64
+	@zip -r webhookdb_linux_arm64.zip webhookdb_linux_arm64
+	@zip -r webhookdb_windows_amd64.zip webhookdb_windows_amd64
+
+new-release: build-binaries zip-binaries
