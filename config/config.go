@@ -46,5 +46,5 @@ func MustSetEnv(k string, v interface{}) {
 
 func init() {
 	MustSetEnv("LOG_LEVEL", "warn")
-	MustSetEnv("API_HOST", "https://api.webhookdb.com")
+	MustSetEnv("API_HOST", "https://webhookdb-prod.herokuapp.com/")
 }
