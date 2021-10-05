@@ -17,7 +17,7 @@ type DbTablesOutput struct {
 
 func DbTables(c context.Context, input DbTablesInput) (out DbTablesOutput, err error) {
 	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/db/%v", input.OrgIdentifier)
+	url := fmt.Sprintf("/v1/db/%v/tables", input.OrgIdentifier)
 	resp, err := resty.R().
 		SetError(&ErrorResponse{}).
 		SetResult(&out).
