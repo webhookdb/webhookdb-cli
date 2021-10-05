@@ -83,3 +83,9 @@ whtest db tables
 
 echo "\n*** testing db sql..."
 whtest db sql "SELECT * FROM $tableName"
+
+echo "\n*** testing subscription info..."
+whtest subscription info
+
+echo "\n*** testing subscription edit..."
+whtest subscription edit

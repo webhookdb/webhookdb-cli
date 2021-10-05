@@ -20,6 +20,7 @@ func Execute() {
 			integrationsCmd,
 			organizationsCmd,
 			servicesCmd,
+			subscriptionsCmd,
 			{
 				Name: "version",
 				Action: func(c *cli.Context) error {
