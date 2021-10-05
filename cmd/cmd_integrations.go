@@ -63,5 +63,28 @@ var integrationsCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:        "reset",
+			Description: "Reset the webhook secret for this integration.",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				opaqueId, err := extractIntegrationId(0, c)
+				if err != nil {
+					return err
+				}
+				input := client.IntegrationsResetInput{
+					AuthCookie: p.AuthCookie,
+					OpaqueId:   opaqueId,
+				}
+				step, err := client.IntegrationsReset(ctx, input)
+				if err != nil {
+					return err
+				}
+				if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
+					return err
+				}
+				return nil
+			}),
+		},
 	},
 }

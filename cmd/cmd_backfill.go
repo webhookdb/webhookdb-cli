@@ -30,4 +30,29 @@ var backfillCmd = &cli.Command{
 		}
 		return nil
 	}),
+	Subcommands: []*cli.Command{
+		{
+			Name:        "reset",
+			Description: "Reset any stored API keys and secrets associated with backfilling this integration.",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				opaqueId, err := extractIntegrationId(0, c)
+				if err != nil {
+					return err
+				}
+				input := client.BackfillResetInput{
+					AuthCookie: p.AuthCookie,
+					OpaqueId:   opaqueId,
+				}
+				step, err := client.BackfillReset(ctx, input)
+				if err != nil {
+					return err
+				}
+				if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
+					return err
+				}
+				return nil
+			}),
+		},
+	},
 }
