@@ -19,13 +19,14 @@ var integrationsCmd = &cli.Command{
 			Description: "create an integration for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				if c.NArg() != 1 {
-					return errors.New("Service name required. Use 'webhookdb services list' to view all available services.")
+				serviceName, err := extractPositional(0, c, "Service name required. Use 'webhookdb services list' to view all available services.")
+				if err != nil {
+					return err
 				}
 				input := client.IntegrationsCreateInput{
 					AuthCookie:    p.AuthCookie,
 					OrgIdentifier: getOrgFlag(c, p),
-					ServiceName:   c.Args().Get(0),
+					ServiceName:   serviceName,
 				}
 				step, err := client.IntegrationsCreate(ctx, input)
 				if err != nil {

@@ -5,7 +5,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
-	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,12 +13,13 @@ var backfillCmd = &cli.Command{
 	Description: "You can run this command to start a backfill of all the resources available to an integration.",
 	Flags:       []cli.Flag{},
 	Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-		if c.NArg() != 1 {
-			return errors.New("Integration ID required. Use 'webhookdb integrations list'.")
+		opaqueId, err := extractIntegrationId(0, c)
+		if err != nil {
+			return err
 		}
 		input := client.BackfillInput{
 			AuthCookie: p.AuthCookie,
-			OpaqueId:   c.Args().Get(0),
+			OpaqueId:   opaqueId,
 		}
 		step, err := client.Backfill(ctx, input)
 		if err != nil {

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
@@ -47,10 +46,11 @@ var dbCmd = &cli.Command{
 			Description: "Execute query on organization's database.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				if c.NArg() != 1 {
-					return errors.New("You must enter a query string.")
+				q, err := extractPositional(0, c, "You must enter a query string.")
+				if err != nil {
+					return err
 				}
-				out, err := client.DbSql(ctx, client.DbSqlInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p), Query: c.Args().Get(0)})
+				out, err := client.DbSql(ctx, client.DbSqlInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p), Query: q})
 				if err != nil {
 					return err
 				}
