@@ -1,8 +1,11 @@
 package client
 
+import "github.com/lithictech/webhookdb-cli/types"
+
 type OrganizationMembershipEntity struct {
-	CustomerEmail string `json:"email"`
-	Status        string `json:"status"`
+	CustomerEmail string             `json:"email"`
+	Organization  types.Organization `json:"organization"`
+	Status        string             `json:"status"`
 }
 
 type ServiceEntity struct {

@@ -7,6 +7,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
+	"os"
 )
 
 var authCmd = &cli.Command{
@@ -14,8 +15,20 @@ var authCmd = &cli.Command{
 	Description: "These commands control the auth process.",
 	Subcommands: []*cli.Command{
 		{
+			Name:        "whoami",
+			Description: "Print information about the current user",
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				output, err := client.AuthGetMe(ctx)
+				if err != nil {
+					return err
+				}
+				output.PrintTo(os.Stdout)
+				return nil
+			}),
+		},
+		{
 			Name:        "login",
-			Description: "logs a user in, sends them an otp",
+			Description: "Sign up or log in.",
 			Flags:       []cli.Flag{usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				output, err := client.AuthLogin(ctx, client.AuthLoginInput{
@@ -30,7 +43,7 @@ var authCmd = &cli.Command{
 		},
 		{
 			Name:        "otp",
-			Description: "registers the user's otp",
+			Description: "Finish sign up or login in using the given One Time Password.",
 			Flags:       []cli.Flag{usernameFlag(), tokenFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				output, err := client.AuthOTP(ctx, client.AuthOTPInput{
@@ -41,7 +54,7 @@ var authCmd = &cli.Command{
 					return err
 				}
 				p.AuthCookie = output.AuthCookie
-				p.CurrentOrg = output.DefaultOrg
+				p.CurrentOrg = output.CurrentCustomer.DefaultOrganization
 				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, p)
 				if err := prefs.Save(ac.GlobalPrefs); err != nil {
 					return err
@@ -52,7 +65,7 @@ var authCmd = &cli.Command{
 		},
 		{
 			Name:        "logout",
-			Description: "logs the current user out",
+			Description: "Log out of your current session.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				output, err := client.AuthLogout(ctx)
 				if err != nil {
