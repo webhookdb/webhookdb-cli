@@ -17,8 +17,21 @@ var dbCmd = &cli.Command{
 	Flags:       []cli.Flag{orgFlag()},
 	Subcommands: []*cli.Command{
 		{
+			Name:        "connection",
+			Description: "Print the database connection url for an organization.",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				out, err := client.DbConnection(ctx, client.DbConnectionInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
+				if err != nil {
+					return err
+				}
+				fmt.Print(out.ConnectionUrl)
+				return nil
+			}),
+		},
+		{
 			Name:        "tables",
-			Description: "list all tables in organization's db",
+			Description: "List all tables in an organization's database.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				out, err := client.DbTables(ctx, client.DbTablesInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
@@ -31,7 +44,7 @@ var dbCmd = &cli.Command{
 		},
 		{
 			Name:        "sql",
-			Description: "execute query on organization's db",
+			Description: "Execute query on organization's database.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
 				if c.NArg() != 1 {
@@ -46,6 +59,19 @@ var dbCmd = &cli.Command{
 				if out.MaxRowsReached {
 					fmt.Println("Results have been truncated.")
 				}
+				return nil
+			}),
+		},
+		{
+			Name:        "roll-credentials",
+			Description: "Roll the credentials for an organization's database to something newly randomly generated.",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+				out, err := client.DbRollCredentials(ctx, client.DbRollCredentialsInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
+				if err != nil {
+					return err
+				}
+				fmt.Print(out.ConnectionUrl)
 				return nil
 			}),
 		},
