@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
 	"strings"
 )
@@ -18,8 +17,8 @@ var servicesCmd = &cli.Command{
 			Name:        "list",
 			Description: "list all available services",
 			Flags:       []cli.Flag{},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				out, err := client.ServicesList(ctx, client.ServicesListInput{AuthCookie: p.AuthCookie})
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{})
 				if err != nil {
 					return err
 				}

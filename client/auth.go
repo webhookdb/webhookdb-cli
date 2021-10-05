@@ -30,19 +30,9 @@ func (o AuthCurrentCustomerOutput) PrintTo(w io.Writer) {
 	}
 }
 
-func AuthGetMe(c context.Context) (out AuthCurrentCustomerOutput, err error) {
-	resty := RestyFromContext(c)
-	resp, err := resty.R().
-		SetError(&ErrorResponse{}).
-		SetResult(&out).
-		Get("/v1/me")
-	if err != nil {
-		return out, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return out, err
-	}
-	return out, nil
+func AuthGetMe(c context.Context, auth Auth) (out AuthCurrentCustomerOutput, err error) {
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/me")
+	return
 }
 
 type AuthLoginInput struct {
@@ -54,19 +44,8 @@ type AuthLoginOutput struct {
 }
 
 func AuthLogin(c context.Context, input AuthLoginInput) (out AuthLoginOutput, err error) {
-	resty := RestyFromContext(c)
-	resp, err := resty.R().
-		SetBody(&input).
-		SetError(&ErrorResponse{}).
-		SetResult(&out).
-		Post("/v1/auth")
-	if err != nil {
-		return out, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return out, err
-	}
-	return out, nil
+	err = makeRequest(c, POST, Auth{}, input, &out, "/v1/auth")
+	return
 }
 
 type AuthOTPInput struct {
@@ -105,17 +84,7 @@ type AuthLogoutOutput struct {
 	Message string `json:"message"`
 }
 
-func AuthLogout(c context.Context) (out AuthLogoutOutput, err error) {
-	resty := RestyFromContext(c)
-	resp, err := resty.R().
-		SetError(&ErrorResponse{}).
-		SetResult(&out).
-		Post("/v1/auth/logout")
-	if err != nil {
-		return out, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return out, err
-	}
-	return out, nil
+func AuthLogout(c context.Context, auth Auth) (out AuthLogoutOutput, err error) {
+	err = makeRequest(c, POST, auth, nil, &out, "/v1/auth/logout")
+	return
 }

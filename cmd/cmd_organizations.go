@@ -20,19 +20,18 @@ var organizationsCmd = &cli.Command{
 			Name:        "activate",
 			Description: "change the default organization for any command you run",
 			Flags:       []cli.Flag{},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				orgSlug, err := extractPositional(0, c, "You must enter an organization key.")
 				if err != nil {
 					return err
 				}
-				out, err := client.OrgGet(ctx, client.OrgGetInput{
-					AuthCookie:    p.AuthCookie,
+				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
 					OrgIdentifier: types.OrgIdentifierFromSlug(orgSlug),
 				})
 				if err != nil {
 					return err
 				}
-				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, p.ChangeOrg(out.Org))
+				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, ac.Prefs.ChangeOrg(out.Org))
 				if err := prefs.Save(ac.GlobalPrefs); err != nil {
 					return err
 				}
@@ -44,14 +43,13 @@ var organizationsCmd = &cli.Command{
 			Name:        "changerole",
 			Description: "TODO",
 			Flags:       []cli.Flag{roleFlag(), usernamesFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgChangeRolesInput{
-					AuthCookie:    p.AuthCookie,
 					Emails:        c.String("usernames"),
-					OrgIdentifier: getOrgFlag(c, p),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					RoleName:      c.String("role"),
 				}
-				out, err := client.OrgChangeRoles(ctx, input)
+				out, err := client.OrgChangeRoles(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -63,16 +61,15 @@ var organizationsCmd = &cli.Command{
 			Name:        "create",
 			Description: "create an organization",
 			Flags:       []cli.Flag{},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				orgName, err := ask.Ask("What is your organization name? ")
 				if err != nil {
 					return err
 				}
 				input := client.OrgCreateInput{
-					AuthCookie: p.AuthCookie,
-					OrgName:    orgName,
+					OrgName: orgName,
 				}
-				out, err := client.OrgCreate(ctx, input)
+				out, err := client.OrgCreate(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -85,13 +82,12 @@ var organizationsCmd = &cli.Command{
 			Name:        "invite",
 			Description: "invite a user to your organization",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
-					AuthCookie:    p.AuthCookie,
 					Email:         c.String("username"),
-					OrgIdentifier: getOrgFlag(c, p),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
-				out, err := client.OrgInvite(ctx, input)
+				out, err := client.OrgInvite(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -103,16 +99,15 @@ var organizationsCmd = &cli.Command{
 			Name:        "join",
 			Description: "join an organization using a join code",
 			Flags:       []cli.Flag{},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				invCode, err := extractPositional(0, c, "You must enter an invitation code.")
 				if err != nil {
 					return err
 				}
 				input := client.OrgJoinInput{
-					AuthCookie:     p.AuthCookie,
 					InvitationCode: invCode,
 				}
-				out, err := client.OrgJoin(ctx, input)
+				out, err := client.OrgJoin(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -124,15 +119,15 @@ var organizationsCmd = &cli.Command{
 			Name:        "list",
 			Description: "list all organizations that you're a member of",
 			Flags:       []cli.Flag{},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				out, err := client.OrgList(ctx, client.OrgListInput{AuthCookie: p.AuthCookie})
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				out, err := client.OrgList(ctx, ac.Auth, client.OrgListInput{})
 				if err != nil {
 					return err
 				}
 				orgsLen := len(out.Items)
 				keySlugs := make([]string, orgsLen)
 				for i, value := range out.Items {
-					if value.Id == p.CurrentOrg.Id {
+					if value.Id == ac.Prefs.CurrentOrg.Id {
 						keySlugs[i] = value.Name + " (active)"
 					} else {
 						keySlugs[i] = value.Name
@@ -146,8 +141,8 @@ var organizationsCmd = &cli.Command{
 			Name:        "current",
 			Description: "display the name and slug of the currently active org",
 			Flags:       []cli.Flag{},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				fmt.Println(p.CurrentOrg.DisplayString())
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				fmt.Println(ac.Prefs.CurrentOrg.DisplayString())
 				return nil
 			}),
 		},
@@ -155,8 +150,8 @@ var organizationsCmd = &cli.Command{
 			Name:        "members",
 			Description: "list all members of the given organization",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				out, err := client.OrgMembers(ctx, client.OrgMembersInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				out, err := client.OrgMembers(ctx, ac.Auth, client.OrgMembersInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
@@ -177,13 +172,12 @@ var organizationsCmd = &cli.Command{
 			Name:        "remove",
 			Description: "remove a member from an organization",
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgRemoveInput{
-					AuthCookie:    p.AuthCookie,
 					Email:         c.String("username"),
-					OrgIdentifier: getOrgFlag(c, p),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
-				out, err := client.OrgRemove(ctx, input)
+				out, err := client.OrgRemove(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}

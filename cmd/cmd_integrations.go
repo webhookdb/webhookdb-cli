@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 )
@@ -18,21 +17,20 @@ var integrationsCmd = &cli.Command{
 			Name:        "create",
 			Description: "create an integration for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				serviceName, err := extractPositional(0, c, "Service name required. Use 'webhookdb services list' to view all available services.")
 				if err != nil {
 					return err
 				}
 				input := client.IntegrationsCreateInput{
-					AuthCookie:    p.AuthCookie,
-					OrgIdentifier: getOrgFlag(c, p),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					ServiceName:   serviceName,
 				}
-				step, err := client.IntegrationsCreate(ctx, input)
+				step, err := client.IntegrationsCreate(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
+				if err := client.NewStateMachine().Run(ctx, ac.Auth, step); err != nil {
 					return err
 				}
 				return nil
@@ -42,12 +40,11 @@ var integrationsCmd = &cli.Command{
 			Name:        "list",
 			Description: "list all integrations for the given organization",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsListInput{
-					AuthCookie:    p.AuthCookie,
-					OrgIdentifier: getOrgFlag(c, p),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
-				out, err := client.IntegrationsList(ctx, input)
+				out, err := client.IntegrationsList(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -67,20 +64,19 @@ var integrationsCmd = &cli.Command{
 			Name:        "reset",
 			Description: "Reset the webhook secret for this integration.",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				opaqueId, err := extractIntegrationId(0, c)
 				if err != nil {
 					return err
 				}
 				input := client.IntegrationsResetInput{
-					AuthCookie: p.AuthCookie,
-					OpaqueId:   opaqueId,
+					OpaqueId: opaqueId,
 				}
-				step, err := client.IntegrationsReset(ctx, input)
+				step, err := client.IntegrationsReset(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				if err := client.NewStateMachine().Run(ctx, p, step); err != nil {
+				if err := client.NewStateMachine().Run(ctx, ac.Auth, step); err != nil {
 					return err
 				}
 				return nil

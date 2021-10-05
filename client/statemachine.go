@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/ask"
-	"github.com/lithictech/webhookdb-cli/prefs"
 )
 
 type Step struct {
@@ -34,7 +33,7 @@ type StateMachine struct {
 	Println   Println
 }
 
-func (sm StateMachine) Run(c context.Context, p prefs.Prefs, startingStep Step) error {
+func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) error {
 	step := startingStep
 	for {
 		if step.Complete {
@@ -56,11 +55,10 @@ func (sm StateMachine) Run(c context.Context, p prefs.Prefs, startingStep Step) 
 			return err
 		}
 		transitionInput := TransitionStepInput{
-			AuthCookie: p.AuthCookie,
-			PostUrl:    step.PostToUrl,
-			Value:      value,
+			PostUrl: step.PostToUrl,
+			Value:   value,
 		}
-		newStep, err := TransitionStep(c, transitionInput)
+		newStep, err := TransitionStep(c, auth, transitionInput)
 		if err != nil {
 			return err
 		}

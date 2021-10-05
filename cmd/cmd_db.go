@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
 	"strings"
 )
@@ -19,8 +18,8 @@ var dbCmd = &cli.Command{
 			Name:        "connection",
 			Description: "Print the database connection url for an organization.",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				out, err := client.DbConnection(ctx, client.DbConnectionInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				out, err := client.DbConnection(ctx, ac.Auth, client.DbConnectionInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
@@ -32,8 +31,8 @@ var dbCmd = &cli.Command{
 			Name:        "tables",
 			Description: "List all tables in an organization's database.",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				out, err := client.DbTables(ctx, client.DbTablesInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				out, err := client.DbTables(ctx, ac.Auth, client.DbTablesInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
@@ -45,12 +44,12 @@ var dbCmd = &cli.Command{
 			Name:        "sql",
 			Description: "Execute query on organization's database.",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				q, err := extractPositional(0, c, "You must enter a query string.")
 				if err != nil {
 					return err
 				}
-				out, err := client.DbSql(ctx, client.DbSqlInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p), Query: q})
+				out, err := client.DbSql(ctx, ac.Auth, client.DbSqlInput{OrgIdentifier: getOrgFlag(c, ac.Prefs), Query: q})
 				if err != nil {
 					return err
 				}
@@ -66,8 +65,8 @@ var dbCmd = &cli.Command{
 			Name:        "roll-credentials",
 			Description: "Roll the credentials for an organization's database to something newly randomly generated.",
 			Flags:       []cli.Flag{orgFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				out, err := client.DbRollCredentials(ctx, client.DbRollCredentialsInput{AuthCookie: p.AuthCookie, OrgIdentifier: getOrgFlag(c, p)})
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				out, err := client.DbRollCredentials(ctx, ac.Auth, client.DbRollCredentialsInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}

@@ -17,8 +17,8 @@ var authCmd = &cli.Command{
 		{
 			Name:        "whoami",
 			Description: "Print information about the current user",
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				output, err := client.AuthGetMe(ctx)
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				output, err := client.AuthGetMe(ctx, ac.Auth)
 				if err != nil {
 					return err
 				}
@@ -30,7 +30,7 @@ var authCmd = &cli.Command{
 			Name:        "login",
 			Description: "Sign up or log in.",
 			Flags:       []cli.Flag{usernameFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				output, err := client.AuthLogin(ctx, client.AuthLoginInput{
 					Username: c.String("username"),
 				})
@@ -45,7 +45,7 @@ var authCmd = &cli.Command{
 			Name:        "otp",
 			Description: "Finish sign up or login in using the given One Time Password.",
 			Flags:       []cli.Flag{usernameFlag(), tokenFlag()},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				output, err := client.AuthOTP(ctx, client.AuthOTPInput{
 					Username: c.String("username"),
 					Token:    c.String("token"),
@@ -53,9 +53,9 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				p.AuthCookie = output.AuthCookie
-				p.CurrentOrg = output.CurrentCustomer.DefaultOrganization
-				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, p)
+				ac.Prefs.AuthCookie = output.AuthCookie
+				ac.Prefs.CurrentOrg = output.CurrentCustomer.DefaultOrganization
+				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, ac.Prefs)
 				if err := prefs.Save(ac.GlobalPrefs); err != nil {
 					return err
 				}
@@ -66,8 +66,8 @@ var authCmd = &cli.Command{
 		{
 			Name:        "logout",
 			Description: "Log out of your current session.",
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				output, err := client.AuthLogout(ctx)
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				output, err := client.AuthLogout(ctx, ac.Auth)
 				if err != nil {
 					return err
 				}
