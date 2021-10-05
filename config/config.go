@@ -11,21 +11,38 @@ var BuildTime = "btime"
 var BuildSha = "bsha"
 
 type Config struct {
-	ApiHost   string
+	// ApiHost is the URL of the service, like
+	// https://api.production.webhookdb.com, or http://localhost:1234.
+	ApiHost string
+	// Use a non-empty environment variable value to enable debug mode,
+	// which uses debug-level logging and may change other behaviors.
 	Debug     bool
 	LogFile   string
 	LogFormat string
 	LogLevel  string
+	// PrefsNamespace is used to namespace different environments
+	// in the .webhookdb prefs file.
+	// It defaults to API_HOST but you can set it to something else
+	// so multiple api hosts can use the same prefs,
+	// like if they are backed by the same DB.
+	PrefsNamespace string
 }
 
 func LoadConfig(filenames ...string) Config {
 	_ = godotenv.Overload(filenames...)
 	cfg := Config{
-		ApiHost:   os.Getenv("API_HOST"),
-		Debug:     os.Getenv("DEBUG") != "",
-		LogFile:   os.Getenv("LOG_FILE"),
-		LogFormat: os.Getenv("LOG_FORMAT"),
-		LogLevel:  MustEnvStr("LOG_LEVEL"),
+		ApiHost:        MustEnvStr("WEBHOOKDB_API_HOST"),
+		Debug:          os.Getenv("WEBHOOKDB_DEBUG") != "",
+		LogFile:        os.Getenv("WEBHOOKDB_LOG_FILE"),
+		LogFormat:      os.Getenv("WEBHOOKDB_LOG_FORMAT"),
+		LogLevel:       MustEnvStr("WEBHOOKDB_LOG_LEVEL"),
+		PrefsNamespace: os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
+	}
+	if cfg.PrefsNamespace == "" {
+		cfg.PrefsNamespace = cfg.ApiHost
+	}
+	if cfg.Debug {
+		cfg.LogLevel = "debug"
 	}
 	return cfg
 }
@@ -45,6 +62,6 @@ func MustSetEnv(k string, v interface{}) {
 }
 
 func init() {
-	MustSetEnv("LOG_LEVEL", "warn")
-	MustSetEnv("API_HOST", "https://webhookdb-api-production.herokuapp.com/")
+	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")
+	MustSetEnv("WEBHOOKDB_API_HOST", "https://api.production.webhookdb.com")
 }

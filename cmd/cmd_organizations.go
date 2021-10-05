@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/ask"
@@ -22,10 +21,10 @@ var organizationsCmd = &cli.Command{
 			Description: "change the default organization for any command you run",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				if c.NArg() != 1 {
-					return errors.New("You must enter an organization key.")
+				orgSlug, err := extractPositional(0, c, "You must enter an organization key.")
+				if err != nil {
+					return err
 				}
-				orgSlug := c.Args().Get(0)
 				out, err := client.OrgGet(ctx, client.OrgGetInput{
 					AuthCookie:    p.AuthCookie,
 					OrgIdentifier: types.OrgIdentifierFromSlug(orgSlug),
@@ -33,7 +32,8 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				if err := prefs.Save(p.ChangeOrg(out.Org)); err != nil {
+				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, p.ChangeOrg(out.Org))
+				if err := prefs.Save(ac.GlobalPrefs); err != nil {
 					return err
 				}
 				fmt.Println(fmt.Sprintf("%s is now your active organization. ", out.Org.DisplayString()))
@@ -104,12 +104,13 @@ var organizationsCmd = &cli.Command{
 			Description: "join an organization using a join code",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context, p prefs.Prefs) error {
-				if c.NArg() != 1 {
-					return errors.New("You must enter an invitation code.")
+				invCode, err := extractPositional(0, c, "You must enter an invitation code.")
+				if err != nil {
+					return err
 				}
 				input := client.OrgJoinInput{
 					AuthCookie:     p.AuthCookie,
-					InvitationCode: c.Args().Get(0),
+					InvitationCode: invCode,
 				}
 				out, err := client.OrgJoin(ctx, input)
 				if err != nil {

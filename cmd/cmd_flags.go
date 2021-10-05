@@ -59,3 +59,15 @@ func usernamesFlag() *cli.StringFlag {
 		Usage:    "Takes multiple emails.",
 	}
 }
+
+func extractPositional(idx int, c *cli.Context, msg string) (string, error) {
+	a := c.Args().Get(idx)
+	if a == "" {
+		return "", CliError{Message: msg, Code: 1}
+	}
+	return a, nil
+}
+
+func extractIntegrationId(idx int, c *cli.Context) (string, error) {
+	return extractPositional(idx, c, "Integration Id required. Use `webhookdb integrations list` to view all integrations.")
+}

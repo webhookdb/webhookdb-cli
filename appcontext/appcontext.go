@@ -12,10 +12,11 @@ import (
 )
 
 type AppContext struct {
-	Config config.Config
-	Resty  *resty.Client
-	Prefs  prefs.Prefs
-	logger *logrus.Entry
+	Config      config.Config
+	Resty       *resty.Client
+	GlobalPrefs *prefs.GlobalPrefs
+	Prefs       prefs.Prefs
+	logger      *logrus.Entry
 	//ActiveOrg    string (should be derived from a prefs dir)
 }
 
@@ -25,9 +26,10 @@ func (ac AppContext) Logger() *logrus.Entry {
 
 func New(command string, cfg config.Config) (ac AppContext, err error) {
 	ac.Config = cfg
-	if ac.Prefs, err = prefs.Load(); err != nil {
+	if ac.GlobalPrefs, err = prefs.Load(); err != nil {
 		return
 	}
+	ac.Prefs = ac.GlobalPrefs.GetNS(cfg.PrefsNamespace)
 	ac.Resty = newResty(cfg, ac.Prefs)
 	if ac.logger, err = logctx.NewLogger(logctx.NewLoggerInput{
 		Level:     cfg.LogLevel,
@@ -52,12 +54,13 @@ func NewTestContext() AppContext {
 	logger := logrus.New()
 	logger.SetLevel(logrus.DebugLevel)
 
-	pr := prefs.Prefs{}
+	pr := &prefs.GlobalPrefs{}
 	ac := AppContext{
-		logger: logger.WithFields(nil),
-		Config: cfg,
-		Resty:  newResty(cfg, pr),
-		Prefs:  pr,
+		logger:      logger.WithFields(nil),
+		Config:      cfg,
+		Resty:       newResty(cfg, pr.GetNS("")),
+		GlobalPrefs: pr,
+		Prefs:       pr.GetNS(""),
 	}
 	return ac
 }

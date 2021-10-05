@@ -1,5 +1,5 @@
 BIN := ./webhookdb
-ARGS := API_HOST=http://localhost:18001
+ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -19,16 +19,16 @@ vet:
 
 test:
 	go test .
-	@LOG_LEVEL=fatal ginkgo -r --trace --race --progress --skipMeasurements
+	@WEBHOOKDB_LOG_LEVEL=fatal ginkgo -r --trace --race --progress --skipMeasurements
 
 test-watch:
-	@LOG_LEVEL=fatal ginkgo watch ./...
+	@WEBHOOKDB_LOG_LEVEL=fatal ginkgo watch ./...
 
 update-test-snapshots:
 	UPDATE_SNAPSHOTS=true make test
 
 bench:
-	@LOG_LEVEL=fatal ginkgo -r --focus=benchmarks
+	@WEBHOOKDB_LOG_LEVEL=fatal ginkgo -r --focus=benchmarks
 
 build:
 	@go build -ldflags \

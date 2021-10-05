@@ -46,12 +46,25 @@ func cliAction(cb func(*cli.Context, appcontext.AppContext, context.Context, pre
 		if err != nil {
 			return err
 		}
-		if err := cb(c, ac, ctx, p); err != nil {
+		nsp := p.GetNS(ac.Config.PrefsNamespace)
+		if err := cb(c, ac, ctx, nsp); err != nil {
 			if eresp, ok := err.(client.ErrorResponse); ok {
 				return cli.Exit(eresp.Err.Message, 2)
+			}
+			if ce, ok := err.(CliError); ok {
+				return cli.Exit(ce.Message, ce.Code)
 			}
 			return err
 		}
 		return nil
 	}
+}
+
+type CliError struct {
+	Message string
+	Code    int
+}
+
+func (e CliError) Error() string {
+	return e.Message
 }

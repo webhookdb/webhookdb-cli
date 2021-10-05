@@ -2,9 +2,48 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"github.com/lithictech/webhookdb-cli/types"
+	"io"
 	"strings"
 )
+
+type AuthCurrentCustomerOutput struct {
+	Message             string                         `json:"message"`
+	Email               string                         `json:"email"`
+	Name                string                         `json:"name"`
+	DefaultOrganization types.Organization             `json:"default_organization"`
+	Memberships         []OrganizationMembershipEntity `json:"memberships"`
+}
+
+func (o AuthCurrentCustomerOutput) PrintTo(w io.Writer) {
+	fmt.Fprintln(w, "Name: "+o.Name)
+	fmt.Fprintln(w, "Email: "+o.Email)
+	fmt.Fprintln(w, "Default Org: "+o.DefaultOrganization.DisplayString())
+	if len(o.Memberships) == 0 {
+		fmt.Fprintln(w, "Memberships: <none>")
+	} else {
+		fmt.Fprintln(w, "Memberships:")
+		for _, m := range o.Memberships {
+			fmt.Fprintf(w, "  %s: %s\n", m.Organization.DisplayString(), m.Status)
+		}
+	}
+}
+
+func AuthGetMe(c context.Context) (out AuthCurrentCustomerOutput, err error) {
+	resty := RestyFromContext(c)
+	resp, err := resty.R().
+		SetError(&ErrorResponse{}).
+		SetResult(&out).
+		Get("/v1/me")
+	if err != nil {
+		return out, err
+	}
+	if err := CoerceError(resp); err != nil {
+		return out, err
+	}
+	return out, nil
+}
 
 type AuthLoginInput struct {
 	Username string `json:"email"`
@@ -35,35 +74,30 @@ type AuthOTPInput struct {
 	Token    string `json:"token"`
 }
 
-type AuthOTPResponseOutput struct {
-	DefaultOrg types.Organization `json:"organization"`
-	Message    string             `json:"message"`
-}
-
 type AuthOTPOutput struct {
-	AuthCookie types.AuthCookie
-	DefaultOrg types.Organization
-	Message    string
+	Message         string
+	AuthCookie      types.AuthCookie
+	CurrentCustomer AuthCurrentCustomerOutput
 }
 
 func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err error) {
 	resty := RestyFromContext(c)
-	respOut := AuthOTPResponseOutput{}
+	respOut := AuthCurrentCustomerOutput{}
 	resp, err := resty.R().
 		SetBody(&input).
 		SetError(&ErrorResponse{}).
 		SetResult(&respOut).
 		Post("/v1/auth/login_otp")
 	if err != nil {
-		return AuthOTPOutput{}, err
+		return out, err
 	}
-	setCookieHeader := resp.Header().Get("Set-Cookie")
-	out.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
-	out.DefaultOrg = respOut.DefaultOrg
-	out.Message = respOut.Message
 	if err := CoerceError(resp); err != nil {
 		return out, err
 	}
+	setCookieHeader := resp.Header().Get("Set-Cookie")
+	out.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
+	out.CurrentCustomer = respOut
+	out.Message = respOut.Message
 	return out, nil
 }
 
