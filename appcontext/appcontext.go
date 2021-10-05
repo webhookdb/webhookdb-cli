@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/logctx"
+	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/sirupsen/logrus"
@@ -16,6 +17,7 @@ type AppContext struct {
 	Resty       *resty.Client
 	GlobalPrefs *prefs.GlobalPrefs
 	Prefs       prefs.Prefs
+	Auth        client.Auth
 	logger      *logrus.Entry
 	//ActiveOrg    string (should be derived from a prefs dir)
 }
@@ -30,6 +32,7 @@ func New(command string, cfg config.Config) (ac AppContext, err error) {
 		return
 	}
 	ac.Prefs = ac.GlobalPrefs.GetNS(cfg.PrefsNamespace)
+	ac.Auth = client.Auth{Cookie: ac.Prefs.AuthCookie}
 	ac.Resty = newResty(cfg, ac.Prefs)
 	if ac.logger, err = logctx.NewLogger(logctx.NewLoggerInput{
 		Level:     cfg.LogLevel,

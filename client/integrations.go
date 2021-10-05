@@ -2,79 +2,37 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
 type IntegrationsCreateInput struct {
-	AuthCookie    types.AuthCookie    `json:"-"`
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 	ServiceName   string              `json:"service_name"`
 }
 
-func IntegrationsCreate(c context.Context, input IntegrationsCreateInput) (step Step, err error) {
-	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/service_integrations/create", input.OrgIdentifier)
-	resp, err := resty.R().
-		SetBody(&input).
-		SetError(&ErrorResponse{}).
-		SetResult(&step).
-		SetHeader("Cookie", string(input.AuthCookie)).
-		Post(url)
-	if err != nil {
-		return step, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return step, err
-	}
-	return step, nil
+func IntegrationsCreate(c context.Context, auth Auth, input IntegrationsCreateInput) (out Step, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/create", input.OrgIdentifier)
+	return
 }
 
 type IntegrationsListInput struct {
-	AuthCookie    types.AuthCookie
-	OrgIdentifier types.OrgIdentifier
+	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
 type IntegrationsListOutput struct {
 	Data []ServiceIntegrationEntity `json:"items"`
 }
 
-func IntegrationsList(c context.Context, input IntegrationsListInput) (out IntegrationsListOutput, err error) {
-	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/organizations/%v/service_integrations", input.OrgIdentifier)
-	resp, err := resty.R().
-		SetError(&ErrorResponse{}).
-		SetResult(&out).
-		SetHeader("Cookie", string(input.AuthCookie)).
-		Get(url)
-	if err != nil {
-		return out, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return out, err
-	}
-	return out, nil
+func IntegrationsList(c context.Context, auth Auth, input IntegrationsListInput) (out IntegrationsListOutput, err error) {
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations", input.OrgIdentifier)
+	return
 }
 
 type IntegrationsResetInput struct {
-	AuthCookie types.AuthCookie `json:"-"`
-	OpaqueId   string           `json:"-"`
+	OpaqueId string `json:"-"`
 }
 
-func IntegrationsReset(c context.Context, input IntegrationsResetInput) (step Step, err error) {
-	resty := RestyFromContext(c)
-	url := fmt.Sprintf("/v1/service_integrations/%v/reset", input.OpaqueId)
-	resp, err := resty.R().
-		SetBody(&input).
-		SetError(&ErrorResponse{}).
-		SetResult(&step).
-		SetHeader("Cookie", string(input.AuthCookie)).
-		Post(url)
-	if err != nil {
-		return step, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return step, err
-	}
-	return step, nil
+func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInput) (out Step, err error) {
+	err = makeRequest(c, POST, auth, nil, &out, "/v1/service_integrations/%v/reset", input.OpaqueId)
+	return
 }
