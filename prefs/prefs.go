@@ -8,9 +8,27 @@ import (
 	"path/filepath"
 )
 
+type Namespace string
+
+type GlobalPrefs struct {
+	Namespaces map[Namespace]Prefs `json:"namespaces"`
+}
+
+func (p *GlobalPrefs) GetNS(namespace string) Prefs {
+	return p.Namespaces[Namespace(namespace)]
+}
+
+func (p *GlobalPrefs) SetNS(namespace string, prefs Prefs) {
+	p.Namespaces[Namespace(namespace)] = prefs
+}
+
+func (p *GlobalPrefs) ClearNS(namespace string) {
+	delete(p.Namespaces, Namespace(namespace))
+}
+
 type Prefs struct {
-	AuthCookie types.AuthCookie `json:"auth_cookie"`
-	CurrentOrg types.Organization
+	AuthCookie types.AuthCookie   `json:"auth_cookie"`
+	CurrentOrg types.Organization `json:"current_org"`
 }
 
 func (p Prefs) ChangeOrg(org types.Organization) Prefs {
@@ -23,12 +41,13 @@ func getDir() string {
 	convext.Must(err)
 	return filepath.Join(home, ".webhookdb")
 }
+
 func getPath() string {
 	return filepath.Join(getDir(), "config")
 }
 
-func Load() (Prefs, error) {
-	p := Prefs{}
+func Load() (*GlobalPrefs, error) {
+	p := &GlobalPrefs{Namespaces: make(map[Namespace]Prefs, 1)}
 	path := getPath()
 	f, err := os.Open(path)
 	if err != nil && os.IsNotExist(err) {
@@ -42,7 +61,7 @@ func Load() (Prefs, error) {
 	return p, nil
 }
 
-func Save(p Prefs) error {
+func Save(p *GlobalPrefs) error {
 	if err := os.MkdirAll(getDir(), os.ModePerm); err != nil {
 		return err
 	}
@@ -56,7 +75,7 @@ func Save(p Prefs) error {
 	return nil
 }
 
-func Delete() error {
+func DeleteAll() error {
 	err := os.Remove(getPath())
 	if os.IsNotExist(err) {
 		return nil

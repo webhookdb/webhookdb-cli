@@ -33,7 +33,8 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				if err := prefs.Save(p.ChangeOrg(out.Org)); err != nil {
+				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, p.ChangeOrg(out.Org))
+				if err := prefs.Save(ac.GlobalPrefs); err != nil {
 					return err
 				}
 				fmt.Println(fmt.Sprintf("%s is now your active organization. ", out.Org.DisplayString()))
