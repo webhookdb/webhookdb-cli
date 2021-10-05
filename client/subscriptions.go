@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/types"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -23,14 +24,14 @@ type SubscriptionInfoOutput struct {
 	SubStatus               string `json:"sub_status"`
 }
 
-func (info SubscriptionInfoOutput) PrintTo() {
-	fmt.Println("Organization name: " + info.OrgName)
-	fmt.Println("Billing email: " + info.BillingEmail)
-	fmt.Println("Integrations used: " + strconv.Itoa(info.IntegrationsUsed))
-	fmt.Println("Plan name: " + info.PlanName)
-	fmt.Println("Integrations left: " + info.IntegrationsLeftDisplay)
+func (info SubscriptionInfoOutput) PrintTo(w io.Writer) {
+	fmt.Fprintln(w, "Organization name: "+info.OrgName)
+	fmt.Fprintln(w, "Billing email: "+info.BillingEmail)
+	fmt.Fprintln(w, "Integrations used: "+strconv.Itoa(info.IntegrationsUsed))
+	fmt.Fprintln(w, "Plan name: "+info.PlanName)
+	fmt.Fprintln(w, "Integrations left: "+info.IntegrationsLeftDisplay)
 	if strings.TrimSpace(info.SubStatus) != "" {
-		fmt.Println("Subscription status: " + info.SubStatus)
+		fmt.Fprintln(w, "Subscription status: "+info.SubStatus)
 	}
 }
 
