@@ -37,9 +37,9 @@ type DbSqlInput struct {
 }
 
 type DbSqlOutput struct {
-	Rows           []string `json:"rows"`
-	Columns        []string `json:"columns"`
-	MaxRowsReached bool     `json:"max_rows_reached"`
+	Rows           [][]interface{} `json:"rows"`
+	Columns        []string        `json:"columns"`
+	MaxRowsReached bool            `json:"max_rows_reached"`
 }
 
 func DbSql(c context.Context, auth Auth, input DbSqlInput) (out DbSqlOutput, err error) {

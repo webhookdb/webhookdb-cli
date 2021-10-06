@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
+	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
+	"os"
 	"strings"
 )
 
@@ -53,11 +55,33 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(strings.Join(out.Columns, "t"))
-				fmt.Println(strings.Join(out.Rows, "\n"))
-				if out.MaxRowsReached {
-					fmt.Println("Results have been truncated.")
+				table := tablewriter.NewWriter(os.Stdout)
+
+				table.SetHeader(out.Columns)
+				headerCols := make([]tablewriter.Colors, len(out.Columns))
+				for i := range out.Columns {
+					headerCols[i] = tablewriter.Colors{tablewriter.FgHiGreenColor}
 				}
+				table.SetHeaderColor(headerCols...)
+
+				for _, row := range out.Rows {
+					rowStr := make([]string, len(row))
+					colors := make([]tablewriter.Colors, len(row))
+					for i, cell := range row {
+						if cell == nil {
+							rowStr[i] = "<null>"
+							colors[i] = tablewriter.Colors{tablewriter.FgYellowColor}
+						} else {
+							rowStr[i] = fmt.Sprintf("%v", cell)
+							colors[i] = tablewriter.Colors{}
+						}
+					}
+					table.Rich(rowStr, colors)
+				}
+				if out.MaxRowsReached {
+					table.SetCaption(true, "Results have been truncated.")
+				}
+				table.Render()
 				return nil
 			}),
 		},
