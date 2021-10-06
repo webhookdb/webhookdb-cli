@@ -7,6 +7,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
+	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -61,4 +62,12 @@ type CliError struct {
 
 func (e CliError) Error() string {
 	return e.Message
+}
+
+func configTableWriter(table *tablewriter.Table) {
+	table.SetBorder(false)
+	table.SetRowSeparator("")
+	table.SetColumnSeparator("")
+	table.SetCenterSeparator("")
+	table.SetHeaderLine(false)
 }
