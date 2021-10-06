@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/pkg/errors"
+	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
+	"os"
 )
 
 var integrationsCmd = &cli.Command{
@@ -49,14 +50,16 @@ var integrationsCmd = &cli.Command{
 					return err
 				}
 				if len(out.Data) == 0 {
-					// TODO: fix the bug where the cli library's timestamp shows up if we return an `errors.New()`
-					return errors.New("This organization doesn't have any integrations set up yet.")
+					fmt.Println("This organization doesn't have any integrations set up yet.")
+					return nil
 				}
-				// TODO: Get this spacing correct
-				fmt.Println("service name \t\t\t\t table name \t\t\t\t id")
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader([]string{"Service", "Table", "Id"})
+				configTableWriter(table)
 				for _, value := range out.Data {
-					fmt.Println(value.ServiceName + " \t\t\t " + value.TableName + " \t\t\t " + value.OpaqueId)
+					table.Append([]string{value.ServiceName, value.TableName, value.OpaqueId})
 				}
+				table.Render()
 				return nil
 			}),
 		},
