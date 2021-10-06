@@ -53,7 +53,7 @@ func makeRequest(c context.Context, method string, auth Auth, body, outPtr inter
 	url := fmt.Sprintf(urlTmpl, urlArgs...)
 	req := r.R().SetError(&ErrorResponse{})
 	if body != nil {
-		req = req.SetBody(req)
+		req = req.SetBody(body)
 	}
 	if outPtr != nil {
 		req = req.SetResult(outPtr)
