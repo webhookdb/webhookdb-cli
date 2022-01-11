@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
+	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
 	"strings"
 )
@@ -18,7 +19,13 @@ var servicesCmd = &cli.Command{
 			Description: "list all available services",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{})
+				orgSlug, err := extractPositional(0, c, "You must enter an organization key.")
+				if err != nil {
+					return err
+				}
+				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{
+					OrgIdentifier: types.OrgIdentifierFromSlug(orgSlug),
+				})
 				if err != nil {
 					return err
 				}
