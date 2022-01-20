@@ -18,7 +18,7 @@ func OrgIdentifierFromSlug(slug string) OrgIdentifier {
 type AuthCookie string
 
 type Organization struct {
-	// The primary key of the organiztaion.
+	// The primary key of the organization.
 	// Safe to store on the client.
 	Id int `json:"id"`
 	// The name of the org. Can change.

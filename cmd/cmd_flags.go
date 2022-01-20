@@ -55,7 +55,7 @@ func tokenFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:     "token",
 		Aliases:  s1("t"),
-		Required: true,
+		Required: false,
 		Usage:    "Takes a one time password—only used during auth.",
 	}
 }

@@ -37,36 +37,22 @@ func AuthGetMe(c context.Context, auth Auth) (out AuthCurrentCustomerOutput, err
 
 type AuthLoginInput struct {
 	Username string `json:"email"`
-}
-
-type AuthLoginOutput struct {
-	Message string `json:"message"`
-}
-
-func AuthLogin(c context.Context, input AuthLoginInput) (out AuthLoginOutput, err error) {
-	err = makeRequest(c, POST, Auth{}, input, &out, "/v1/auth")
-	return
-}
-
-type AuthOTPInput struct {
-	Username string `json:"email"`
 	Token    string `json:"token"`
 }
 
-type AuthOTPOutput struct {
-	Message         string
-	AuthCookie      types.AuthCookie
-	CurrentCustomer AuthCurrentCustomerOutput
+type AuthLoginOutput struct {
+	AuthCookie types.AuthCookie
+	OutputStep Step
 }
 
-func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err error) {
+func AuthLogin(c context.Context, input AuthLoginInput) (out AuthLoginOutput, err error) {
 	resty := RestyFromContext(c)
-	respOut := AuthCurrentCustomerOutput{}
+	step := Step{}
 	resp, err := resty.R().
 		SetBody(&input).
 		SetError(&ErrorResponse{}).
-		SetResult(&respOut).
-		Post("/v1/auth/login_otp")
+		SetResult(&step).
+		Post("/v1/auth")
 	if err != nil {
 		return out, err
 	}
@@ -75,8 +61,7 @@ func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err erro
 	}
 	setCookieHeader := resp.Header().Get("Set-Cookie")
 	out.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
-	out.CurrentCustomer = respOut
-	out.Message = respOut.Message
+	out.OutputStep = step
 	return out, nil
 }
 
