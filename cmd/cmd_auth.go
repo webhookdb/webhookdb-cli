@@ -3,12 +3,12 @@ package cmd
 import "C"
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/lithictech/webhookdb-cli/types"
+	"github.com/mitchellh/mapstructure"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -38,6 +38,9 @@ var authCmd = &cli.Command{
 					Username: c.String("username"),
 					Token:    c.String("token"),
 				})
+				if err != nil {
+					return err
+				}
 				step, err := client.NewStateMachine().RunWithOutput(ctx, ac.Auth, out.OutputStep)
 				if err != nil {
 					return err
@@ -45,12 +48,9 @@ var authCmd = &cli.Command{
 
 				// org information is coming in as a map[string]interface{}
 				defaultOrg := types.Organization{}
-				defaultOrgMap := step.Extras["current_customer"]["default_organization"]
-				jsonString, err := json.Marshal(defaultOrgMap)
-				if err != nil {
+				if err := mapstructure.Decode(step.Extras["current_customer"]["default_organization"], &defaultOrg); err != nil {
 					return err
 				}
-				json.Unmarshal(jsonString, &defaultOrg)
 				ac.Prefs.CurrentOrg = defaultOrg
 
 				ac.Prefs.AuthCookie = out.AuthCookie
