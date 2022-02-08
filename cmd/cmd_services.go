@@ -18,7 +18,9 @@ var servicesCmd = &cli.Command{
 			Description: "list all available services",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{})
+				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+				})
 				if err != nil {
 					return err
 				}

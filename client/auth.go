@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/types"
 	"io"
-	"strings"
 )
 
 type AuthCurrentCustomerOutput struct {
@@ -37,47 +36,16 @@ func AuthGetMe(c context.Context, auth Auth) (out AuthCurrentCustomerOutput, err
 
 type AuthLoginInput struct {
 	Username string `json:"email"`
-}
-
-type AuthLoginOutput struct {
-	Message string `json:"message"`
-}
-
-func AuthLogin(c context.Context, input AuthLoginInput) (out AuthLoginOutput, err error) {
-	err = makeRequest(c, POST, Auth{}, input, &out, "/v1/auth")
-	return
-}
-
-type AuthOTPInput struct {
-	Username string `json:"email"`
 	Token    string `json:"token"`
 }
 
-type AuthOTPOutput struct {
-	Message         string
-	AuthCookie      types.AuthCookie
-	CurrentCustomer AuthCurrentCustomerOutput
+type AuthLoginOutput struct {
+	AuthCookie types.AuthCookie
+	OutputStep Step
 }
 
-func AuthOTP(c context.Context, input AuthOTPInput) (out AuthOTPOutput, err error) {
-	resty := RestyFromContext(c)
-	respOut := AuthCurrentCustomerOutput{}
-	resp, err := resty.R().
-		SetBody(&input).
-		SetError(&ErrorResponse{}).
-		SetResult(&respOut).
-		Post("/v1/auth/login_otp")
-	if err != nil {
-		return out, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return out, err
-	}
-	setCookieHeader := resp.Header().Get("Set-Cookie")
-	out.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
-	out.CurrentCustomer = respOut
-	out.Message = respOut.Message
-	return out, nil
+func AuthLogin(c context.Context, input AuthLoginInput) (Step, error) {
+	return makeStepRequestWithResponse(c, POST, Auth{}, input, "/v1/auth")
 }
 
 type AuthLogoutOutput struct {

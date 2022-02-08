@@ -33,11 +33,29 @@ func roleFlag() *cli.StringFlag {
 	}
 }
 
+func serviceIntegrationFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:     "integration",
+		Aliases:  s1("i"),
+		Required: false,
+		Usage:    "Takes an integration opaque id. Run `webhook integrations list` to see a list of all your integrations.",
+	}
+}
+
+func secretFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:     "secret",
+		Aliases:  s1("s"),
+		Required: true,
+		Usage:    "Takes a string that will become your webhook secret.",
+	}
+}
+
 func tokenFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:     "token",
 		Aliases:  s1("t"),
-		Required: true,
+		Required: false,
 		Usage:    "Takes a one time password—only used during auth.",
 	}
 }
@@ -70,4 +88,8 @@ func extractPositional(idx int, c *cli.Context, msg string) (string, error) {
 
 func extractIntegrationId(idx int, c *cli.Context) (string, error) {
 	return extractPositional(idx, c, "Integration Id required. Use `webhookdb integrations list` to view all integrations.")
+}
+
+func extractWebhookUrl(idx int, c *cli.Context) (string, error) {
+	return extractPositional(idx, c, "Url required: we cannot establish the webhook subscription without a url.")
 }

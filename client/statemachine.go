@@ -3,18 +3,23 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/webhookdb-cli/ask"
 )
 
 type Step struct {
-	Message        string `json:"message"`
-	NeedsInput     bool   `json:"needs_input"`
-	Prompt         string `json:"prompt"`
-	PromptIsSecret bool   `json:"prompt_is_secret"`
-	PostToUrl      string `json:"post_to_url"`
-	Complete       bool   `json:"complete"`
-	Output         string `json:"output"`
+	Message        string           `json:"message"`
+	NeedsInput     bool             `json:"needs_input"`
+	Prompt         string           `json:"prompt"`
+	PromptIsSecret bool             `json:"prompt_is_secret"`
+	PostToUrl      string           `json:"post_to_url"`
+	Complete       bool             `json:"complete"`
+	Output         string           `json:"output"`
+	Extras         map[string]Extra `json:"extras"`
+	RawResponse    *resty.Response  `json:"-"`
 }
+
+type Extra map[string]interface{}
 
 type Prompt func(string) (string, error)
 type Println func(...interface{})
@@ -34,11 +39,16 @@ type StateMachine struct {
 }
 
 func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) error {
+	_, err := sm.RunWithOutput(c, auth, startingStep)
+	return err
+}
+
+func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep Step) (Step, error) {
 	step := startingStep
 	for {
 		if step.Complete {
 			sm.Println(step.Output)
-			return nil
+			return step, nil
 		}
 		if !step.NeedsInput {
 			panic("Step must be complete, or need input. Backend is busted.")
@@ -52,7 +62,7 @@ func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) erro
 		}
 		value, err := asker(step.Prompt)
 		if err != nil {
-			return err
+			return step, err
 		}
 		transitionInput := TransitionStepInput{
 			PostUrl: step.PostToUrl,
@@ -60,7 +70,7 @@ func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) erro
 		}
 		newStep, err := TransitionStep(c, auth, transitionInput)
 		if err != nil {
-			return err
+			return newStep, err
 		}
 		step = newStep
 	}
