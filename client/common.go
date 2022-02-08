@@ -49,6 +49,21 @@ const (
 )
 
 func makeRequest(c context.Context, method string, auth Auth, body, outPtr interface{}, urlTmpl string, urlArgs ...interface{}) error {
+	_, err := makeRequestWithResponse(c, method, auth, body, outPtr, urlTmpl, urlArgs...)
+	return err
+}
+
+func makeStepRequestWithResponse(c context.Context, method string, auth Auth, body interface{}, urlTmpl string, urlArgs ...interface{}) (Step, error) {
+	var step Step
+	resp, err := makeRequestWithResponse(c, method, auth, body, &step, urlTmpl, urlArgs...)
+	if err != nil {
+		return step, err
+	}
+	step.RawResponse = resp
+	return step, err
+}
+
+func makeRequestWithResponse(c context.Context, method string, auth Auth, body, outPtr interface{}, urlTmpl string, urlArgs ...interface{}) (*resty.Response, error) {
 	r := RestyFromContext(c)
 	url := fmt.Sprintf(urlTmpl, urlArgs...)
 	req := r.R().SetError(&ErrorResponse{})
@@ -63,10 +78,10 @@ func makeRequest(c context.Context, method string, auth Auth, body, outPtr inter
 	}
 	resp, err := req.Execute(method, url)
 	if err != nil {
-		return err
+		return resp, err
 	}
 	if err := CoerceError(resp); err != nil {
-		return err
+		return resp, err
 	}
-	return nil
+	return resp, nil
 }

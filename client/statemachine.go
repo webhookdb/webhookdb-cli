@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/webhookdb-cli/ask"
 )
 
@@ -15,6 +16,7 @@ type Step struct {
 	Complete       bool             `json:"complete"`
 	Output         string           `json:"output"`
 	Extras         map[string]Extra `json:"extras"`
+	RawResponse    *resty.Response  `json:"-"`
 }
 
 type Extra map[string]interface{}

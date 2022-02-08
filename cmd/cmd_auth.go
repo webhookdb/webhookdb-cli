@@ -11,6 +11,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/urfave/cli/v2"
 	"os"
+	"strings"
 )
 
 var authCmd = &cli.Command{
@@ -41,7 +42,7 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				step, err := client.NewStateMachine().RunWithOutput(ctx, ac.Auth, out.OutputStep)
+				step, err := client.NewStateMachine().RunWithOutput(ctx, ac.Auth, out)
 				if err != nil {
 					return err
 				}
@@ -53,7 +54,8 @@ var authCmd = &cli.Command{
 				}
 				ac.Prefs.CurrentOrg = defaultOrg
 
-				ac.Prefs.AuthCookie = out.AuthCookie
+				setCookieHeader := out.RawResponse.Header().Get("Set-Cookie")
+				ac.Prefs.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
 				ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, ac.Prefs)
 				if err := prefs.Save(ac.GlobalPrefs); err != nil {
 					return err

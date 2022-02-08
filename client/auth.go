@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/types"
 	"io"
-	"strings"
 )
 
 type AuthCurrentCustomerOutput struct {
@@ -45,24 +44,8 @@ type AuthLoginOutput struct {
 	OutputStep Step
 }
 
-func AuthLogin(c context.Context, input AuthLoginInput) (out AuthLoginOutput, err error) {
-	resty := RestyFromContext(c)
-	step := Step{}
-	resp, err := resty.R().
-		SetBody(&input).
-		SetError(&ErrorResponse{}).
-		SetResult(&step).
-		Post("/v1/auth")
-	if err != nil {
-		return out, err
-	}
-	if err := CoerceError(resp); err != nil {
-		return out, err
-	}
-	setCookieHeader := resp.Header().Get("Set-Cookie")
-	out.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
-	out.OutputStep = step
-	return out, nil
+func AuthLogin(c context.Context, input AuthLoginInput) (Step, error) {
+	return makeStepRequestWithResponse(c, POST, Auth{}, input, "/v1/auth")
 }
 
 type AuthLogoutOutput struct {

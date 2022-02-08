@@ -9,7 +9,6 @@ type TransitionStepInput struct {
 	Value   string `json:"value"`
 }
 
-func TransitionStep(c context.Context, auth Auth, input TransitionStepInput) (step Step, err error) {
-	err = makeRequest(c, POST, auth, input, &step, input.PostUrl)
-	return
+func TransitionStep(c context.Context, auth Auth, input TransitionStepInput) (Step, error) {
+	return makeStepRequestWithResponse(c, POST, auth, input, input.PostUrl)
 }
