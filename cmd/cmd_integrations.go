@@ -73,7 +73,8 @@ var integrationsCmd = &cli.Command{
 					return err
 				}
 				input := client.IntegrationsResetInput{
-					OpaqueId: opaqueId,
+					OpaqueId:      opaqueId,
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				step, err := client.IntegrationsReset(ctx, ac.Auth, input)
 				if err != nil {

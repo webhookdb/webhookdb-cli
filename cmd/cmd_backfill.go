@@ -10,14 +10,15 @@ import (
 var backfillCmd = &cli.Command{
 	Name:        "backfill",
 	Description: "You can run this command to start a backfill of all the resources available to an integration.",
-	Flags:       []cli.Flag{},
+	Flags:       []cli.Flag{orgFlag()},
 	Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 		opaqueId, err := extractIntegrationId(0, c)
 		if err != nil {
 			return err
 		}
 		input := client.BackfillInput{
-			OpaqueId: opaqueId,
+			OpaqueId:      opaqueId,
+			OrgIdentifier: getOrgFlag(c, ac.Prefs),
 		}
 		step, err := client.Backfill(ctx, ac.Auth, input)
 		if err != nil {
@@ -39,7 +40,8 @@ var backfillCmd = &cli.Command{
 					return err
 				}
 				input := client.BackfillResetInput{
-					OpaqueId: opaqueId,
+					OpaqueId:      opaqueId,
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				step, err := client.BackfillReset(ctx, ac.Auth, input)
 				if err != nil {
