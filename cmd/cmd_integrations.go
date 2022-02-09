@@ -86,5 +86,29 @@ var integrationsCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:        "status",
+			Description: "Get statistics about webhooks for this integration.",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				opaqueId, err := extractIntegrationId(0, c)
+				if err != nil {
+					return err
+				}
+				input := client.IntegrationsStatusInput{
+					OpaqueId:      opaqueId,
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+				}
+				out, err := client.IntegrationsStatus(ctx, ac.Auth, input)
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader(out.Header)
+				configTableWriter(table)
+				for _, row := range out.Rows {
+					table.Append(row)
+				}
+				table.Render()
+				return nil
+			}),
+		},
 	},
 }

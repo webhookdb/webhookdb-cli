@@ -37,3 +37,18 @@ func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInpu
 	err = makeRequest(c, POST, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/reset", input.OpaqueId)
 	return
 }
+
+type IntegrationsStatusInput struct {
+	OpaqueId      string              `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+}
+
+type IntegrationsStatusOutput struct {
+	Header []string   `json:"headers"`
+	Rows   [][]string `json:"rows"`
+}
+
+func IntegrationsStatus(c context.Context, auth Auth, input IntegrationsStatusInput) (out IntegrationsStatusOutput, err error) {
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/status", input.OrgIdentifier, input.OpaqueId)
+	return
+}
