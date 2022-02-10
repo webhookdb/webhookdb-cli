@@ -10,6 +10,9 @@ import (
 var BuildTime = "btime"
 var BuildSha = "bsha"
 
+const Version = "0.1.2"
+const Repo = "lithictech/webhookdb-cli"
+
 type Config struct {
 	// ApiHost is the URL of the service, like
 	// https://api.production.webhookdb.com, or http://localhost:1234.
