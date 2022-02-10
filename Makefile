@@ -46,7 +46,7 @@ itest-auth-login: build
 	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech
 
 itest-auth-otp-%: build
-	$(ARGS) $(BIN) auth otp --username=alpha@lithic.tech --token=$(*)
+	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech --token=$(*)
 
 itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout

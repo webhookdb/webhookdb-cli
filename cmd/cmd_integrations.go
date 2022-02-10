@@ -73,7 +73,8 @@ var integrationsCmd = &cli.Command{
 					return err
 				}
 				input := client.IntegrationsResetInput{
-					OpaqueId: opaqueId,
+					OpaqueId:      opaqueId,
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				step, err := client.IntegrationsReset(ctx, ac.Auth, input)
 				if err != nil {
@@ -82,6 +83,30 @@ var integrationsCmd = &cli.Command{
 				if err := client.NewStateMachine().Run(ctx, ac.Auth, step); err != nil {
 					return err
 				}
+				return nil
+			}),
+		},
+		{
+			Name:        "status",
+			Description: "Get statistics about webhooks for this integration.",
+			Flags:       []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				opaqueId, err := extractIntegrationId(0, c)
+				if err != nil {
+					return err
+				}
+				input := client.IntegrationsStatusInput{
+					OpaqueId:      opaqueId,
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+				}
+				out, err := client.IntegrationsStatus(ctx, ac.Auth, input)
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader(out.Header)
+				configTableWriter(table)
+				for _, row := range out.Rows {
+					table.Append(row)
+				}
+				table.Render()
 				return nil
 			}),
 		},
