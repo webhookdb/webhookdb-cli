@@ -90,6 +90,10 @@ func extractIntegrationId(idx int, c *cli.Context) (string, error) {
 	return extractPositional(idx, c, "Integration Id required. Use `webhookdb integrations list` to view all integrations.")
 }
 
+func extractServiceName(idx int, c *cli.Context) (string, error) {
+	return extractPositional(idx, c, "Service Name required. Use `webhookdb services list` to view all available services.")
+}
+
 func extractWebhookUrl(idx int, c *cli.Context) (string, error) {
 	return extractPositional(idx, c, "Url required: we cannot establish the webhook subscription without a url.")
 }

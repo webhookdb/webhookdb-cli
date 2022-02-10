@@ -17,6 +17,7 @@ func Execute() {
 			authCmd,
 			backfillCmd,
 			dbCmd,
+			fixturesCmd,
 			integrationsCmd,
 			organizationsCmd,
 			servicesCmd,
