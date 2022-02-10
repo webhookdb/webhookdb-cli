@@ -22,10 +22,15 @@ func Execute() {
 			organizationsCmd,
 			servicesCmd,
 			subscriptionsCmd,
+			updateCmd,
 			{
 				Name: "version",
 				Action: func(c *cli.Context) error {
-					fmt.Fprintln(os.Stdout, config.BuildSha[0:8])
+					shaPart := config.BuildSha
+					if len(shaPart) >= 8 {
+						shaPart = fmt.Sprintf(" (%s)", config.BuildSha[0:8])
+					}
+					fmt.Fprintf(os.Stdout, "%s%s\n", config.Version, shaPart)
 					return nil
 				},
 			},
