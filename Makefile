@@ -35,6 +35,11 @@ build:
 		"-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`" \
 		-o webhookdb
 
+build-arm64:
+	@GOOS=darwin go build -ldflags \
+		"-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`" \
+		-o webhookdb
+
 update-lithic-deps:
 	go get github.com/rgalanakis/golangal@latest
 	go get github.com/lithictech/go-aperitif@latest
