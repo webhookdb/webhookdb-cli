@@ -16,12 +16,15 @@ var integrationsCmd = &cli.Command{
 	Subcommands: []*cli.Command{
 		{
 			Name:        "create",
-			Description: "create an integration for the given organization",
-			Flags:       []cli.Flag{orgFlag(), serviceFlag()},
+			Description: "Create an integration for the given organization",
+			Flags: []cli.Flag{
+				orgFlag(),
+				serviceFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsCreateInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					ServiceName:   c.String("service"),
+					ServiceName:   paramOrArg(c, "service"),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsCreate(ctx, ac.Auth, input))
 			}),
@@ -55,10 +58,13 @@ var integrationsCmd = &cli.Command{
 		{
 			Name:        "reset",
 			Description: "Reset the webhook secret for this integration.",
-			Flags:       []cli.Flag{orgFlag(), integrationFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsResetInput{
-					OpaqueId:      c.String("integration"),
+					OpaqueId:      paramOrArg(c, "integration"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsReset(ctx, ac.Auth, input))
@@ -70,7 +76,7 @@ var integrationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsStatusInput{
-					OpaqueId:      c.String("integration"),
+					OpaqueId:      paramOrArg(c, "integration"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.IntegrationsStatus(ctx, ac.Auth, input)

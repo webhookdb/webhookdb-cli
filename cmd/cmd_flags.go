@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
@@ -48,10 +49,31 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
-func extractPositional(idx int, c *cli.Context, msg string) (string, error) {
+func extractPositional(idx int, c *cli.Context, msg string) string {
 	a := c.Args().Get(idx)
 	if a == "" {
-		return "", CliError{Message: msg, Code: 1}
+		panic(CliError{Message: msg, Code: 1})
 	}
-	return a, nil
+	return a
+}
+
+func orstr(a ...string) string {
+	for _, s := range a {
+		if s != "" {
+			return s
+		}
+	}
+	return ""
+}
+
+func paramOrArg(c *cli.Context, param string) string {
+	v := c.String(param)
+	if v != "" {
+		return v
+	}
+	v = c.Args().First()
+	if v != "" {
+		return v
+	}
+	panic(CliError{Code: 1, Message: fmt.Sprintf("Please pass --%s or provide it as the first argument.", param)})
 }

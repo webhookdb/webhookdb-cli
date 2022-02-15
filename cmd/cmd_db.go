@@ -45,13 +45,16 @@ var dbCmd = &cli.Command{
 		{
 			Name:        "sql",
 			Description: "Execute query on organization's database.",
-			Flags:       []cli.Flag{orgFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				&cli.StringFlag{Name: "query", Aliases: s1("u"), Usage: "Query string to execute using your connection."},
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				q, err := extractPositional(0, c, "You must enter a query string.")
-				if err != nil {
-					return err
+				input := client.DbSqlInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Query:         extractPositional(0, c, "You must enter a query string."),
 				}
-				out, err := client.DbSql(ctx, ac.Auth, client.DbSqlInput{OrgIdentifier: getOrgFlag(c, ac.Prefs), Query: q})
+				out, err := client.DbSql(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}

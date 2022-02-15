@@ -20,6 +20,10 @@ var webhooksCmd = &cli.Command{
 					Name:  "url",
 					Usage: "Full URL to the endpoint that will be POSTed to whenever this organization or integration is updated.",
 				},
+				&cli.StringFlag{
+					Name:  "secret",
+					Usage: "Random secure secret to use to sign webhooks coming from WebhookDB",
+				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				_, err := client.WebhookCreate(ctx, ac.Auth, client.WebhookCreateInput{
@@ -39,7 +43,7 @@ var webhooksCmd = &cli.Command{
 			Usage: "Send a test event to all webhook subscriptions associated with this integration.",
 			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: c.String("integration")})
+				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: paramOrArg(c, "integration")})
 				if err != nil {
 					return err
 				}
@@ -51,7 +55,7 @@ var webhooksCmd = &cli.Command{
 			Usage: "Delete this webhook subscription, so no future events will be sent.",
 			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				_, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: c.String("integration")})
+				_, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: paramOrArg(c, "integration")})
 				if err != nil {
 					return err
 				}

@@ -18,14 +18,10 @@ var organizationsCmd = &cli.Command{
 		{
 			Name:        "activate",
 			Description: "Change the default organization for any command you run",
-			Flags:       []cli.Flag{},
+			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				orgSlug, err := extractPositional(0, c, "You must enter an organization key.")
-				if err != nil {
-					return err
-				}
 				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
-					OrgIdentifier: types.OrgIdentifierFromSlug(orgSlug),
+					OrgIdentifier: types.OrgIdentifierFromSlug(paramOrArg(c, "org")),
 				})
 				if err != nil {
 					return err
@@ -54,15 +50,15 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgChangeRolesInput{
-					Emails:        c.String("usernames"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Emails:        c.String("usernames"),
 					RoleName:      c.String("role"),
 				}
 				out, err := client.OrgChangeRoles(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				fmt.Println(out)
+				fmt.Println(out.Message)
 				return nil
 			}),
 		},

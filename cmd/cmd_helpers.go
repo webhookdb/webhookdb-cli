@@ -39,12 +39,27 @@ func newCtx(appCtx appcontext.AppContext) context.Context {
 }
 
 func cliAction(cb func(*cli.Context, appcontext.AppContext, context.Context) error) cli.ActionFunc {
-	return func(c *cli.Context) error {
+	return func(c *cli.Context) (returnErr error) {
 		ac := newAppCtx(c)
 		ctx := newCtx(ac)
+		defer func() {
+			if r := recover(); r == nil {
+				return
+			} else {
+				if ce, ok := r.(CliError); ok {
+					returnErr = cli.Exit(ce.Message, ce.Code)
+				} else {
+					panic(r)
+				}
+			}
+		}()
 		if err := cb(c, ac, ctx); err != nil {
 			if eresp, ok := err.(client.ErrorResponse); ok {
-				return cli.Exit(eresp.Err.Message, 2)
+				msg := eresp.Err.Message
+				if msg == "" {
+					msg = "Sorry, something went wrong. Please report it to support@webhookdb.com."
+				}
+				return cli.Exit(msg, 2)
 			}
 			if ce, ok := err.(CliError); ok {
 				return cli.Exit(ce.Message, ce.Code)

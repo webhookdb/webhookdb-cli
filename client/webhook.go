@@ -9,7 +9,7 @@ type WebhookCreateInput struct {
 	WebhookSecret string              `json:"webhook_secret"`
 	Url           string              `json:"url"`
 	OrgIdentifier types.OrgIdentifier `json:"org_identifier"`
-	SintOpaqueId  string              `json:"sint_opaque_id"`
+	SintOpaqueId  string              `json:"service_integration_opaque_id"`
 }
 type WebhookCreateOutput struct {
 	Data []WebhookSubscriptionEntity `json:"items"`

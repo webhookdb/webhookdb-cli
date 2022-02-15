@@ -100,6 +100,9 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 // so we can use a single line to make the API call and run the state machine.
 func StateMachineResponseRunner(ctx context.Context, auth Auth) func(Step, error) (Step, error) {
 	return func(step Step, err error) (Step, error) {
+		if err != nil {
+			return step, err
+		}
 		if err := NewStateMachine().Run(ctx, auth, step); err != nil {
 			return step, err
 		}
