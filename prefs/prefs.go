@@ -75,6 +75,11 @@ func Save(p *GlobalPrefs) error {
 	return nil
 }
 
+func SetNSAndSave(gp *GlobalPrefs, namespace string, p Prefs) error {
+	gp.SetNS(namespace, p)
+	return Save(gp)
+}
+
 func DeleteAll() error {
 	err := os.Remove(getPath())
 	if os.IsNotExist(err) {

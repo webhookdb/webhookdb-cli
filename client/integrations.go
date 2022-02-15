@@ -33,9 +33,8 @@ type IntegrationsResetInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInput) (out Step, err error) {
-	err = makeRequest(c, POST, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/reset", input.OpaqueId)
-	return
+func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInput) (Step, error) {
+	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/reset", input.OrgIdentifier, input.OpaqueId)
 }
 
 type IntegrationsStatusInput struct {

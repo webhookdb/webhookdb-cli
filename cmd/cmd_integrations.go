@@ -17,24 +17,13 @@ var integrationsCmd = &cli.Command{
 		{
 			Name:        "create",
 			Description: "create an integration for the given organization",
-			Flags:       []cli.Flag{orgFlag()},
+			Flags:       []cli.Flag{orgFlag(), serviceFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				serviceName, err := extractPositional(0, c, "Service name required. Use 'webhookdb services list' to view all available services.")
-				if err != nil {
-					return err
-				}
 				input := client.IntegrationsCreateInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					ServiceName:   serviceName,
+					ServiceName:   c.String("service"),
 				}
-				step, err := client.IntegrationsCreate(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				if err := client.NewStateMachine().Run(ctx, ac.Auth, step); err != nil {
-					return err
-				}
-				return nil
+				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsCreate(ctx, ac.Auth, input))
 			}),
 		},
 		{
@@ -66,40 +55,28 @@ var integrationsCmd = &cli.Command{
 		{
 			Name:        "reset",
 			Description: "Reset the webhook secret for this integration.",
-			Flags:       []cli.Flag{orgFlag()},
+			Flags:       []cli.Flag{orgFlag(), integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				opaqueId, err := extractIntegrationId(0, c)
-				if err != nil {
-					return err
-				}
 				input := client.IntegrationsResetInput{
-					OpaqueId:      opaqueId,
+					OpaqueId:      c.String("integration"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
-				step, err := client.IntegrationsReset(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				if err := client.NewStateMachine().Run(ctx, ac.Auth, step); err != nil {
-					return err
-				}
-				return nil
+				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsReset(ctx, ac.Auth, input))
 			}),
 		},
 		{
 			Name:        "status",
 			Description: "Get statistics about webhooks for this integration.",
-			Flags:       []cli.Flag{orgFlag()},
+			Flags:       []cli.Flag{orgFlag(), integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				opaqueId, err := extractIntegrationId(0, c)
-				if err != nil {
-					return err
-				}
 				input := client.IntegrationsStatusInput{
-					OpaqueId:      opaqueId,
+					OpaqueId:      c.String("integration"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.IntegrationsStatus(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
 				table := tablewriter.NewWriter(os.Stdout)
 				table.SetHeader(out.Header)
 				configTableWriter(table)

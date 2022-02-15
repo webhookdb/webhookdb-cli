@@ -15,7 +15,7 @@ var subscriptionsCmd = &cli.Command{
 	Subcommands: []*cli.Command{
 		{
 			Name:        "info",
-			Description: "get information about an organization's subscription",
+			Description: "Get information about an organization's software subscription.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.SubscriptionInfo(ctx, ac.Auth, client.SubscriptionInfoInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
@@ -28,7 +28,7 @@ var subscriptionsCmd = &cli.Command{
 		},
 		{
 			Name:        "edit",
-			Description: "open stripe portal to edit subscription",
+			Description: "Open stripe portal to edit subscription.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.SubscriptionEdit(ctx, ac.Auth, client.SubscriptionEditInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})

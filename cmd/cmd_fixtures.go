@@ -9,12 +9,13 @@ import (
 )
 
 var fixturesCmd = &cli.Command{
-	Name:  "fixtures",
-	Flags: []cli.Flag{},
+	Name: "fixtures",
+	Usage: "Output the SQL DDL (CREATE TABLE command) to create a DB table that matches what is in WebhookDB. " +
+		"This can be used to generate .sql files that can be run as part of test database fixturing.",
+	Flags: []cli.Flag{serviceFlag()},
 	Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-		serviceName, err := extractServiceName(0, c)
 		out, err := client.GetFixtures(ctx, ac.Auth, client.GetFixturesInput{
-			ServiceName: serviceName,
+			ServiceName: c.String("service"),
 		})
 		if err != nil {
 			return err

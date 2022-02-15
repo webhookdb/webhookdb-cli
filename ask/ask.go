@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -82,6 +83,9 @@ func Ask(prompt string) (string, error) {
 }
 
 func Print(str string) error {
+	if strings.HasSuffix(str, ":") {
+		str += " "
+	}
 	_, err := fmt.Fprint(output, str)
 	return err
 }
