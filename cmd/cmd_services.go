@@ -11,11 +11,11 @@ import (
 
 var servicesCmd = &cli.Command{
 	Name:        "services",
-	Description: "We use the term \"services\" to describe all of the platforms currently available for integration",
+	Description: "Work with available services that can be hooked up to reflect data to WebhookDB.",
 	Subcommands: []*cli.Command{
 		{
 			Name:        "list",
-			Description: "list all available services",
+			Description: "List all available services.",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{

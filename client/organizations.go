@@ -10,6 +10,7 @@ type OrgCreateInput struct {
 }
 
 type OrgCreateOutput struct {
+	types.Organization
 	Message string `json:"message"`
 }
 

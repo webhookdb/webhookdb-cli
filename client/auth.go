@@ -45,7 +45,7 @@ type AuthLoginOutput struct {
 }
 
 func AuthLogin(c context.Context, input AuthLoginInput) (Step, error) {
-	return makeStepRequestWithResponse(c, POST, Auth{}, input, "/v1/auth")
+	return makeStepRequestWithResponse(c, Auth{}, input, "/v1/auth")
 }
 
 type AuthLogoutOutput struct {

@@ -71,3 +71,10 @@ func configTableWriter(table *tablewriter.Table) {
 	table.SetCenterSeparator("")
 	table.SetHeaderLine(false)
 }
+
+func stateMachineResponseRunner(ctx context.Context, auth client.Auth) func(client.Step, error) error {
+	return func(st client.Step, e error) error {
+		_, err := client.StateMachineResponseRunner(ctx, auth)(st, e)
+		return err
+	}
+}

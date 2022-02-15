@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -10,6 +8,20 @@ import (
 
 func Execute() {
 	app := &cli.App{
+		Usage: `CLI for the WebhookDB (https://webhookdb.com) application. WebhookDB allows you
+to query any API in real-time with SQL.
+
+To create an account and get started, run:
+
+	webhookdb auth login
+
+The CLI will guide you from there.
+
+The CLI also gives you quick access to the WebhookDB documentation:
+
+	webhookdb docs html
+	webhookdb docs tui
+`,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "debug", Value: false},
 		},
@@ -17,23 +29,15 @@ func Execute() {
 			authCmd,
 			backfillCmd,
 			dbCmd,
+			docsCmd,
 			fixturesCmd,
 			integrationsCmd,
 			organizationsCmd,
 			servicesCmd,
 			subscriptionsCmd,
 			updateCmd,
-			{
-				Name: "version",
-				Action: func(c *cli.Context) error {
-					shaPart := config.BuildSha
-					if len(shaPart) >= 8 {
-						shaPart = fmt.Sprintf(" (%s)", config.BuildSha[0:8])
-					}
-					fmt.Fprintf(os.Stdout, "%s%s\n", config.Version, shaPart)
-					return nil
-				},
-			},
+			webhooksCmd,
+			versionCmd,
 		},
 	}
 	err := app.Run(os.Args)

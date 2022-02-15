@@ -8,18 +8,22 @@ import (
 )
 
 var webhooksCmd = &cli.Command{
-	Name: "webhook",
+	Name:  "webhook",
+	Usage: "Manage webhooks that will be notified when WebhookDB data is updated.",
 	Subcommands: []*cli.Command{
 		{
-			Name:  "create",
-			Flags: []cli.Flag{serviceIntegrationFlag(), orgFlag()},
+			Name: "create",
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+				&cli.StringFlag{
+					Name:  "url",
+					Usage: "Full URL to the endpoint that will be POSTed to whenever this organization or integration is updated.",
+				},
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				url, err := extractWebhookUrl(0, c)
-				if err != nil {
-					return err
-				}
-				_, err = client.WebhookCreate(ctx, ac.Auth, client.WebhookCreateInput{
-					Url:           url,
+				_, err := client.WebhookCreate(ctx, ac.Auth, client.WebhookCreateInput{
+					Url:           c.String("url"),
 					WebhookSecret: c.String("secret"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					SintOpaqueId:  c.String("integration"),
@@ -32,7 +36,8 @@ var webhooksCmd = &cli.Command{
 		},
 		{
 			Name:  "test",
-			Flags: []cli.Flag{serviceIntegrationFlag()},
+			Usage: "Send a test event to all webhook subscriptions associated with this integration.",
+			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: c.String("integration")})
 				if err != nil {
@@ -43,7 +48,8 @@ var webhooksCmd = &cli.Command{
 		},
 		{
 			Name:  "delete",
-			Flags: []cli.Flag{serviceIntegrationFlag()},
+			Usage: "Delete this webhook subscription, so no future events will be sent.",
+			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				_, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: c.String("integration")})
 				if err != nil {

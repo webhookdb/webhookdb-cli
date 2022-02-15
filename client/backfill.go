@@ -10,9 +10,8 @@ type BackfillInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-func Backfill(c context.Context, auth Auth, input BackfillInput) (step Step, err error) {
-	err = makeRequest(c, POST, auth, nil, &step, "/v1/organizations/%v/service_integrations/%v/backfill", input.OrgIdentifier, input.OpaqueId)
-	return
+func Backfill(c context.Context, auth Auth, input BackfillInput) (Step, error) {
+	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/backfill", input.OrgIdentifier, input.OpaqueId)
 }
 
 type BackfillResetInput struct {
@@ -20,7 +19,6 @@ type BackfillResetInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-func BackfillReset(c context.Context, auth Auth, input BackfillResetInput) (step Step, err error) {
-	err = makeRequest(c, POST, auth, nil, &step, "/v1/organizations/%v/service_integrations/%v/backfill/reset", input.OrgIdentifier, input.OpaqueId)
-	return
+func BackfillReset(c context.Context, auth Auth, input BackfillResetInput) (Step, error) {
+	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/backfill/reset", input.OrgIdentifier, input.OpaqueId)
 }
