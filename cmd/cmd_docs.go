@@ -9,6 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -28,14 +29,17 @@ var docsCmd = &cli.Command{
 			Description: "Render the WebhookDB guide into a local Markdown viewer.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				resp, err := ac.Resty.R().Get("https://raw.githubusercontent.com/MichaelMure/go-term-markdown/master/Readme.md")
+				resp, err := ac.Resty.R().Get("https://webhookdb.com/docs/cli.md")
 				if err != nil {
 					return err
 				}
 				if resp.StatusCode() >= 400 {
 					return CliError{Message: "Sorry, could not fetch the guide Markdown: " + resp.String(), Code: 2}
 				}
-				result := markdown.Render(resp.String(), 80, 0)
+				md := resp.String()
+				md = regexp.MustCompile("\\A---(.|\n)*?---").ReplaceAllString(md, "")
+				md = regexp.MustCompile("<a id=\".*\"></a>").ReplaceAllString(md, "")
+				result := markdown.Render(md, 80, 0)
 				if pager := getPager(); pager != "" {
 					pa := strings.Split(pager, " ")
 					c := exec.Command(pa[0], pa[1:]...)
