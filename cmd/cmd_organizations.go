@@ -70,7 +70,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgCreateInput{
-					OrgName: c.String("name"),
+					OrgName: flagOrArg(c, "name", ""),
 				}
 				out, err := client.OrgCreate(ctx, ac.Auth, input)
 				if err != nil {
@@ -90,7 +90,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
-					Email:         c.String("username"),
+					Email:         flagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.OrgInvite(ctx, ac.Auth, input)
@@ -109,7 +109,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgJoinInput{
-					InvitationCode: c.String("code"),
+					InvitationCode: flagOrArg(c, "code", ""),
 				}
 				out, err := client.OrgJoin(ctx, ac.Auth, input)
 				if err != nil {
@@ -178,7 +178,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgRemoveInput{
-					Email:         c.String("username"),
+					Email:         flagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.OrgRemove(ctx, ac.Auth, input)
