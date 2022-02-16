@@ -21,7 +21,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
-					OrgIdentifier: types.OrgIdentifierFromSlug(paramOrArg(c, "org")),
+					OrgIdentifier: types.OrgIdentifierFromSlug(flagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")),
 				})
 				if err != nil {
 					return err

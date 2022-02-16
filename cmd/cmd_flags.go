@@ -33,12 +33,20 @@ func serviceFlag() *cli.StringFlag {
 	}
 }
 
+func getServiceFlagOrArg(c *cli.Context) string {
+	return flagOrArg(c, "service", "Use `webhookdb services list` to see available integrations.")
+}
+
 func integrationFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "integration",
 		Aliases: s1("i"),
 		Usage:   "Integration opaque id, starting with 'svi_'. Run `webhookdb integrations list` to see a list of all your integrations.",
 	}
+}
+
+func getIntegrationFlagOrArg(c *cli.Context) string {
+	return flagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")
 }
 
 func usernameFlag() *cli.StringFlag {
@@ -57,16 +65,7 @@ func extractPositional(idx int, c *cli.Context, msg string) string {
 	return a
 }
 
-func orstr(a ...string) string {
-	for _, s := range a {
-		if s != "" {
-			return s
-		}
-	}
-	return ""
-}
-
-func paramOrArg(c *cli.Context, param string) string {
+func flagOrArg(c *cli.Context, param, extraMsg string) string {
 	v := c.String(param)
 	if v != "" {
 		return v
@@ -75,5 +74,9 @@ func paramOrArg(c *cli.Context, param string) string {
 	if v != "" {
 		return v
 	}
-	panic(CliError{Code: 1, Message: fmt.Sprintf("Please pass --%s or provide it as the first argument.", param)})
+	msg := fmt.Sprintf("Please pass --%s or provide it as the first argument.", param)
+	if extraMsg != "" {
+		msg += " " + extraMsg
+	}
+	panic(CliError{Code: 1, Message: msg})
 }

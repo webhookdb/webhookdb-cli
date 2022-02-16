@@ -43,7 +43,7 @@ var webhooksCmd = &cli.Command{
 			Usage: "Send a test event to all webhook subscriptions associated with this integration.",
 			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: paramOrArg(c, "integration")})
+				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: flagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")})
 				if err != nil {
 					return err
 				}
@@ -55,7 +55,10 @@ var webhooksCmd = &cli.Command{
 			Usage: "Delete this webhook subscription, so no future events will be sent.",
 			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				_, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: paramOrArg(c, "integration")})
+				input := client.WebhookOpaqueIdInput{
+					OpaqueId: getIntegrationFlagOrArg(c),
+				}
+				_, err := client.WebhookDelete(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
