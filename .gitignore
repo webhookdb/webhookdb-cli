@@ -18,3 +18,4 @@ webhookdb-cli
 webhookdb
 
 dist/
+.env
