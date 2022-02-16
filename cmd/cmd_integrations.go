@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/olekukonko/tablewriter"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -32,7 +32,10 @@ var integrationsCmd = &cli.Command{
 		{
 			Name:        "list",
 			Description: "list all integrations for the given organization",
-			Flags:       []cli.Flag{orgFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				formatFlag(formatting.Table),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsListInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
@@ -46,14 +49,17 @@ var integrationsCmd = &cli.Command{
 					fmt.Println("Use `webhookdb services list` and `webhookdb integrations create` to set one up.")
 					return nil
 				}
-				table := tablewriter.NewWriter(os.Stdout)
-				table.SetHeader([]string{"Service", "Table", "Id"})
-				configTableWriter(table)
-				for _, value := range out.Data {
-					table.Append([]string{value.ServiceName, value.TableName, value.OpaqueId})
+
+				fmt := getFormatFlag(c)
+				rows := make([][]string, len(out.Data))
+				for i, value := range out.Data {
+					rows[i] = []string{value.ServiceName, value.TableName, value.OpaqueId}
 				}
-				table.Render()
-				return nil
+				tabular := formatting.TabularResponse{
+					Headers: []string{"Service", "Table", "Id"},
+					Rows:    rows,
+				}
+				return fmt.WriteTabular(tabular, os.Stdout)
 			}),
 		},
 		{
@@ -72,29 +78,25 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "status",
+			Name:        "stats",
 			Description: "Get statistics about webhooks for this integration.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),
+				formatFlag(formatting.Table),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				format := getFormatFlag(c)
 				input := client.IntegrationsStatusInput{
 					OpaqueId:      getIntegrationFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Format:        format,
 				}
-				out, err := client.IntegrationsStatus(ctx, ac.Auth, input)
+				out, err := client.IntegrationsStats(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				table := tablewriter.NewWriter(os.Stdout)
-				table.SetHeader(out.Header)
-				configTableWriter(table)
-				for _, row := range out.Rows {
-					table.Append(row)
-				}
-				table.Render()
-				return nil
+				return input.Format.WriteApiResponseTo(out.Parsed, os.Stdout)
 			}),
 		},
 	},

@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
@@ -40,14 +41,17 @@ func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInpu
 type IntegrationsStatusInput struct {
 	OpaqueId      string              `json:"-"`
 	OrgIdentifier types.OrgIdentifier `json:"-"`
+	Format        formatting.Format   `json:"-"`
 }
 
 type IntegrationsStatusOutput struct {
-	Header []string   `json:"headers"`
-	Rows   [][]string `json:"rows"`
+	Parsed interface{}
 }
 
-func IntegrationsStatus(c context.Context, auth Auth, input IntegrationsStatusInput) (out IntegrationsStatusOutput, err error) {
-	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/status", input.OrgIdentifier, input.OpaqueId)
-	return
+func IntegrationsStats(c context.Context, auth Auth, input IntegrationsStatusInput) (IntegrationsStatusOutput, error) {
+	out := IntegrationsStatusOutput{
+		Parsed: input.Format.ApiResponsePtr(),
+	}
+	err := makeRequest(c, GET, auth, nil, out.Parsed, "/v1/organizations/%v/service_integrations/%v/stats?fmt=%s", input.OrgIdentifier, input.OpaqueId, input.Format.ApiRequestValue)
+	return out, err
 }
