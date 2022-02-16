@@ -1,18 +1,23 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
-    - go generate ./...
 builds:
-  - env:
-      - CGO_ENABLED=0
+  - binary: webhookdb
+    id: webhookdb
     goos:
       - linux
       - windows
+    goarch:
+      - amd64
+  # we need a separated build for the MacOS binary only:
+  - binary: webhookdb
+    id: webhookdb-macos
+    goos:
       - darwin
+    goarch:
+      - amd64
+    hooks:
+      post: gon gon.hcl
 archives:
   - replacements:
       darwin: Darwin
