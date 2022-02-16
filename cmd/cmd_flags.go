@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
+	"strings"
 )
 
 func orgFlag() *cli.StringFlag {
@@ -55,6 +57,25 @@ func usernameFlag() *cli.StringFlag {
 		Aliases: s1("u"),
 		Usage:   "Takes an email.",
 	}
+}
+
+func formatFlag(defaultFmt formatting.Format) cli.Flag {
+	return &cli.StringFlag{
+		Name:    "format",
+		Aliases: s1("f"),
+		Value:   defaultFmt.FlagValue,
+		Usage:   "Format of the output. One of: " + strings.Join(formatting.FormatFlagValues(), ", "),
+	}
+}
+func getFormatFlag(c *cli.Context) formatting.Format {
+	f, ok := formatting.LookupByFlag(c.String("format"))
+	if !ok {
+		panic(CliError{
+			Message: fmt.Sprintf("Invalid --format flag value: %s. Must be one of: %s", c.String("format"), strings.Join(formatting.FormatFlagValues(), ", ")),
+			Code:    1,
+		})
+	}
+	return f
 }
 
 func extractPositional(idx int, c *cli.Context, msg string) string {
