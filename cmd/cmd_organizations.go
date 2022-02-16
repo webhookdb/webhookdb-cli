@@ -18,14 +18,10 @@ var organizationsCmd = &cli.Command{
 		{
 			Name:        "activate",
 			Description: "Change the default organization for any command you run",
-			Flags:       []cli.Flag{},
+			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				orgSlug, err := extractPositional(0, c, "You must enter an organization key.")
-				if err != nil {
-					return err
-				}
 				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
-					OrgIdentifier: types.OrgIdentifierFromSlug(orgSlug),
+					OrgIdentifier: types.OrgIdentifierFromSlug(flagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")),
 				})
 				if err != nil {
 					return err
@@ -54,15 +50,15 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgChangeRolesInput{
-					Emails:        c.String("usernames"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Emails:        c.String("usernames"),
 					RoleName:      c.String("role"),
 				}
 				out, err := client.OrgChangeRoles(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				fmt.Println(out)
+				fmt.Println(out.Message)
 				return nil
 			}),
 		},
@@ -74,7 +70,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgCreateInput{
-					OrgName: c.String("name"),
+					OrgName: flagOrArg(c, "name", ""),
 				}
 				out, err := client.OrgCreate(ctx, ac.Auth, input)
 				if err != nil {
@@ -94,7 +90,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
-					Email:         c.String("username"),
+					Email:         flagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.OrgInvite(ctx, ac.Auth, input)
@@ -113,7 +109,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgJoinInput{
-					InvitationCode: c.String("code"),
+					InvitationCode: flagOrArg(c, "code", ""),
 				}
 				out, err := client.OrgJoin(ctx, ac.Auth, input)
 				if err != nil {
@@ -182,7 +178,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgRemoveInput{
-					Email:         c.String("username"),
+					Email:         flagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.OrgRemove(ctx, ac.Auth, input)

@@ -16,12 +16,15 @@ var integrationsCmd = &cli.Command{
 	Subcommands: []*cli.Command{
 		{
 			Name:        "create",
-			Description: "create an integration for the given organization",
-			Flags:       []cli.Flag{orgFlag(), serviceFlag()},
+			Description: "Create an integration for the given organization",
+			Flags: []cli.Flag{
+				orgFlag(),
+				serviceFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsCreateInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					ServiceName:   c.String("service"),
+					ServiceName:   flagOrArg(c, "service", "Use `webhookdb services list` to see available integrations."),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsCreate(ctx, ac.Auth, input))
 			}),
@@ -40,6 +43,7 @@ var integrationsCmd = &cli.Command{
 				}
 				if len(out.Data) == 0 {
 					fmt.Println("This organization doesn't have any integrations set up yet.")
+					fmt.Println("Use `webhookdb services list` and `webhookdb integrations create` to set one up.")
 					return nil
 				}
 				table := tablewriter.NewWriter(os.Stdout)
@@ -55,10 +59,13 @@ var integrationsCmd = &cli.Command{
 		{
 			Name:        "reset",
 			Description: "Reset the webhook secret for this integration.",
-			Flags:       []cli.Flag{orgFlag(), integrationFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsResetInput{
-					OpaqueId:      c.String("integration"),
+					OpaqueId:      getIntegrationFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsReset(ctx, ac.Auth, input))
@@ -67,10 +74,13 @@ var integrationsCmd = &cli.Command{
 		{
 			Name:        "status",
 			Description: "Get statistics about webhooks for this integration.",
-			Flags:       []cli.Flag{orgFlag(), integrationFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsStatusInput{
-					OpaqueId:      c.String("integration"),
+					OpaqueId:      getIntegrationFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.IntegrationsStatus(ctx, ac.Auth, input)

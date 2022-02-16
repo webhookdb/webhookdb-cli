@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
@@ -32,12 +33,20 @@ func serviceFlag() *cli.StringFlag {
 	}
 }
 
+func getServiceFlagOrArg(c *cli.Context) string {
+	return flagOrArg(c, "service", "Use `webhookdb services list` to see available integrations.")
+}
+
 func integrationFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "integration",
 		Aliases: s1("i"),
 		Usage:   "Integration opaque id, starting with 'svi_'. Run `webhookdb integrations list` to see a list of all your integrations.",
 	}
+}
+
+func getIntegrationFlagOrArg(c *cli.Context) string {
+	return flagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")
 }
 
 func usernameFlag() *cli.StringFlag {
@@ -48,10 +57,26 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
-func extractPositional(idx int, c *cli.Context, msg string) (string, error) {
+func extractPositional(idx int, c *cli.Context, msg string) string {
 	a := c.Args().Get(idx)
 	if a == "" {
-		return "", CliError{Message: msg, Code: 1}
+		panic(CliError{Message: msg, Code: 1})
 	}
-	return a, nil
+	return a
+}
+
+func flagOrArg(c *cli.Context, param, extraMsg string) string {
+	v := c.String(param)
+	if v != "" {
+		return v
+	}
+	v = c.Args().First()
+	if v != "" {
+		return v
+	}
+	msg := fmt.Sprintf("Please pass --%s or provide it as the first argument.", param)
+	if extraMsg != "" {
+		msg += " " + extraMsg
+	}
+	panic(CliError{Code: 1, Message: msg})
 }

@@ -15,7 +15,7 @@ var fixturesCmd = &cli.Command{
 	Flags: []cli.Flag{serviceFlag()},
 	Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 		out, err := client.GetFixtures(ctx, ac.Auth, client.GetFixturesInput{
-			ServiceName: c.String("service"),
+			ServiceName: getServiceFlagOrArg(c),
 		})
 		if err != nil {
 			return err

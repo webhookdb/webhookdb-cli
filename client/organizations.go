@@ -29,7 +29,7 @@ type OrgChangeRolesOutput struct {
 	Message string `json:"message"`
 }
 
-func OrgChangeRoles(c context.Context, auth Auth, input OrgChangeRolesInput) (out []OrgChangeRolesOutput, err error) {
+func OrgChangeRoles(c context.Context, auth Auth, input OrgChangeRolesInput) (out OrgChangeRolesOutput, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/change_roles", input.OrgIdentifier)
 	return
 }
