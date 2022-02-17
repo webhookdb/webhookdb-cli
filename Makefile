@@ -1,5 +1,6 @@
 BIN := ./webhookdb
 ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
+BUILDFLAGS = "-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`"
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -31,14 +32,15 @@ bench:
 	@WEBHOOKDB_LOG_LEVEL=fatal ginkgo -r --focus=benchmarks
 
 build:
-	@go build -ldflags \
-		"-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`" \
-		-o webhookdb
+	@go build -ldflags $(BUILDFLAGS) -o webhookdb
 
 build-arm64:
-	@GOOS=darwin go build -ldflags \
-		"-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`" \
-		-o webhookdb
+	@GOOS=darwin go build -ldflags $(BUILDFLAGS) -o webhookdb
+
+build-wasm:
+	@GOOS=js GOARCH=wasm go build -ldflags $(BUILDFLAGS) -o webhookdb.wasm
+
+build-all: build-arm64 build build-wasm
 
 update-lithic-deps:
 	go get github.com/rgalanakis/golangal@latest

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	markdown "github.com/MichaelMure/go-term-markdown"
 	"github.com/lithictech/webhookdb-cli/appcontext"
-	"github.com/pkg/browser"
+	"github.com/lithictech/webhookdb-cli/whbrowser"
 	"github.com/urfave/cli/v2"
 	"os"
 	"os/exec"
@@ -21,7 +21,7 @@ var docsCmd = &cli.Command{
 			Name:        "html",
 			Description: "Open a browser to the WebhookDB HTML guide.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				return browser.OpenURL("https://webhookdb.com/docs/cli")
+				return whbrowser.OpenURL("https://webhookdb.com/docs/cli")
 			}),
 		},
 		{
