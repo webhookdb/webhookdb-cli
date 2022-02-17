@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/pkg/browser"
+	"github.com/lithictech/webhookdb-cli/whbrowser"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -35,7 +35,7 @@ var subscriptionsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				if err := browser.OpenURL(out.SessionUrl); err != nil {
+				if err := whbrowser.OpenURL(out.SessionUrl); err != nil {
 					return err
 				}
 				fmt.Println("You have been redirected to the Stripe Billing Portal:")

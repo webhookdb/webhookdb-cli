@@ -16,6 +16,8 @@
 
 webhookdb-cli
 webhookdb
+webhookdb.wasm
+webhookdb.exe
 
 dist/
 .env
