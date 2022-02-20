@@ -8,7 +8,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/urfave/cli/v2"
-	"log"
 	"os"
 )
 
@@ -23,7 +22,7 @@ func newAppCtx(c *cli.Context) appcontext.AppContext {
 	}
 	appCtx, err := appcontext.New(c.Command.FullName(), config.LoadConfig())
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	return appCtx
 }
@@ -37,7 +36,9 @@ func newCtx(appCtx appcontext.AppContext) context.Context {
 	return appcontext.InContext(c, appCtx)
 }
 
-func cliAction(cb func(*cli.Context, appcontext.AppContext, context.Context) error) cli.ActionFunc {
+type cliActionCallback func(*cli.Context, appcontext.AppContext, context.Context) error
+
+func cliAction(cb cliActionCallback) cli.ActionFunc {
 	return func(c *cli.Context) (returnErr error) {
 		ac := newAppCtx(c)
 		ctx := newCtx(ac)
@@ -54,6 +55,9 @@ func cliAction(cb func(*cli.Context, appcontext.AppContext, context.Context) err
 		}()
 		if err := cb(c, ac, ctx); err != nil {
 			if eresp, ok := err.(client.ErrorResponse); ok {
+				if eresp.Err.Status == 401 {
+					return cli.Exit("You are not logged in. Use 'webhookdb auth login' to get started.", 2)
+				}
 				msg := eresp.Err.Message
 				if msg == "" {
 					msg = "Sorry, something went wrong. Please report it to support@webhookdb.com."

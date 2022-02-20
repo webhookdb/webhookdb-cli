@@ -9,7 +9,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/mitchellh/mapstructure"
 	"github.com/urfave/cli/v2"
-	"os"
 	"strings"
 )
 
@@ -25,7 +24,7 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				output.PrintTo(os.Stdout)
+				output.PrintTo(c.App.Writer)
 				return nil
 			}),
 		},
@@ -60,9 +59,9 @@ var authCmd = &cli.Command{
 				}
 				ac.Prefs.CurrentOrg = defaultOrg
 
-				setCookieHeader := out.RawResponse.Header().Get("Set-Cookie")
-				ac.Prefs.AuthCookie = types.AuthCookie(strings.Split(setCookieHeader, ";")[0])
-				if err := prefs.SetNSAndSave(ac.GlobalPrefs, ac.Config.PrefsNamespace, ac.Prefs); err != nil {
+				authTokHeader := out.RawResponse.Header().Get(client.AuthTokenHeader)
+				ac.Prefs.AuthToken = types.AuthToken(strings.Split(authTokHeader, ";")[0])
+				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
 				return nil
@@ -80,16 +79,16 @@ var authCmd = &cli.Command{
 					return err
 				}
 				if c.Bool("remove") {
-					if err := prefs.DeleteAll(); err != nil {
+					if err := prefs.DeleteAll(ac.FS); err != nil {
 						return err
 					}
 				} else {
 					ac.GlobalPrefs.ClearNS(ac.Config.PrefsNamespace)
-					if err := prefs.Save(ac.GlobalPrefs); err != nil {
+					if err := prefs.Save(ac.FS, ac.GlobalPrefs); err != nil {
 						return err
 					}
 				}
-				fmt.Println(output.Message)
+				fmt.Fprintln(c.App.Writer, output.Message)
 				return nil
 			}),
 		},

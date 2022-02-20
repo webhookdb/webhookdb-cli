@@ -7,7 +7,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/whbrowser"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 var subscriptionsCmd = &cli.Command{
@@ -22,7 +21,7 @@ var subscriptionsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				out.PrintTo(os.Stdout)
+				out.PrintTo(c.App.Writer)
 				return nil
 			}),
 		},
@@ -38,8 +37,8 @@ var subscriptionsCmd = &cli.Command{
 				if err := whbrowser.OpenURL(out.SessionUrl); err != nil {
 					return err
 				}
-				fmt.Println("You have been redirected to the Stripe Billing Portal:")
-				fmt.Println(out.SessionUrl)
+				fmt.Fprintln(c.App.Writer, "You have been redirected to the Stripe Billing Portal:")
+				fmt.Fprintln(c.App.Writer, out.SessionUrl)
 				return nil
 			}),
 		},

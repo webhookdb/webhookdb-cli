@@ -15,7 +15,7 @@ func OrgIdentifierFromSlug(slug string) OrgIdentifier {
 	return OrgIdentifier(slug)
 }
 
-type AuthCookie string
+type AuthToken string
 
 type Organization struct {
 	// The primary key of the organization.

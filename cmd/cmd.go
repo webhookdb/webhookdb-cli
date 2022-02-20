@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"github.com/urfave/cli/v2"
-	"log"
-	"os"
 )
 
-func Execute() {
+func BuildApp() *cli.App {
 	app := &cli.App{
 		Usage: `CLI for the WebhookDB (https://webhookdb.com) application. WebhookDB allows you
 to query any API in real-time with SQL.
@@ -40,8 +38,5 @@ The CLI also gives you quick access to the WebhookDB documentation:
 			versionCmd,
 		},
 	}
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return app
 }

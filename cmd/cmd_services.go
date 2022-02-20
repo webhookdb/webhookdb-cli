@@ -29,7 +29,7 @@ var servicesCmd = &cli.Command{
 				for i, value := range out.Data {
 					names[i] = value.Name
 				}
-				fmt.Println(strings.Join(names, "\n"))
+				fmt.Fprintln(c.App.Writer, strings.Join(names, "\n"))
 				return nil
 			}),
 		},

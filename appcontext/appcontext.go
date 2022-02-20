@@ -8,18 +8,19 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/lithictech/webhookdb-cli/prefs"
+	"github.com/lithictech/webhookdb-cli/whfs"
 	"github.com/sirupsen/logrus"
 	"os"
 )
 
 type AppContext struct {
+	FS          whfs.FS
 	Config      config.Config
 	Resty       *resty.Client
 	GlobalPrefs *prefs.GlobalPrefs
 	Prefs       prefs.Prefs
 	Auth        client.Auth
 	logger      *logrus.Entry
-	//ActiveOrg    string (should be derived from a prefs dir)
 }
 
 func (ac AppContext) Logger() *logrus.Entry {
@@ -27,13 +28,14 @@ func (ac AppContext) Logger() *logrus.Entry {
 }
 
 func New(command string, cfg config.Config) (ac AppContext, err error) {
+	ac.FS = whfs.New()
 	ac.Config = cfg
-	if ac.GlobalPrefs, err = prefs.Load(); err != nil {
+	if ac.GlobalPrefs, err = prefs.Load(ac.FS); err != nil {
 		return
 	}
 	ac.Prefs = ac.GlobalPrefs.GetNS(cfg.PrefsNamespace)
-	ac.Auth = client.Auth{Cookie: ac.Prefs.AuthCookie}
-	ac.Resty = newResty(cfg, ac.Prefs)
+	ac.Auth = client.Auth{Token: ac.Prefs.AuthToken}
+	ac.Resty = newResty(cfg)
 	if ac.logger, err = logctx.NewLogger(logctx.NewLoggerInput{
 		Level:     cfg.LogLevel,
 		Format:    cfg.LogFormat,
@@ -51,6 +53,10 @@ func New(command string, cfg config.Config) (ac AppContext, err error) {
 	return
 }
 
+func (ac AppContext) SavePrefs() error {
+	return prefs.SetNSAndSave(ac.FS, ac.GlobalPrefs, ac.Config.PrefsNamespace, ac.Prefs)
+}
+
 func NewTestContext() AppContext {
 	cfg := config.LoadConfig()
 
@@ -59,9 +65,10 @@ func NewTestContext() AppContext {
 
 	pr := &prefs.GlobalPrefs{}
 	ac := AppContext{
+		FS:          whfs.New(),
 		logger:      logger.WithFields(nil),
 		Config:      cfg,
-		Resty:       newResty(cfg, pr.GetNS("")),
+		Resty:       newResty(cfg),
 		GlobalPrefs: pr,
 		Prefs:       pr.GetNS(""),
 	}
@@ -78,13 +85,13 @@ func FromContext(c context.Context) AppContext {
 	return c.Value(ctxKey).(AppContext)
 }
 
-func newResty(cfg config.Config, pr prefs.Prefs) *resty.Client {
+func newResty(cfg config.Config) *resty.Client {
 	r := resty.New().
 		SetHostURL(cfg.ApiHost).
 		SetHeader(
 			"User-Agent",
 			fmt.Sprintf("WebhookdbCLI/%s built %s", config.BuildSha, config.BuildTime),
-		).SetHeader("Cookie", string(pr.AuthCookie))
+		)
 	r.Debug = cfg.Debug
 	return r
 }

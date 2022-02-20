@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/webhookdb-cli/types"
-	"os"
+	"github.com/lithictech/webhookdb-cli/whfs"
+	"github.com/pkg/errors"
+	"io/fs"
+	"io/ioutil"
 	"path/filepath"
 )
 
@@ -27,7 +30,7 @@ func (p *GlobalPrefs) ClearNS(namespace string) {
 }
 
 type Prefs struct {
-	AuthCookie types.AuthCookie   `json:"auth_cookie"`
+	AuthToken  types.AuthToken    `json:"auth_token"`
 	CurrentOrg types.Organization `json:"current_org"`
 }
 
@@ -36,53 +39,56 @@ func (p Prefs) ChangeOrg(org types.Organization) Prefs {
 	return p
 }
 
-func getDir() string {
-	home, err := os.UserHomeDir()
+func getDir(pfs whfs.FS) string {
+	home, err := pfs.UserHomeDir()
 	convext.Must(err)
 	return filepath.Join(home, ".webhookdb")
 }
 
-func getPath() string {
-	return filepath.Join(getDir(), "config")
+func getPath(pfs whfs.FS) string {
+	return filepath.Join(getDir(pfs), "config")
 }
 
-func Load() (*GlobalPrefs, error) {
+func Load(pfs whfs.FS) (*GlobalPrefs, error) {
 	p := &GlobalPrefs{Namespaces: make(map[Namespace]Prefs, 1)}
-	path := getPath()
-	f, err := os.Open(path)
-	if err != nil && os.IsNotExist(err) {
+	path := getPath(pfs)
+	f, err := pfs.Open(path)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
 		return p, nil
 	} else if err != nil {
 		return p, err
 	}
-	if err := json.NewDecoder(f).Decode(&p); err != nil {
-		return p, err
+	defer f.Close()
+	b, err := ioutil.ReadAll(f)
+	if err != nil {
+		return p, errors.Wrap(err, "reading "+path)
+	}
+	if err := json.Unmarshal(b, &p); err != nil {
+		return p, errors.Wrap(err, "unmarshalling into prefs: "+string(b))
 	}
 	return p, nil
 }
 
-func Save(p *GlobalPrefs) error {
-	if err := os.MkdirAll(getDir(), os.ModePerm); err != nil {
-		return err
-	}
-	f, err := os.Create(getPath())
+func Save(pfs whfs.FS, p *GlobalPrefs) error {
+	f, err := pfs.CreateWithDirs(getPath(pfs))
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	if err := json.NewEncoder(f).Encode(p); err != nil {
 		return err
 	}
 	return nil
 }
 
-func SetNSAndSave(gp *GlobalPrefs, namespace string, p Prefs) error {
+func SetNSAndSave(pfs whfs.FS, gp *GlobalPrefs, namespace string, p Prefs) error {
 	gp.SetNS(namespace, p)
-	return Save(gp)
+	return Save(pfs, gp)
 }
 
-func DeleteAll() error {
-	err := os.Remove(getPath())
-	if os.IsNotExist(err) {
+func DeleteAll(pfs whfs.FS) error {
+	err := pfs.Remove(getPath(pfs))
+	if errors.Is(err, fs.ErrNotExist) {
 		return nil
 	} else if err != nil {
 		return err
