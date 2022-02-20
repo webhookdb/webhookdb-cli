@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"github.com/lithictech/webhookdb-cli/prefs"
 	"log"
 	"os"
 )
@@ -14,3 +15,5 @@ func Execute() {
 		log.Fatal(err)
 	}
 }
+
+func wasmUpdateAuthDisplay(_ prefs.Prefs) {}

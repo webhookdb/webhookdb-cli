@@ -30,6 +30,7 @@ var organizationsCmd = &cli.Command{
 					return err
 				}
 				fmt.Fprintln(c.App.Writer, fmt.Sprintf("%s is now your active organization. ", out.Org.DisplayString()))
+				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
 		},

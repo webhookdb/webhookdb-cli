@@ -25,6 +25,7 @@ var authCmd = &cli.Command{
 					return err
 				}
 				output.PrintTo(c.App.Writer)
+				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
 		},
@@ -58,12 +59,13 @@ var authCmd = &cli.Command{
 					return err
 				}
 				ac.Prefs.CurrentOrg = defaultOrg
-
 				authTokHeader := out.RawResponse.Header().Get(client.AuthTokenHeader)
 				ac.Prefs.AuthToken = types.AuthToken(strings.Split(authTokHeader, ";")[0])
+				ac.Prefs.Email = out.Extras["current_customer"]["email"].(string)
 				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
+				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
 		},
@@ -89,6 +91,7 @@ var authCmd = &cli.Command{
 					}
 				}
 				fmt.Fprintln(c.App.Writer, output.Message)
+				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
 		},

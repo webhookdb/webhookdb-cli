@@ -29,7 +29,7 @@ var docsCmd = &cli.Command{
 			Description: "Render the WebhookDB guide into a local Markdown viewer.",
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				resp, err := ac.Resty.R().Get("https://webhookdb.com/docs/cli.md")
+				resp, err := ac.Resty.R().Get(fmt.Sprintf("%s/docs/cli.md", ac.Config.WebsiteHost))
 				if err != nil {
 					return err
 				}

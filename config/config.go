@@ -29,6 +29,7 @@ type Config struct {
 	// so multiple api hosts can use the same prefs,
 	// like if they are backed by the same DB.
 	PrefsNamespace string
+	WebsiteHost    string
 }
 
 func LoadConfig(filenames ...string) Config {
@@ -40,6 +41,7 @@ func LoadConfig(filenames ...string) Config {
 		LogFormat:      os.Getenv("WEBHOOKDB_LOG_FORMAT"),
 		LogLevel:       MustEnvStr("WEBHOOKDB_LOG_LEVEL"),
 		PrefsNamespace: os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
+		WebsiteHost:    MustEnvStr("WEBHOOKDB_WEBSITE_HOST"),
 	}
 	if cfg.PrefsNamespace == "" {
 		cfg.PrefsNamespace = cfg.ApiHost
@@ -67,4 +69,5 @@ func MustSetEnv(k string, v interface{}) {
 func init() {
 	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")
 	MustSetEnv("WEBHOOKDB_API_HOST", "https://api.production.webhookdb.com")
+	MustSetEnv("WEBHOOKDB_WEBSITE_HOST", "https://webhookdb.com")
 }
