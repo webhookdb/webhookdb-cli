@@ -54,7 +54,8 @@ func New(command string, cfg config.Config) (ac AppContext, err error) {
 }
 
 func (ac AppContext) SavePrefs() error {
-	return prefs.SetNSAndSave(ac.FS, ac.GlobalPrefs, ac.Config.PrefsNamespace, ac.Prefs)
+	ac.GlobalPrefs.SetNS(ac.Config.PrefsNamespace, ac.Prefs)
+	return prefs.Save(ac.FS, ac.GlobalPrefs)
 }
 
 func NewTestContext() AppContext {

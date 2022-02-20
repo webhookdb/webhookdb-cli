@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/webhookdb-cli/ask"
 )
@@ -29,21 +28,14 @@ type Step struct {
 
 type Extra map[string]interface{}
 
-type Prompt func(string) (string, error)
-type Println func(...interface{})
-
 func NewStateMachine() StateMachine {
 	return StateMachine{
-		Ask:       ask.Ask,
-		HiddenAsk: ask.HiddenAsk,
-		Println:   func(a ...interface{}) { fmt.Println(a...) },
+		ask: ask.New(),
 	}
 }
 
 type StateMachine struct {
-	Ask       Prompt
-	HiddenAsk Prompt
-	Println   Println
+	ask ask.Ask
 }
 
 func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) error {
@@ -59,7 +51,7 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 	step := startingStep
 	for {
 		if step.Complete {
-			sm.Println(step.Output)
+			sm.ask.Feedback(step.Output)
 			return step, nil
 		}
 		if !step.NeedsInput {
@@ -67,12 +59,12 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		}
 		if step.Output != "" {
 			// If the step is the first one, so only prompts, this will be blank.
-			sm.Println(step.Output)
+			sm.ask.Feedback(step.Output)
 		}
-		asker := sm.Ask
+		asker := sm.ask.Ask
 		prompt := step.Prompt
 		if step.PromptIsSecret {
-			asker = sm.HiddenAsk
+			asker = sm.ask.HiddenAsk
 			prompt = ask.HiddenPrompt(prompt)
 		}
 		value, err := asker(step.Prompt)
@@ -92,7 +84,7 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		step = newStep
 		// Always print a newline after processing input, so the next step output
 		// has a blank line after the input.
-		fmt.Println("")
+		sm.ask.Feedback("")
 	}
 }
 

@@ -31,6 +31,7 @@ func (p *GlobalPrefs) ClearNS(namespace string) {
 
 type Prefs struct {
 	AuthToken  types.AuthToken    `json:"auth_token"`
+	Email      string             `json:"current_email"`
 	CurrentOrg types.Organization `json:"current_org"`
 }
 
@@ -79,11 +80,6 @@ func Save(pfs whfs.FS, p *GlobalPrefs) error {
 		return err
 	}
 	return nil
-}
-
-func SetNSAndSave(pfs whfs.FS, gp *GlobalPrefs, namespace string, p Prefs) error {
-	gp.SetNS(namespace, p)
-	return Save(pfs, gp)
 }
 
 func DeleteAll(pfs whfs.FS) error {

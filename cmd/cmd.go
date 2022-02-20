@@ -27,6 +27,7 @@ The CLI also gives you quick access to the WebhookDB documentation:
 			authCmd,
 			backfillCmd,
 			dbCmd,
+			debugCmd,
 			docsCmd,
 			fixturesCmd,
 			integrationsCmd,
