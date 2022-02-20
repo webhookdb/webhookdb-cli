@@ -42,12 +42,12 @@ var docsCmd = &cli.Command{
 				result := markdown.Render(md, 80, 0)
 				if pager := getPager(); pager != "" {
 					pa := strings.Split(pager, " ")
-					c := exec.Command(pa[0], pa[1:]...)
-					c.Stdin = strings.NewReader(string(result))
-					c.Stdout = os.Stdout
-					return c.Run()
+					cm := exec.Command(pa[0], pa[1:]...)
+					cm.Stdin = strings.NewReader(string(result))
+					cm.Stdout = c.App.Writer
+					return cm.Run()
 				}
-				fmt.Print(string(result))
+				fmt.Fprint(c.App.Writer, string(result))
 				return nil
 			}),
 		},

@@ -40,7 +40,7 @@ type AuthLoginInput struct {
 }
 
 type AuthLoginOutput struct {
-	AuthCookie types.AuthCookie
+	AuthToken  types.AuthToken
 	OutputStep Step
 }
 

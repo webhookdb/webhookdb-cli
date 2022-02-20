@@ -8,7 +8,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/lithictech/webhookdb-cli/whselfupdate"
 	"github.com/urfave/cli/v2"
-	"log"
 	"os"
 )
 
@@ -30,7 +29,7 @@ var updateCmd = &cli.Command{
 		if !forceUpdate {
 			v := semver.MustParse(config.Version)
 			if !found || latest.Version().LTE(v) {
-				fmt.Println("Already up-to-date.")
+				fmt.Fprintln(c.App.Writer, "Already up-to-date.")
 				return nil
 			}
 		}
@@ -42,11 +41,11 @@ var updateCmd = &cli.Command{
 			}
 			path = exe
 		}
-		fmt.Printf("Updating from %s to %s\n", config.Version, latest.Version().String())
+		fmt.Fprintf(c.App.Writer, "Updating from %s to %s\n", config.Version, latest.Version().String())
 		if err := whselfupdate.UpdateTo(latest.AssetURL(), path); err != nil {
 			return CliError{Message: fmt.Sprintf("Error occurred while updating binary: %s", err)}
 		}
-		log.Printf("Successfully updated to %s\n", latest.Version().String())
+		fmt.Fprintf(c.App.Writer, "Successfully updated to %s\n", latest.Version().String())
 		return nil
 	}),
 }

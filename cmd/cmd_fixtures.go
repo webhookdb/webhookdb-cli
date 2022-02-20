@@ -20,7 +20,7 @@ var fixturesCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Println(out.SchemaSql)
+		fmt.Fprintln(c.App.Writer, out.SchemaSql)
 		return nil
 	}),
 }

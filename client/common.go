@@ -20,8 +20,10 @@ func RestyFromContext(c context.Context) *resty.Client {
 }
 
 type Auth struct {
-	Cookie types.AuthCookie `json:"-"`
+	Token types.AuthToken `json:"-"`
 }
+
+const AuthTokenHeader = "Whdb-Auth-Token"
 
 type ErrorResponse struct {
 	Err struct {
@@ -98,8 +100,8 @@ func makeRequestWithResponse(c context.Context, method string, auth Auth, body, 
 	if outPtr != nil {
 		req = req.SetResult(outPtr)
 	}
-	if auth.Cookie != "" {
-		req = req.SetHeader("Cookie", string(auth.Cookie))
+	if auth.Token != "" {
+		req = req.SetHeader(AuthTokenHeader, string(auth.Token))
 	}
 	resp, err := req.Execute(method, url)
 	if err != nil {

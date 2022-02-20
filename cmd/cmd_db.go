@@ -8,7 +8,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
-	"os"
 	"strings"
 )
 
@@ -25,7 +24,7 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Print(out.ConnectionUrl)
+				fmt.Fprint(c.App.Writer, out.ConnectionUrl)
 				return nil
 			}),
 		},
@@ -38,7 +37,7 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(strings.Join(out.TableNames, "\n"))
+				fmt.Fprintln(c.App.Writer, strings.Join(out.TableNames, "\n"))
 				return nil
 			}),
 		},
@@ -58,7 +57,7 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				table := tablewriter.NewWriter(os.Stdout)
+				table := tablewriter.NewWriter(c.App.Writer)
 
 				table.SetHeader(out.Columns)
 				headerCols := make([]tablewriter.Colors, len(out.Columns))
@@ -97,7 +96,7 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Print(out.ConnectionUrl)
+				fmt.Fprint(c.App.Writer, out.ConnectionUrl)
 				return nil
 			}),
 		},
@@ -132,9 +131,9 @@ var dbCmd = &cli.Command{
 					return err
 				}
 				if c.Bool("raw") {
-					fmt.Println(convext.MustMarshal(out))
+					fmt.Fprintln(c.App.Writer, convext.MustMarshal(out))
 				} else {
-					fmt.Println(out["message"])
+					fmt.Fprintln(c.App.Writer, out["message"])
 				}
 				return nil
 			}),

@@ -7,7 +7,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 var integrationsCmd = &cli.Command{
@@ -45,8 +44,8 @@ var integrationsCmd = &cli.Command{
 					return err
 				}
 				if len(out.Data) == 0 {
-					fmt.Println("This organization doesn't have any integrations set up yet.")
-					fmt.Println("Use `webhookdb services list` and `webhookdb integrations create` to set one up.")
+					fmt.Fprintln(c.App.Writer, "This organization doesn't have any integrations set up yet.")
+					fmt.Fprintln(c.App.Writer, "Use `webhookdb services list` and `webhookdb integrations create` to set one up.")
 					return nil
 				}
 
@@ -59,7 +58,7 @@ var integrationsCmd = &cli.Command{
 					Headers: []string{"Service", "Table", "Id"},
 					Rows:    rows,
 				}
-				return fmt.WriteTabular(tabular, os.Stdout)
+				return fmt.WriteTabular(tabular, c.App.Writer)
 			}),
 		},
 		{
@@ -96,7 +95,7 @@ var integrationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				return input.Format.WriteApiResponseTo(out.Parsed, os.Stdout)
+				return input.Format.WriteApiResponseTo(out.Parsed, c.App.Writer)
 			}),
 		},
 	},

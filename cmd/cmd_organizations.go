@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
 	"strings"
@@ -26,10 +25,11 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				if err := prefs.SetNSAndSave(ac.GlobalPrefs, ac.Config.PrefsNamespace, ac.Prefs.ChangeOrg(out.Org)); err != nil {
+				ac.Prefs = ac.Prefs.ChangeOrg(out.Org)
+				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
-				fmt.Println(fmt.Sprintf("%s is now your active organization. ", out.Org.DisplayString()))
+				fmt.Fprintln(c.App.Writer, fmt.Sprintf("%s is now your active organization. ", out.Org.DisplayString()))
 				return nil
 			}),
 		},
@@ -58,7 +58,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(out.Message)
+				fmt.Fprintln(c.App.Writer, out.Message)
 				return nil
 			}),
 		},
@@ -76,9 +76,9 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(out.Message)
+				fmt.Fprintln(c.App.Writer, out.Message)
 				ac.Prefs.CurrentOrg = out.Organization
-				if err := prefs.SetNSAndSave(ac.GlobalPrefs, ac.Config.PrefsNamespace, ac.Prefs); err != nil {
+				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
 				return nil
@@ -97,7 +97,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(out.Message)
+				fmt.Fprintln(c.App.Writer, out.Message)
 				return nil
 			}),
 		},
@@ -115,7 +115,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(out.Message)
+				fmt.Fprintln(c.App.Writer, out.Message)
 				return nil
 			}),
 		},
@@ -137,7 +137,7 @@ var organizationsCmd = &cli.Command{
 					}
 					keySlugs[i] = line
 				}
-				fmt.Println(strings.Join(keySlugs, "\n"))
+				fmt.Fprintln(c.App.Writer, strings.Join(keySlugs, "\n"))
 				return nil
 			}),
 		},
@@ -146,7 +146,7 @@ var organizationsCmd = &cli.Command{
 			Description: "display the name and slug of the currently active org",
 			Flags:       []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				fmt.Println(ac.Prefs.CurrentOrg.DisplayString())
+				fmt.Fprintln(c.App.Writer, ac.Prefs.CurrentOrg.DisplayString())
 				return nil
 			}),
 		},
@@ -168,7 +168,7 @@ var organizationsCmd = &cli.Command{
 						members[i] = value.CustomerEmail
 					}
 				}
-				fmt.Println(strings.Join(members, "\n"))
+				fmt.Fprintln(c.App.Writer, strings.Join(members, "\n"))
 				return nil
 			}),
 		},
@@ -185,7 +185,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Println(out.Message)
+				fmt.Fprintln(c.App.Writer, out.Message)
 				return nil
 			}),
 		},
