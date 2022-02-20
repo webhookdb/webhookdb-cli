@@ -31,7 +31,7 @@ func (p *GlobalPrefs) ClearNS(namespace string) {
 
 type Prefs struct {
 	AuthToken  types.AuthToken    `json:"auth_token"`
-	Email      string             `json:"current_email"`
+	Email      string             `json:"email"`
 	CurrentOrg types.Organization `json:"current_org"`
 }
 
