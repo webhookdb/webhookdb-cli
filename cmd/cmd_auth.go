@@ -42,7 +42,7 @@ var authCmd = &cli.Command{
 				}},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.AuthLogin(ctx, client.AuthLoginInput{
-					Username: c.String("username"),
+					Username: flagOrArg(c, "username", ""),
 					Token:    c.String("token"),
 				})
 				if err != nil {
@@ -61,7 +61,9 @@ var authCmd = &cli.Command{
 				ac.Prefs.CurrentOrg = defaultOrg
 				authTokHeader := out.RawResponse.Header().Get(client.AuthTokenHeader)
 				ac.Prefs.AuthToken = types.AuthToken(strings.Split(authTokHeader, ";")[0])
-				ac.Prefs.Email = out.Extras["current_customer"]["email"].(string)
+				if out.Extras["current_customer"] != nil {
+					ac.Prefs.Email = out.Extras["current_customer"]["email"].(string)
+				}
 				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
@@ -91,7 +93,7 @@ var authCmd = &cli.Command{
 					}
 				}
 				fmt.Fprintln(c.App.Writer, output.Message)
-				wasmUpdateAuthDisplay(ac.Prefs)
+				wasmUpdateAuthDisplay(prefs.Prefs{})
 				return nil
 			}),
 		},

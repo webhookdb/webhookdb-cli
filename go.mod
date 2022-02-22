@@ -7,12 +7,12 @@ require (
 	github.com/alecthomas/chroma v0.8.2 // indirect
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/getsentry/sentry-go v0.12.0
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/lithictech/go-aperitif v0.0.0-20201008180713-efd6b162b762
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/olekukonko/tablewriter v0.0.5
