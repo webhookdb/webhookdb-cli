@@ -49,9 +49,20 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		return startingStep, nil
 	}
 	step := startingStep
+	feedbackIfNoError := func(line string) {
+		// This is pretty tricky. The state machine can be recursive, and attempts to transition
+		// will return errors that will be processed at the API level.
+		// If this happens, our step will have been processed via error.
+		// In these cases, we assume a nested state machine will have given us the right output,
+		// and can leave this output out.
+		if step.processedViaError {
+			return
+		}
+		sm.ask.Feedback(line)
+	}
 	for {
 		if step.Complete {
-			sm.ask.Feedback(step.Output)
+			feedbackIfNoError(step.Output)
 			return step, nil
 		}
 		if !step.NeedsInput {
@@ -59,7 +70,7 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		}
 		if step.Output != "" {
 			// If the step is the first one, so only prompts, this will be blank.
-			sm.ask.Feedback(step.Output)
+			feedbackIfNoError(step.Output)
 		}
 		asker := sm.ask.Ask
 		prompt := step.Prompt
@@ -84,7 +95,7 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		step = newStep
 		// Always print a newline after processing input, so the next step output
 		// has a blank line after the input.
-		sm.ask.Feedback("")
+		feedbackIfNoError("")
 	}
 }
 
