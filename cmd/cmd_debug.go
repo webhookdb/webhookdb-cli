@@ -64,5 +64,12 @@ var debugCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:        "panic",
+			Description: "Test out a panic",
+			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
+				panic("can you see this?")
+			}),
+		},
 	},
 }
