@@ -20,7 +20,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
-					OrgIdentifier: types.OrgIdentifierFromSlug(flagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")),
+					OrgIdentifier: types.OrgIdentifierFromSlug(requireFlagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")),
 				})
 				if err != nil {
 					return err
@@ -71,7 +71,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgCreateInput{
-					OrgName: flagOrArg(c, "name", ""),
+					OrgName: requireFlagOrArg(c, "name", ""),
 				}
 				out, err := client.OrgCreate(ctx, ac.Auth, input)
 				if err != nil {
@@ -91,7 +91,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
-					Email:         flagOrArg(c, "username", ""),
+					Email:         requireFlagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.OrgInvite(ctx, ac.Auth, input)
@@ -110,7 +110,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgJoinInput{
-					InvitationCode: flagOrArg(c, "code", ""),
+					InvitationCode: requireFlagOrArg(c, "code", ""),
 				}
 				out, err := client.OrgJoin(ctx, ac.Auth, input)
 				if err != nil {
@@ -179,7 +179,7 @@ var organizationsCmd = &cli.Command{
 			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgRemoveInput{
-					Email:         flagOrArg(c, "username", ""),
+					Email:         requireFlagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.OrgRemove(ctx, ac.Auth, input)

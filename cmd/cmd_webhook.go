@@ -43,7 +43,7 @@ var webhooksCmd = &cli.Command{
 			Usage: "Send a test event to all webhook subscriptions associated with this integration.",
 			Flags: []cli.Flag{integrationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: flagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")})
+				_, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: requireFlagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")})
 				if err != nil {
 					return err
 				}

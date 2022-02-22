@@ -23,7 +23,7 @@ var integrationsCmd = &cli.Command{
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsCreateInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					ServiceName:   flagOrArg(c, "service", "Use `webhookdb services list` to see available integrations."),
+					ServiceName:   requireFlagOrArg(c, "service", "Use `webhookdb services list` to see available integrations."),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsCreate(ctx, ac.Auth, input))
 			}),

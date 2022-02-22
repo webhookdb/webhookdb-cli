@@ -42,7 +42,7 @@ var authCmd = &cli.Command{
 				}},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.AuthLogin(ctx, client.AuthLoginInput{
-					Username: flagOrArg(c, "username", ""),
+					Username: flagOrArg(c, "username"),
 					Token:    c.String("token"),
 				})
 				if err != nil {

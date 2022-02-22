@@ -36,7 +36,7 @@ func serviceFlag() *cli.StringFlag {
 }
 
 func getServiceFlagOrArg(c *cli.Context) string {
-	return flagOrArg(c, "service", "Use `webhookdb services list` to see available integrations.")
+	return requireFlagOrArg(c, "service", "Use `webhookdb services list` to see available integrations.")
 }
 
 func integrationFlag() *cli.StringFlag {
@@ -48,7 +48,7 @@ func integrationFlag() *cli.StringFlag {
 }
 
 func getIntegrationFlagOrArg(c *cli.Context) string {
-	return flagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")
+	return requireFlagOrArg(c, "integration", "Use `webhookdb integrations list` to see available integrations.")
 }
 
 func usernameFlag() *cli.StringFlag {
@@ -86,7 +86,15 @@ func extractPositional(idx int, c *cli.Context, msg string) string {
 	return a
 }
 
-func flagOrArg(c *cli.Context, param, extraMsg string) string {
+func flagOrArg(c *cli.Context, param string) string {
+	v := c.String(param)
+	if v != "" {
+		return v
+	}
+	return c.Args().First()
+}
+
+func requireFlagOrArg(c *cli.Context, param, extraMsg string) string {
 	v := c.String(param)
 	if v != "" {
 		return v
