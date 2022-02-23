@@ -21,3 +21,4 @@ webhookdb.exe
 
 dist/
 .env
+temp/

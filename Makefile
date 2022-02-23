@@ -42,6 +42,9 @@ build-wasm:
 
 build-all: build-arm64 build build-wasm
 
+docs-write: build
+	@$(BIN) docs build > MANUAL.md
+
 update-lithic-deps:
 	go get github.com/rgalanakis/golangal@latest
 	go get github.com/lithictech/go-aperitif@latest

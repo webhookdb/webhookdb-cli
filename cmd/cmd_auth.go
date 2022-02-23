@@ -13,12 +13,12 @@ import (
 )
 
 var authCmd = &cli.Command{
-	Name:        "auth",
-	Description: "These commands control the auth process.",
+	Name:  "auth",
+	Usage: "These commands control the auth process.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "whoami",
-			Description: "Print information about the current user",
+			Name:  "whoami",
+			Usage: "Print information about the current user.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				output, err := client.AuthGetMe(ctx, ac.Auth)
 				if err != nil {
@@ -30,9 +30,9 @@ var authCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "login",
-			Aliases:     []string{"signup", "signin", "register"},
-			Description: "Sign up or log in.",
+			Name:    "login",
+			Aliases: []string{"signup", "signin", "register"},
+			Usage:   "Sign up or log in.",
 			Flags: []cli.Flag{
 				usernameFlag(),
 				&cli.StringFlag{
@@ -72,8 +72,8 @@ var authCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "logout",
-			Description: "Log out of your current session.",
+			Name:  "logout",
+			Usage: "Log out of your current session.",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{Name: "remove", Aliases: s1("r"), Usage: "If given, remove all WebhookDB preferences."},
 			},

@@ -12,13 +12,13 @@ import (
 )
 
 var dbCmd = &cli.Command{
-	Name:        "db",
-	Description: "Command namespace for interacting with your organization's database and tables.",
+	Name:  "db",
+	Usage: "Command namespace for interacting with your organization's database and tables.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "connection",
-			Description: "Print the database connection url for an organization.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "connection",
+			Usage: "Print the database connection url for an organization.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.DbConnection(ctx, ac.Auth, client.DbConnectionInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
@@ -29,9 +29,9 @@ var dbCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "tables",
-			Description: "List all tables in an organization's database.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "tables",
+			Usage: "List all tables in an organization's database.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.DbTables(ctx, ac.Auth, client.DbTablesInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
@@ -42,8 +42,8 @@ var dbCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "sql",
-			Description: "Execute query on organization's database.",
+			Name:  "sql",
+			Usage: "Execute query on organization's database.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				&cli.StringFlag{Name: "query", Aliases: s1("u"), Usage: "Query string to execute using your connection."},
@@ -88,9 +88,9 @@ var dbCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "roll-credentials",
-			Description: "Roll the credentials for an organization's database to something newly randomly generated.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "roll-credentials",
+			Usage: "Roll the credentials for an organization's database to something newly randomly generated.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.DbRollCredentials(ctx, ac.Auth, client.DbRollCredentialsInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
@@ -102,7 +102,7 @@ var dbCmd = &cli.Command{
 		},
 		{
 			Name: "fdw",
-			Description: "Write out commands that can be used to generate a FDW against your WebhookDB database and " +
+			Usage: "Write out commands that can be used to generate a FDW against your WebhookDB database and " +
 				"import them into materialized views. See flags for further usage.",
 			Flags: []cli.Flag{
 				orgFlag(),

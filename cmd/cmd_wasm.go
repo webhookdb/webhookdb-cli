@@ -15,6 +15,9 @@ import (
 	"syscall/js"
 )
 
+// Set this explicitly since os.Args[0] will always be 'js'
+var helpName = "webhookdb"
+
 func Execute() {
 	c := make(chan struct{}, 0)
 	js.Global().Set("webhookdbRunGo", js.FuncOf(func(_ js.Value, args []js.Value) interface{} {

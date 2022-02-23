@@ -14,20 +14,20 @@ import (
 )
 
 var docsCmd = &cli.Command{
-	Name:        "docs",
-	Description: "Work with the WebhookDB docs and guide.",
+	Name:  "docs",
+	Usage: "Work with the WebhookDB docs and guide.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "html",
-			Description: "Open a browser to the WebhookDB HTML guide.",
+			Name:  "html",
+			Usage: "Open a browser to the WebhookDB HTML guide.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				return whbrowser.OpenURL("https://webhookdb.com/docs/cli")
 			}),
 		},
 		{
-			Name:        "tui",
-			Description: "Render the WebhookDB guide into a local Markdown viewer.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "tui",
+			Usage: "Render the WebhookDB guide into a local Markdown viewer.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				resp, err := ac.Resty.R().Get(fmt.Sprintf("%s/docs/cli.md", ac.Config.WebsiteHost))
 				if err != nil {
@@ -51,7 +51,36 @@ var docsCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:  "build",
+			Usage: "Build the docs for the app.",
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "format", Usage: "One of: markdown, man"},
+			},
+		},
 	},
+}
+
+func docsBuildFunc(c *cli.Context) error {
+	app := BuildApp()
+	app.Setup()
+	writestr := func(s string, i ...interface{}) {
+		app.Writer.Write([]byte(fmt.Sprintf(s, i...)))
+	}
+	if c.String("format") == "man" {
+		writestr(app.ToMan())
+	} else {
+		writestr(app.ToMarkdown())
+	}
+	return nil
+}
+func init() {
+	// We must do it this way to avoid a cyclical compile error
+	for _, subcmd := range docsCmd.Subcommands {
+		if subcmd.Name == "build" {
+			subcmd.Action = docsBuildFunc
+		}
+	}
 }
 
 func getPager() string {

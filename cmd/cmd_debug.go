@@ -57,16 +57,16 @@ var debugCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "update-auth-display",
-			Description: "Used to update the WASM terminal on startup",
+			Name:  "update-auth-display",
+			Usage: "Used to update the WASM terminal on startup.",
 			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
 				wasmUpdateAuthDisplay(appContext.Prefs)
 				return nil
 			}),
 		},
 		{
-			Name:        "panic",
-			Description: "Test out a panic",
+			Name:  "panic",
+			Usage: "Test out a panic",
 			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
 				panic("can you see this?")
 			}),

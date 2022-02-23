@@ -7,7 +7,8 @@ import (
 )
 
 var versionCmd = &cli.Command{
-	Name: "version",
+	Name:  "version",
+	Usage: "Print version and exit.",
 	Action: func(c *cli.Context) error {
 		shaPart := config.BuildSha
 		if len(shaPart) >= 8 {
