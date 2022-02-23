@@ -12,7 +12,8 @@ var webhooksCmd = &cli.Command{
 	Usage: "Manage webhooks that will be notified when WebhookDB data is updated.",
 	Subcommands: []*cli.Command{
 		{
-			Name: "create",
+			Name:  "create",
+			Usage: "Create a new webhook that WebhookDB will call on every data update.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),
@@ -22,7 +23,7 @@ var webhooksCmd = &cli.Command{
 				},
 				&cli.StringFlag{
 					Name:  "secret",
-					Usage: "Random secure secret to use to sign webhooks coming from WebhookDB",
+					Usage: "Random secure secret to use to sign webhooks coming from WebhookDB.",
 				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {

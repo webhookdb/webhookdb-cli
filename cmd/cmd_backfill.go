@@ -8,8 +8,8 @@ import (
 )
 
 var backfillCmd = &cli.Command{
-	Name:        "backfill",
-	Description: "Start backfilling all the resources available to the service integration.",
+	Name:  "backfill",
+	Usage: "Start backfilling all the resources available to the service integration.",
 	Flags: []cli.Flag{
 		orgFlag(),
 		integrationFlag(),
@@ -23,9 +23,9 @@ var backfillCmd = &cli.Command{
 	}),
 	Subcommands: []*cli.Command{
 		{
-			Name:        "reset",
-			Description: "Reset any stored API keys and secrets associated with backfilling this integration.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "reset",
+			Usage: "Reset any stored API keys and secrets associated with backfilling this integration.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.BackfillResetInput{
 					OpaqueId:      getIntegrationFlagOrArg(c),

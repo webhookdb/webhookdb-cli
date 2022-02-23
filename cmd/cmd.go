@@ -6,6 +6,8 @@ import (
 
 func BuildApp() *cli.App {
 	app := &cli.App{
+		Name:     "webhookdb",
+		HelpName: helpName,
 		Usage: `CLI for the WebhookDB (https://webhookdb.com) application. WebhookDB allows you
 to query any API in real-time with SQL.
 

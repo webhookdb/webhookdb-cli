@@ -10,13 +10,13 @@ import (
 )
 
 var servicesCmd = &cli.Command{
-	Name:        "services",
-	Description: "Work with available services that can be hooked up to reflect data to WebhookDB.",
+	Name:  "services",
+	Usage: "Work with available services that can be hooked up to reflect data to WebhookDB.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "list",
-			Description: "List all available services.",
-			Flags:       []cli.Flag{},
+			Name:  "list",
+			Usage: "List all available services.",
+			Flags: []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.ServicesList(ctx, ac.Auth, client.ServicesListInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),

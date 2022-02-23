@@ -10,12 +10,13 @@ import (
 )
 
 var subscriptionsCmd = &cli.Command{
-	Name: "subscription",
+	Name:  "subscription",
+	Usage: "Work with your WebhookDB subscription.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "info",
-			Description: "Get information about an organization's software subscription.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "info",
+			Usage: "Get information about an organization's software subscription.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.SubscriptionInfo(ctx, ac.Auth, client.SubscriptionInfoInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
@@ -26,9 +27,9 @@ var subscriptionsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "edit",
-			Description: "Open stripe portal to edit subscription.",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "edit",
+			Usage: "Open stripe portal to edit subscription.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.SubscriptionEdit(ctx, ac.Auth, client.SubscriptionEditInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {

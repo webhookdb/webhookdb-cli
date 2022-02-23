@@ -11,13 +11,13 @@ import (
 )
 
 var organizationsCmd = &cli.Command{
-	Name:        "org",
-	Description: "Create and activate an organization, invite new members, and change membership roles.",
+	Name:  "org",
+	Usage: "Create and activate an organization, invite new members, and change membership roles.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "activate",
-			Description: "Change the default organization for any command you run",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "activate",
+			Usage: "Change the default organization for any command you run.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
 					OrgIdentifier: types.OrgIdentifierFromSlug(requireFlagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")),
@@ -35,8 +35,8 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "changerole",
-			Description: "Change the role of members of your organization.",
+			Name:  "changerole",
+			Usage: "Change the role of members of your organization.",
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:    "usernames",
@@ -64,8 +64,8 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "create",
-			Description: "Create and activate an organization.",
+			Name:  "create",
+			Usage: "Create and activate an organization.",
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "name", Aliases: s1("n"), Usage: "Name of the new organization. The unique key for the org is derived from this name."},
 			},
@@ -86,9 +86,9 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "invite",
-			Description: "Invite a user to your organization",
-			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
+			Name:  "invite",
+			Usage: "Invite a user to your organization.",
+			Flags: []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
 					Email:         requireFlagOrArg(c, "username", ""),
@@ -103,8 +103,8 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "join",
-			Description: "join an organization using a join code",
+			Name:  "join",
+			Usage: "join an organization using a join code.",
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "code", Aliases: s1("c"), Usage: "Invitation code sent to the new member. Has 'join-' prefix."},
 			},
@@ -121,9 +121,9 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "list",
-			Description: "List all organizations that you are a member of.",
-			Flags:       []cli.Flag{},
+			Name:  "list",
+			Usage: "List all organizations that you are a member of.",
+			Flags: []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.OrgList(ctx, ac.Auth, client.OrgListInput{})
 				if err != nil {
@@ -143,18 +143,18 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "current",
-			Description: "display the name and slug of the currently active org",
-			Flags:       []cli.Flag{},
+			Name:  "current",
+			Usage: "Display the name and slug of the currently active organization.",
+			Flags: []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				fmt.Fprintln(c.App.Writer, ac.Prefs.CurrentOrg.DisplayString())
 				return nil
 			}),
 		},
 		{
-			Name:        "members",
-			Description: "list all members of the given organization",
-			Flags:       []cli.Flag{orgFlag()},
+			Name:  "members",
+			Usage: "List all members of the given organization.",
+			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.OrgMembers(ctx, ac.Auth, client.OrgMembersInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
@@ -174,9 +174,9 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "remove",
-			Description: "Remove a member from an organization",
-			Flags:       []cli.Flag{orgFlag(), usernameFlag()},
+			Name:  "remove",
+			Usage: "Remove a member from an organization.",
+			Flags: []cli.Flag{orgFlag(), usernameFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgRemoveInput{
 					Email:         requireFlagOrArg(c, "username", ""),

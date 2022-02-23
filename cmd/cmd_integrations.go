@@ -10,12 +10,12 @@ import (
 )
 
 var integrationsCmd = &cli.Command{
-	Name:        "integrations",
-	Description: "Make sure that you're working on the correct organization when you create an integration.",
+	Name:  "integrations",
+	Usage: "Make sure that you're working on the correct organization when you create an integration.",
 	Subcommands: []*cli.Command{
 		{
-			Name:        "create",
-			Description: "Create an integration for the given organization",
+			Name:  "create",
+			Usage: "Create an integration for the given organization.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				serviceFlag(),
@@ -29,8 +29,8 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "list",
-			Description: "list all integrations for the given organization",
+			Name:  "list",
+			Usage: "list all integrations for the given organization.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				formatFlag(formatting.Table),
@@ -62,8 +62,8 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "reset",
-			Description: "Reset the webhook secret for this integration.",
+			Name:  "reset",
+			Usage: "Reset the webhook secret for this integration.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),
@@ -77,8 +77,8 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:        "stats",
-			Description: "Get statistics about webhooks for this integration.",
+			Name:  "stats",
+			Usage: "Get statistics about webhooks for this integration.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),

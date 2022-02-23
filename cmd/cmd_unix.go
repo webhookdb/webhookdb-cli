@@ -13,6 +13,9 @@ import (
 	"time"
 )
 
+// Let this get defaulted to the executed command name
+var helpName = ""
+
 func Execute() {
 	if configureSentry() {
 		defer func() {
