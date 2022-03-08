@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"github.com/getsentry/sentry-go"
+	"github.com/lithictech/go-aperitif/logctx"
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"log"
@@ -52,3 +53,5 @@ func configureSentry() bool {
 }
 
 func wasmUpdateAuthDisplay(_ prefs.Prefs) {}
+
+var IsTty = logctx.IsTty()
