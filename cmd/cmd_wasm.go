@@ -105,3 +105,5 @@ func wasmUpdateAuthDisplay(p prefs.Prefs) {
 	}
 	cb.Invoke(string(j))
 }
+
+var IsTty = false

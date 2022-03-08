@@ -47,8 +47,10 @@ var dbCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				&cli.StringFlag{Name: "query", Aliases: s1("u"), Usage: "Query string to execute using your connection."},
+				&cli.BoolFlag{Name: "color", Aliases: s1("c"), Usage: "Display colors. Default true if tty.", Value: IsTty},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				useColors := c.Bool("color")
 				input := client.DbSqlInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					Query:         extractPositional(0, c, "You must enter a query string."),
@@ -60,11 +62,13 @@ var dbCmd = &cli.Command{
 				table := tablewriter.NewWriter(c.App.Writer)
 
 				table.SetHeader(out.Columns)
-				headerCols := make([]tablewriter.Colors, len(out.Columns))
-				for i := range out.Columns {
-					headerCols[i] = tablewriter.Colors{tablewriter.FgHiGreenColor}
+				if useColors {
+					headerCols := make([]tablewriter.Colors, len(out.Columns))
+					for i := range out.Columns {
+						headerCols[i] = tablewriter.Colors{tablewriter.FgHiGreenColor}
+					}
+					table.SetHeaderColor(headerCols...)
 				}
-				table.SetHeaderColor(headerCols...)
 
 				for _, row := range out.Rows {
 					rowStr := make([]string, len(row))
@@ -78,7 +82,11 @@ var dbCmd = &cli.Command{
 							colors[i] = tablewriter.Colors{}
 						}
 					}
-					table.Rich(rowStr, colors)
+					if useColors {
+						table.Rich(rowStr, colors)
+					} else {
+						table.Append(rowStr)
+					}
 				}
 				if out.MaxRowsReached {
 					table.SetCaption(true, "Results have been truncated.")

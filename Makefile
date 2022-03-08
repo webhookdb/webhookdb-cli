@@ -42,6 +42,9 @@ build-wasm:
 
 build-all: build-arm64 build build-wasm
 
+copy-wasm-to-web:
+	cp webhookdb.wasm ../webhookdb-api/webhookdb-website/static/webterm
+
 docs-write: build
 	@$(BIN) docs build > MANUAL.md
 

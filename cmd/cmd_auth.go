@@ -41,29 +41,27 @@ var authCmd = &cli.Command{
 					Usage:   "One-time-password token received in your email after running 'auth login'.",
 				}},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.AuthLogin(ctx, client.AuthLoginInput{
+				authOut, err := client.AuthLogin(ctx, client.AuthLoginInput{
 					Username: flagOrArg(c, "username"),
 					Token:    c.String("token"),
 				})
 				if err != nil {
 					return err
 				}
-				step, err := client.NewStateMachine().RunWithOutput(ctx, ac.Auth, out)
+				result, err := client.NewStateMachine().RunWithOutput(ctx, ac.Auth, authOut)
 				if err != nil {
 					return err
 				}
 
 				// org information is coming in as a map[string]interface{}
 				defaultOrg := types.Organization{}
-				if err := mapstructure.Decode(step.Extras["current_customer"]["default_organization"], &defaultOrg); err != nil {
+				if err := mapstructure.Decode(result.Extras["current_customer"]["default_organization"], &defaultOrg); err != nil {
 					return err
 				}
 				ac.Prefs.CurrentOrg = defaultOrg
-				authTokHeader := out.RawResponse.Header().Get(client.AuthTokenHeader)
+				authTokHeader := result.RawResponse.Header().Get(client.AuthTokenHeader)
 				ac.Prefs.AuthToken = types.AuthToken(strings.Split(authTokHeader, ";")[0])
-				if out.Extras["current_customer"] != nil {
-					ac.Prefs.Email = out.Extras["current_customer"]["email"].(string)
-				}
+				ac.Prefs.Email = result.Extras["current_customer"]["email"].(string)
 				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
