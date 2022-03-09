@@ -29,6 +29,33 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "delete",
+			Usage: "Delete an integration and its table.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+				&cli.StringFlag{
+					Name:    "confirm",
+					Aliases: s1("c"),
+					Usage: "Confirm this action by providing a value of the integration's table name. " +
+						"Will be prompted if not provided.",
+				},
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.IntegrationsDeleteInput{
+					OpaqueId:      getIntegrationFlagOrArg(c),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Confirm:       c.String("confirm"),
+				}
+				out, err := client.IntegrationsDelete(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				fmt.Fprintln(c.App.Writer, out.Message)
+				return nil
+			}),
+		},
+		{
 			Name:  "list",
 			Usage: "list all integrations for the given organization.",
 			Flags: []cli.Flag{
@@ -86,7 +113,7 @@ var integrationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				format := getFormatFlag(c)
-				input := client.IntegrationsStatusInput{
+				input := client.IntegrationsStatsInput{
 					OpaqueId:      getIntegrationFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					Format:        format,

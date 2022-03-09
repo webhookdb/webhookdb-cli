@@ -190,5 +190,29 @@ var organizationsCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:  "rename",
+			Usage: "Change the name of the organization. Does not change the org key, which is immutable.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				&cli.StringFlag{
+					Name:    "name",
+					Aliases: s1("n"),
+					Usage:   "New name of the organization",
+				},
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.OrgRenameInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Name:          flagOrArg(c, "name"),
+				}
+				out, err := client.OrgRename(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				fmt.Fprintln(c.App.Writer, out.Message)
+				return nil
+			}),
+		},
 	},
 }
