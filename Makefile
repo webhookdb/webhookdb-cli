@@ -16,7 +16,7 @@ lint: guardcmd-gofmt
 	@test -z $$(gofmt -d -l . | tee /dev/stderr) && echo "gofmt ok"
 
 vet:
-	@go vet
+	@go vet && echo "go vet ok"
 
 test:
 	go test .
@@ -30,6 +30,8 @@ update-test-snapshots:
 
 bench:
 	@WEBHOOKDB_LOG_LEVEL=fatal ginkgo -r --focus=benchmarks
+
+check: vet lint
 
 build:
 	@go build -ldflags $(BUILDFLAGS) -o webhookdb
