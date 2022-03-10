@@ -95,6 +95,8 @@ List all tables in an organization's database.
 
 Execute query on organization's database.
 
+**--color, -c**: Display colors. Default true if tty.
+
 **--org, -o**="": Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
 **--query, -u**="": Query string to execute using your connection.
@@ -115,13 +117,13 @@ Write out commands that can be used to generate a FDW against your WebhookDB dat
 
 **--fetch**="": fetch_size option used during server creation (default: 50000)
 
-**--into-schema**="": Name of the schema to import the remote tables into (IMPORT FOREIGN SCHEMA public INTO <into schema>. (default: webhookdb_remote)
+**--into-schema**="": Name of the schema to import the remote tables into (in `IMPORT FOREIGN SCHEMA public INTO <into schema>` call). (default: webhookdb_remote)
 
 **--org, -o**="": Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
 **--raw**: If given, print the raw SQL returned from the server. Useful if you want to pipe through jq or something similar.
 
-**--remote**="": The remote server name, used in the 'CREATE SERVER <remote>' call (default: webhookdb_remote)
+**--remote**="": The remote server name, used in the `CREATE SERVER <remote>` call (default: webhookdb_remote)
 
 **--views**: Write the SQL to create the materialized views to stdout
 
@@ -166,6 +168,16 @@ Create an integration for the given organization.
 **--org, -o**="": Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
 **--service, -s**="": Name of the service. Run `webhookdb services list` to see a list of all services available to your organization.
+
+### delete
+
+Delete an integration and its table.
+
+**--confirm, -c**="": Confirm this action by providing a value of the integration's table name. Will be prompted if not provided.
+
+**--integration, -i**="": Integration opaque id, starting with 'svi_'. Run `webhookdb integrations list` to see a list of all your integrations.
+
+**--org, -o**="": Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
 ### list
 
@@ -253,6 +265,14 @@ Remove a member from an organization.
 
 **--username, -u**="": Takes an email.
 
+### rename
+
+Change the name of the organization. Does not change the org key, which is immutable.
+
+**--name, -n**="": New name of the organization
+
+**--org, -o**="": Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
 ## services
 
 Work with available services that can be hooked up to reflect data to WebhookDB.
@@ -320,4 +340,3 @@ Print version and exit.
 ## help, h
 
 Shows a list of commands or help for one command
-%!(EXTRA <nil>)

@@ -1,6 +1,7 @@
 BIN := ./webhookdb
 ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
 BUILDFLAGS = "-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`"
+WEBSITE = ../webhookdb-api/webhookdb-website
 
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -44,11 +45,14 @@ build-wasm:
 
 build-all: build-arm64 build build-wasm
 
-copy-wasm-to-web:
-	cp webhookdb.wasm ../webhookdb-api/webhookdb-website/static/webterm
+copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
+	@cp webhookdb.wasm $(WEBSITE)/static/webterm
+	@go run bin/copy-manual/main.go
 
-docs-write: build
-	@$(BIN) docs build > MANUAL.md
+docs-write: build ## Write a new copy of MANUAL.md.
+	@$(BIN) docs build | grep -v '^%!(' > MANUAL.md
+
+build-and-copy-to-web: docs-write build-wasm copy-to-web
 
 update-lithic-deps:
 	go get github.com/rgalanakis/golangal@latest
