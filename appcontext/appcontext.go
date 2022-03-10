@@ -11,6 +11,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/whfs"
 	"github.com/sirupsen/logrus"
 	"os"
+	"runtime"
 )
 
 type AppContext struct {
@@ -87,12 +88,19 @@ func FromContext(c context.Context) AppContext {
 }
 
 func newResty(cfg config.Config) *resty.Client {
+
 	r := resty.New().
 		SetHostURL(cfg.ApiHost).
-		SetHeader(
-			"User-Agent",
-			fmt.Sprintf("WebhookdbCLI/%s built %s", config.BuildSha, config.BuildTime),
-		)
+		SetHeader("User-Agent", userAgent).
+		SetHeader("Whdb-User-Agent", userAgent).
+		SetHeader("Whdb-Short-Session", shortSession)
 	r.Debug = cfg.Debug
 	return r
+}
+
+var userAgent string
+
+func init() {
+	userAgent = fmt.Sprintf("WebhookDB/v1 webhookdb-cli/%s (%s; %s) Built/%s https://webhookdb.com",
+		config.BuildSha[:8], runtime.GOOS, runtime.GOARCH, config.BuildTime)
 }
