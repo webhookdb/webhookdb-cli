@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/types"
 	"io"
 	"strconv"
@@ -41,6 +42,7 @@ func SubscriptionInfo(c context.Context, auth Auth, input SubscriptionInfoInput)
 
 type SubscriptionEditInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"identifier"`
+	Plan          string              `json:"plan"`
 }
 
 type SubscriptionEditOutput struct {
@@ -50,4 +52,21 @@ type SubscriptionEditOutput struct {
 func SubscriptionEdit(c context.Context, auth Auth, input SubscriptionEditInput) (out SubscriptionEditOutput, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/subscriptions/open_portal", input.OrgIdentifier)
 	return
+}
+
+type SubscriptionPlansInput struct {
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	Format        formatting.Format   `json:"-"`
+}
+
+type SubscriptionPlansOutput struct {
+	Parsed interface{}
+}
+
+func SubscriptionPlans(c context.Context, auth Auth, input SubscriptionPlansInput) (SubscriptionPlansOutput, error) {
+	out := SubscriptionPlansOutput{
+		Parsed: input.Format.ApiResponsePtr(),
+	}
+	err := makeRequest(c, GET, auth, nil, out.Parsed, "/v1/organizations/%v/subscriptions/plans?fmt=%s", input.OrgIdentifier, input.Format.ApiRequestValue)
+	return out, err
 }

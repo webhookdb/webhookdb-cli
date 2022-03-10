@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/whbrowser"
 	"github.com/urfave/cli/v2"
 )
@@ -29,9 +30,21 @@ var subscriptionsCmd = &cli.Command{
 		{
 			Name:  "edit",
 			Usage: "Open stripe portal to edit subscription.",
-			Flags: []cli.Flag{orgFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				&cli.StringFlag{
+					Name:     "plan",
+					Aliases:  s1("p"),
+					Required: false,
+					Usage:    "Plan name, like 'yearly', 'monthly', etc. Use `webhookdb subscription plans` to see available plans.",
+				},
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.SubscriptionEdit(ctx, ac.Auth, client.SubscriptionEditInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
+				input := client.SubscriptionEditInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Plan:          c.String("plan"),
+				}
+				out, err := client.SubscriptionEdit(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -41,6 +54,25 @@ var subscriptionsCmd = &cli.Command{
 				fmt.Fprintln(c.App.Writer, "You have been redirected to the Stripe Billing Portal:")
 				fmt.Fprintln(c.App.Writer, out.SessionUrl)
 				return nil
+			}),
+		},
+		{
+			Name:  "plans",
+			Usage: "Print information about the WebhookDB pricing plans.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				formatFlag(formatting.Table),
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.SubscriptionPlansInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Format:        getFormatFlag(c),
+				}
+				out, err := client.SubscriptionPlans(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				return input.Format.WriteApiResponseTo(out.Parsed, c.App.Writer)
 			}),
 		},
 	},
