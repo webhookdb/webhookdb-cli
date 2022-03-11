@@ -5,6 +5,14 @@ import (
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
+type OrgCloseInput struct {
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+}
+
+func OrgClose(c context.Context, auth Auth, input OrgCloseInput) (Step, error) {
+	return makeStepRequestWithResponse(c, auth, input, "/v1/organizations/%v/close", input.OrgIdentifier)
+}
+
 type OrgCreateInput struct {
 	OrgName string `json:"name"`
 }
@@ -98,7 +106,7 @@ type OrgRemoveOutput struct {
 }
 
 func OrgRemove(c context.Context, auth Auth, input OrgRemoveInput) (out OrgRemoveOutput, err error) {
-	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/remove", input.OrgIdentifier)
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/remove_member", input.OrgIdentifier)
 	return
 }
 

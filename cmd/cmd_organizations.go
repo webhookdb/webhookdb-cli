@@ -64,6 +64,15 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "close",
+			Usage: "Close down this organization.",
+			Flags: []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.OrgCloseInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)}
+				return stateMachineResponseRunner(ctx, ac.Auth)(client.OrgClose(ctx, ac.Auth, input))
+			}),
+		},
+		{
 			Name:  "create",
 			Usage: "Create and activate an organization.",
 			Flags: []cli.Flag{
