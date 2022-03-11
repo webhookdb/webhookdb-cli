@@ -75,18 +75,6 @@ func OrgJoin(c context.Context, auth Auth, input OrgJoinInput) (out OrgJoinOutpu
 	return
 }
 
-type OrgListInput struct {
-}
-
-type OrgListOutput struct {
-	Items []types.Organization `json:"items"`
-}
-
-func OrgList(c context.Context, auth Auth, input OrgListInput) (out OrgListOutput, err error) {
-	err = makeRequest(c, GET, auth, input, &out, "/v1/organizations/")
-	return
-}
-
 type OrgMembersInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
