@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
@@ -37,9 +38,11 @@ type DbSqlInput struct {
 }
 
 type DbSqlOutput struct {
-	Rows           [][]interface{} `json:"rows"`
-	Columns        []string        `json:"columns"`
-	MaxRowsReached bool            `json:"max_rows_reached"`
+	// Use RawMessage to avoid deserializing the JSON right away.
+	// This allows us to render maps and certain other types verbatim.
+	Rows           [][]json.RawMessage `json:"rows"`
+	Columns        []string            `json:"columns"`
+	MaxRowsReached bool                `json:"max_rows_reached"`
 }
 
 func DbSql(c context.Context, auth Auth, input DbSqlInput) (out DbSqlOutput, err error) {
