@@ -38,6 +38,11 @@ type MessageResponse struct {
 	Message string `json:"message"`
 }
 
+type HasOrgResponse struct {
+	MessageResponse
+	Organization Organization `json:"organization"`
+}
+
 type KeyAndName struct{ Key, Name string }
 
 type DisplayHeaders []KeyAndName
