@@ -26,18 +26,30 @@ type Format struct {
 	WriteSingle func(io.Writer, types.SingleResponse) error
 }
 
+var Raw = Format{
+	FlagValue: "raw",
+	WriteCollection: func(w io.Writer, r types.CollectionResponse) error {
+		return writeJson(w, r)
+	},
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		return writeJson(w, r)
+	},
+}
+
 var JSON = Format{
 	FlagValue: "json",
 	WriteCollection: func(w io.Writer, r types.CollectionResponse) error {
-		enc := json.NewEncoder(w)
-		enc.SetIndent("", "  ")
-		return enc.Encode(r.Items())
+		return writeJson(w, r.Items())
 	},
 	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
-		enc := json.NewEncoder(w)
-		enc.SetIndent("", "  ")
-		return enc.Encode(r.Fields())
+		return writeJson(w, r.Fields())
 	},
+}
+
+func writeJson(w io.Writer, o interface{}) error {
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	return enc.Encode(o)
 }
 
 var CSV = Format{
@@ -69,34 +81,38 @@ func writeCsv(w io.Writer, headers types.DisplayHeaders, items []map[string]inte
 var Table = Format{
 	FlagValue: "table",
 	WriteCollection: func(w io.Writer, cr types.CollectionResponse) error {
-		return writeTable(w, cr.DisplayHeaders(), cr.Items())
+		items := cr.Items()
+		headers := cr.DisplayHeaders()
+		if len(items) == 0 {
+			return nil
+		}
+		table := NewAutoSizingTableWriter(tablewriter.NewWriter(w))
+		ConfigureTableWriter(table.Table)
+		table.SetHeader(headers.Names())
+		row := make([]string, len(headers))
+		for _, item := range items {
+			FillRowFromHeaders(headers, item, row)
+			table.Append(row)
+		}
+		table.Render()
+		return nil
 	},
 	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
 		fields := r.Fields()
-		if len(fields) > 0 {
+		if len(fields) == 0 {
 			return nil
 		}
-		return writeTable(w, r.DisplayHeaders(), []map[string]interface{}{fields})
+		table := NewAutoSizingTableWriter(tablewriter.NewWriter(w))
+		ConfigureTableWriter(table.Table)
+		for _, h := range r.DisplayHeaders() {
+			table.Append([]string{h.Name, ToString(fields[h.Key])})
+		}
+		table.Render()
+		return nil
 	},
 }
 
-func writeTable(w io.Writer, headers types.DisplayHeaders, items []map[string]interface{}) error {
-	if len(items) == 0 {
-		return nil
-	}
-	table := tablewriter.NewWriter(w)
-	table.SetHeader(headers.Names())
-	ConfigureTableWriter(table)
-	row := make([]string, len(headers))
-	for _, item := range items {
-		FillRowFromHeaders(headers, item, row)
-		table.Append(row)
-	}
-	table.Render()
-	return nil
-}
-
-var Formats = []Format{JSON, CSV, Table}
+var Formats = []Format{JSON, CSV, Table, Raw}
 
 type TabularData struct {
 	Headers []string   `json:"headers"`
@@ -132,11 +148,13 @@ func FormatFlagValues() []string {
 }
 
 func ConfigureTableWriter(table *tablewriter.Table) {
-	table.SetBorder(false)
-	table.SetRowSeparator("")
-	table.SetColumnSeparator("")
-	table.SetCenterSeparator("")
-	table.SetHeaderLine(false)
+	//table.SetBorder(false)
+	//table.SetRowSeparator("")
+	//table.SetColumnSeparator("")
+	//table.SetCenterSeparator("")
+	//table.SetHeaderLine(false)
+	//table.SetReflowDuringAutoWrap(false)
+	table.SetAutoWrapText(false)
 }
 
 func ToString(i interface{}) string {

@@ -18,14 +18,17 @@ var authCmd = &cli.Command{
 		{
 			Name:  "whoami",
 			Usage: "Print information about the current user.",
+			Flags: []cli.Flag{
+				formatFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.AuthGetMe(ctx, ac.Auth)
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message, false)
 				wasmUpdateAuthDisplay(ac.Prefs)
-				return nil
+				printlnif(c, out.Message(), true)
+				return getFormatFlag(c).WriteSingle(c.App.Writer, out)
 			}),
 		},
 		{
