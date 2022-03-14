@@ -16,14 +16,17 @@ var subscriptionsCmd = &cli.Command{
 		{
 			Name:  "info",
 			Usage: "Get information about an organization's software subscription.",
-			Flags: []cli.Flag{orgFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				formatFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.SubscriptionInfo(ctx, ac.Auth, client.SubscriptionInfoInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message, false)
-				return nil
+				printlnif(c, out.Message(), true)
+				return getFormatFlag(c).WriteSingle(c.App.Writer, out)
 			}),
 		},
 		{
@@ -50,8 +53,7 @@ var subscriptionsCmd = &cli.Command{
 				if err := whbrowser.OpenURL(out.SessionUrl); err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, "You have been redirected to the Stripe Billing Portal:")
-				fmt.Fprintln(c.App.Writer, out.SessionUrl)
+				fmt.Fprintln(c.App.Writer, "Your browser was opened redirected to the Stripe Billing Portal:", out.SessionUrl)
 				return nil
 			}),
 		},

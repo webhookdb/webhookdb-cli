@@ -5,15 +5,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
-type AuthCurrentCustomerOutput struct {
-	Message             string                         `json:"message"`
-	Email               string                         `json:"email"`
-	Name                string                         `json:"name"`
-	DefaultOrganization types.Organization             `json:"default_organization"`
-	Memberships         []OrganizationMembershipEntity `json:"memberships"`
-}
-
-func AuthGetMe(c context.Context, auth Auth) (out AuthCurrentCustomerOutput, err error) {
+func AuthGetMe(c context.Context, auth Auth) (out types.SingleResponse, err error) {
 	err = makeRequest(c, GET, auth, nil, &out, "/v1/me")
 	return
 }
