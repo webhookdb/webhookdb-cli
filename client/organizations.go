@@ -19,7 +19,7 @@ type OrgCreateInput struct {
 
 type OrgCreateOutput struct {
 	types.Organization
-	Message string `json:"message"`
+	types.MessageResponse
 }
 
 func OrgCreate(c context.Context, auth Auth, input OrgCreateInput) (out OrgCreateOutput, err error) {
@@ -33,11 +33,7 @@ type OrgChangeRolesInput struct {
 	RoleName      string              `json:"role_name"`
 }
 
-type OrgChangeRolesOutput struct {
-	Message string `json:"message"`
-}
-
-func OrgChangeRoles(c context.Context, auth Auth, input OrgChangeRolesInput) (out OrgChangeRolesOutput, err error) {
+func OrgChangeRoles(c context.Context, auth Auth, input OrgChangeRolesInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/change_roles", input.OrgIdentifier)
 	return
 }
@@ -47,8 +43,8 @@ type OrgGetInput struct {
 }
 
 type OrgGetOutput struct {
-	Org     types.Organization `json:"organization"`
-	Message string             `json:"message"`
+	types.Organization
+	types.MessageResponse
 }
 
 func OrgGet(c context.Context, auth Auth, input OrgGetInput) (out OrgGetOutput, err error) {
@@ -61,11 +57,7 @@ type OrgInviteInput struct {
 	Email         string              `json:"email"`
 }
 
-type OrgInviteOutput struct {
-	Message string `json:"message"`
-}
-
-func OrgInvite(c context.Context, auth Auth, input OrgInviteInput) (out OrgInviteOutput, err error) {
+func OrgInvite(c context.Context, auth Auth, input OrgInviteInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/invite", input.OrgIdentifier)
 	return
 }
@@ -74,11 +66,7 @@ type OrgJoinInput struct {
 	InvitationCode string `json:"invitation_code"`
 }
 
-type OrgJoinOutput struct {
-	Message string `json:"message"`
-}
-
-func OrgJoin(c context.Context, auth Auth, input OrgJoinInput) (out OrgJoinOutput, err error) {
+func OrgJoin(c context.Context, auth Auth, input OrgJoinInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/join")
 	return
 }
@@ -87,11 +75,7 @@ type OrgMembersInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-type OrgMembersOutput struct {
-	Data []OrganizationMembershipEntity `json:"items"`
-}
-
-func OrgMembers(c context.Context, auth Auth, input OrgMembersInput) (out OrgMembersOutput, err error) {
+func OrgMembers(c context.Context, auth Auth, input OrgMembersInput) (out types.CollectionResponse, err error) {
 	err = makeRequest(c, GET, auth, input, &out, "/v1/organizations/%v/members", input.OrgIdentifier)
 	return
 }
@@ -115,11 +99,7 @@ type OrgRenameInput struct {
 	Name          string              `json:"name"`
 }
 
-type OrgRenameOutput struct {
-	Message string `json:"message"`
-}
-
-func OrgRename(c context.Context, auth Auth, input OrgRenameInput) (out OrgRenameOutput, err error) {
+func OrgRename(c context.Context, auth Auth, input OrgRenameInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/rename", input.OrgIdentifier)
 	return
 }

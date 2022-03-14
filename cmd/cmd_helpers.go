@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/go-aperitif/logctx"
 	"github.com/lithictech/webhookdb-cli/appcontext"
@@ -86,5 +87,21 @@ func stateMachineResponseRunner(ctx context.Context, auth client.Auth) func(clie
 	return func(st client.Step, e error) error {
 		_, err := client.StateMachineResponseRunner(ctx, auth)(st, e)
 		return err
+	}
+}
+
+// Print msg if not quiet mode, and it's not empty.
+// If linebr, print a newline after the message.
+// Usually 'true' when printing a collection after the message.
+func printlnif(c *cli.Context, msg string, linebr bool) {
+	if c.Bool("quiet") {
+		return
+	}
+	if len(msg) == 0 {
+		return
+	}
+	fmt.Fprintln(c.App.Writer, msg)
+	if linebr {
+		fmt.Fprintln(c.App.Writer)
 	}
 }

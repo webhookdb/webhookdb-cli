@@ -22,7 +22,7 @@ func (b Block) LineValue() (s string) {
 	return
 }
 
-func (b Block) TableValue() (t TabularResponse) {
+func (b Block) TableValue() (t TabularData) {
 	convext.MustUnmarshal(b.RawValue, &t)
 	return
 }
@@ -34,7 +34,7 @@ func (bs Blocks) WriteTo(w io.Writer) (int64, error) {
 		if b.Type == BlockLine {
 			fmt.Fprintln(w, b.LineValue())
 		} else if b.Type == BlockTable {
-			if err := tableWriteTabular(b.TableValue(), w); err != nil {
+			if err := b.TableValue().Write(w); err != nil {
 				return 0, err
 			}
 		}

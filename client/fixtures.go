@@ -7,6 +7,7 @@ type GetFixturesInput struct {
 }
 
 type GetFixturesOutput struct {
+	Message   string `json:"message"`
 	SchemaSql string `json:"schema_sql"`
 }
 

@@ -39,7 +39,8 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, strings.Join(out.TableNames, "\n"))
+				printlnif(c, out.Message, true)
+				printlnif(c, strings.Join(out.TableNames, "\n"), false)
 				return nil
 			}),
 		},
@@ -63,10 +64,10 @@ var dbCmd = &cli.Command{
 				}
 				table := tablewriter.NewWriter(c.App.Writer)
 
-				table.SetHeader(out.Columns)
+				table.SetHeader(out.Headers)
 				if useColors {
-					headerCols := make([]tablewriter.Colors, len(out.Columns))
-					for i := range out.Columns {
+					headerCols := make([]tablewriter.Colors, len(out.Headers))
+					for i := range out.Headers {
 						headerCols[i] = tablewriter.Colors{tablewriter.FgHiGreenColor}
 					}
 					table.SetHeaderColor(headerCols...)
@@ -129,7 +130,7 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprint(c.App.Writer, out.ConnectionUrl)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},

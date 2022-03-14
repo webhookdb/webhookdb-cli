@@ -24,6 +24,11 @@ The CLI also gives you quick access to the WebhookDB documentation:
 `,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "debug", Value: false},
+			&cli.BoolFlag{
+				Name:    "quiet",
+				Aliases: s1("q"),
+				Value:   false,
+				Usage:   "Do not print messages. Mostly used for collection endpoints, where you just want the returned data, not the help message."},
 		},
 		Commands: []*cli.Command{
 			authCmd,

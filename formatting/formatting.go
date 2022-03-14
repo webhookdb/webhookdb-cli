@@ -3,79 +3,127 @@ package formatting
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
+	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/olekukonko/tablewriter"
 	"io"
 )
 
+func FillRowFromHeaders(headers types.DisplayHeaders, item map[string]interface{}, row []string) {
+	for i, h := range headers {
+		row[i] = ToString(item[h.Key])
+	}
+}
+
 type Format struct {
-	FlagValue          string
-	ApiRequestValue    string
-	ApiResponsePtr     func() interface{}
-	WriteApiResponseTo func(o interface{}, w io.Writer) error
-	WriteTabular       func(t TabularResponse, w io.Writer) error
+	// The string value of this format to use in a CLI flag, like 'csv' or 'json'.
+	FlagValue string
+	// Write the API collection response with "display_headers" and "items" to w.
+	WriteCollection func(io.Writer, types.CollectionResponse) error
+	// Write the API response with "display_headers" to w.
+	// Should not have 'items', instead uses display_headers to pluck
+	// fields from the response.
+	WriteSingle func(io.Writer, types.SingleResponse) error
+}
+
+var Raw = Format{
+	FlagValue: "raw",
+	WriteCollection: func(w io.Writer, r types.CollectionResponse) error {
+		return writeJson(w, r)
+	},
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		return writeJson(w, r)
+	},
 }
 
 var JSON = Format{
-	FlagValue:       "json",
-	ApiRequestValue: "object",
-	ApiResponsePtr: func() interface{} {
-		return &ObjectResponse{}
+	FlagValue: "json",
+	WriteCollection: func(w io.Writer, r types.CollectionResponse) error {
+		return writeJson(w, r.Items())
 	},
-	WriteApiResponseTo: func(o interface{}, w io.Writer) error {
-		return jsonWriteObj(o, w)
-	},
-	WriteTabular: func(t TabularResponse, w io.Writer) error {
-		m := make([]map[string]interface{}, len(t.Rows))
-		for rowIdx, row := range t.Rows {
-			rowObj := make(map[string]interface{}, len(t.Headers))
-			for headerIdx, header := range t.Headers {
-				rowObj[header] = row[headerIdx]
-			}
-			m[rowIdx] = rowObj
-		}
-		return jsonWriteObj(m, w)
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		return writeJson(w, r.Fields())
 	},
 }
 
-func jsonWriteObj(o interface{}, w io.Writer) error {
-	return json.NewEncoder(w).Encode(o)
+func writeJson(w io.Writer, o interface{}) error {
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	return enc.Encode(o)
 }
 
 var CSV = Format{
-	FlagValue:       "csv",
-	ApiRequestValue: "table",
-	ApiResponsePtr: func() interface{} {
-		return &TabularResponse{}
+	FlagValue: "csv",
+	WriteCollection: func(w io.Writer, r types.CollectionResponse) error {
+		return writeCsv(w, r.DisplayHeaders(), r.Items())
 	},
-	WriteApiResponseTo: func(o interface{}, w io.Writer) error {
-		t := o.(*TabularResponse)
-		return csvWriteTabular(*t, w)
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		return writeCsv(w, r.DisplayHeaders(), []map[string]interface{}{r.Fields()})
 	},
-	WriteTabular: csvWriteTabular,
 }
 
-func csvWriteTabular(t TabularResponse, w io.Writer) error {
+func writeCsv(w io.Writer, headers types.DisplayHeaders, items []map[string]interface{}) error {
 	cw := csv.NewWriter(w)
-	if err := cw.Write(t.Headers); err != nil {
+	if err := cw.Write(headers.Names()); err != nil {
 		return err
 	}
-	return cw.WriteAll(t.Rows)
+	row := make([]string, len(headers))
+	for _, item := range items {
+		FillRowFromHeaders(headers, item, row)
+		if err := cw.Write(row); err != nil {
+			return err
+		}
+	}
+	cw.Flush()
+	return cw.Error()
 }
 
 var Table = Format{
-	FlagValue:       "table",
-	ApiRequestValue: "table",
-	ApiResponsePtr: func() interface{} {
-		return &TabularResponse{}
+	FlagValue: "table",
+	WriteCollection: func(w io.Writer, cr types.CollectionResponse) error {
+		items := cr.Items()
+		headers := cr.DisplayHeaders()
+		if len(items) == 0 {
+			return nil
+		}
+		table := tablewriter.NewWriter(w)
+		ConfigureTableWriter(table)
+		table.SetHeader(headers.Names())
+		row := make([]string, len(headers))
+		for _, item := range items {
+			FillRowFromHeaders(headers, item, row)
+			table.Append(row)
+		}
+		table.Render()
+		return nil
 	},
-	WriteApiResponseTo: func(o interface{}, w io.Writer) error {
-		t := o.(*TabularResponse)
-		return tableWriteTabular(*t, w)
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		fields := r.Fields()
+		foundFields := 0
+		table := tablewriter.NewWriter(w)
+		ConfigureTableWriter(table)
+		for _, h := range r.DisplayHeaders() {
+			val, ok := fields[h.Key]
+			if ok {
+				table.Append([]string{h.Name, ToString(val)})
+				foundFields++
+			}
+		}
+		if foundFields > 0 {
+			table.Render()
+		}
+		return nil
 	},
-	WriteTabular: tableWriteTabular,
 }
 
-func tableWriteTabular(t TabularResponse, w io.Writer) error {
+var Formats = []Format{JSON, CSV, Table, Raw}
+
+type TabularData struct {
+	Headers []string   `json:"headers"`
+	Rows    [][]string `json:"rows"`
+}
+
+func (t TabularData) Write(w io.Writer) error {
 	table := tablewriter.NewWriter(w)
 	table.SetHeader(t.Headers)
 	ConfigureTableWriter(table)
@@ -85,15 +133,6 @@ func tableWriteTabular(t TabularResponse, w io.Writer) error {
 	table.Render()
 	return nil
 }
-
-type TabularResponse struct {
-	Headers []string   `json:"headers"`
-	Rows    [][]string `json:"rows"`
-}
-
-type ObjectResponse map[string]interface{}
-
-var Formats = []Format{JSON, CSV, Table}
 
 func LookupByFlag(v string) (Format, bool) {
 	for _, f := range Formats {
@@ -118,4 +157,15 @@ func ConfigureTableWriter(table *tablewriter.Table) {
 	table.SetColumnSeparator("")
 	table.SetCenterSeparator("")
 	table.SetHeaderLine(false)
+	table.SetAutoWrapText(false)
+}
+
+func ToString(i interface{}) string {
+	if str, ok := i.(fmt.Stringer); ok {
+		return str.String()
+	}
+	if str, ok := i.(string); ok {
+		return str
+	}
+	return fmt.Sprintf("%v", i)
 }

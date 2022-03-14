@@ -24,6 +24,7 @@ type DbTablesInput struct {
 }
 
 type DbTablesOutput struct {
+	Message    string   `json:"message"`
 	TableNames []string `json:"tables"`
 }
 
@@ -41,7 +42,7 @@ type DbSqlOutput struct {
 	// Use RawMessage to avoid deserializing the JSON right away.
 	// This allows us to render maps and certain other types verbatim.
 	Rows           [][]json.RawMessage `json:"rows"`
-	Columns        []string            `json:"columns"`
+	Headers        []string            `json:"headers"`
 	MaxRowsReached bool                `json:"max_rows_reached"`
 }
 
@@ -55,7 +56,7 @@ type DbRollCredentialsInput struct {
 }
 
 type DbRollCredentialsOutput struct {
-	ConnectionUrl string `json:"connection_url"`
+	Message string `json:"message"`
 }
 
 func DbRollCredentials(c context.Context, auth Auth, input DbRollCredentialsInput) (out DbRollCredentialsOutput, err error) {

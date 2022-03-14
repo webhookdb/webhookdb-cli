@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/urfave/cli/v2"
@@ -20,7 +19,8 @@ var fixturesCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Fprintln(c.App.Writer, out.SchemaSql)
+		printlnif(c, out.Message, true)
+		printlnif(c, out.SchemaSql, false)
 		return nil
 	}),
 }

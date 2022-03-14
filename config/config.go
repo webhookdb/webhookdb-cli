@@ -29,6 +29,7 @@ type Config struct {
 	// so multiple api hosts can use the same prefs,
 	// like if they are backed by the same DB.
 	PrefsNamespace string
+	SentryDsn      string
 	WebsiteHost    string
 }
 
@@ -41,6 +42,7 @@ func LoadConfig(filenames ...string) Config {
 		LogFormat:      os.Getenv("WEBHOOKDB_LOG_FORMAT"),
 		LogLevel:       MustEnvStr("WEBHOOKDB_LOG_LEVEL"),
 		PrefsNamespace: os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
+		SentryDsn:      os.Getenv("WEBHOOKDB_SENTRY_DSN"),
 		WebsiteHost:    MustEnvStr("WEBHOOKDB_WEBSITE_HOST"),
 	}
 	if cfg.PrefsNamespace == "" {
