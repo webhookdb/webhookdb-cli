@@ -7,7 +7,6 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
-	"strings"
 )
 
 var organizationsCmd = &cli.Command{
@@ -25,11 +24,11 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				ac.Prefs = ac.Prefs.ChangeOrg(out.Org)
+				ac.Prefs = ac.Prefs.ChangeOrg(out.Organization)
 				if err := ac.SavePrefs(); err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, fmt.Sprintf("%s is now your active organization. ", out.Org.DisplayString()))
+				fmt.Fprintln(c.App.Writer, fmt.Sprintf("%s is now your active organization. ", out.Organization.DisplayString()))
 				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
@@ -59,7 +58,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, out.Message)
+				printlnif(c, out.Message)
 				return nil
 			}),
 		},
@@ -86,7 +85,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, out.Message)
+				printlnif(c, out.Message)
 				ac.Prefs.CurrentOrg = out.Organization
 				if err := ac.SavePrefs(); err != nil {
 					return err
@@ -107,7 +106,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, out.Message)
+				printlnif(c, out.Message)
 				return nil
 			}),
 		},
@@ -125,7 +124,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, out.Message)
+				printlnif(c, out.Message)
 				return nil
 			}),
 		},
@@ -157,23 +156,17 @@ var organizationsCmd = &cli.Command{
 		{
 			Name:  "members",
 			Usage: "List all members of the given organization.",
-			Flags: []cli.Flag{orgFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				formatFlag(),
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.OrgMembers(ctx, ac.Auth, client.OrgMembersInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
-				orgsLen := len(out.Data)
-				members := make([]string, orgsLen)
-				for i, value := range out.Data {
-					if value.Status != "" {
-						members[i] = value.CustomerEmail + " (" + value.Status + ")"
-					} else {
-						members[i] = value.CustomerEmail
-					}
-				}
-				fmt.Fprintln(c.App.Writer, strings.Join(members, "\n"))
-				return nil
+				printlnif(c, out.Message())
+				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
 			}),
 		},
 		{
@@ -189,7 +182,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, out.Message)
+				printlnif(c, out.Message)
 				return nil
 			}),
 		},
@@ -213,7 +206,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, out.Message)
+				printlnif(c, out.Message)
 				return nil
 			}),
 		},

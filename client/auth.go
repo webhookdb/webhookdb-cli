@@ -2,9 +2,7 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"github.com/lithictech/webhookdb-cli/types"
-	"io"
 )
 
 type AuthCurrentCustomerOutput struct {
@@ -13,20 +11,6 @@ type AuthCurrentCustomerOutput struct {
 	Name                string                         `json:"name"`
 	DefaultOrganization types.Organization             `json:"default_organization"`
 	Memberships         []OrganizationMembershipEntity `json:"memberships"`
-}
-
-func (o AuthCurrentCustomerOutput) PrintTo(w io.Writer) {
-	fmt.Fprintln(w, "Name: "+o.Name)
-	fmt.Fprintln(w, "Email: "+o.Email)
-	fmt.Fprintln(w, "Default Org: "+o.DefaultOrganization.DisplayString())
-	if len(o.Memberships) == 0 {
-		fmt.Fprintln(w, "Memberships: <none>")
-	} else {
-		fmt.Fprintln(w, "Memberships:")
-		for _, m := range o.Memberships {
-			fmt.Fprintf(w, "  %s: %s\n", m.Organization.DisplayString(), m.Status)
-		}
-	}
 }
 
 func AuthGetMe(c context.Context, auth Auth) (out AuthCurrentCustomerOutput, err error) {

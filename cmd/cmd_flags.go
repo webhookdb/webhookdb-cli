@@ -59,11 +59,11 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
-func formatFlag(defaultFmt formatting.Format) cli.Flag {
+func formatFlag() cli.Flag {
 	return &cli.StringFlag{
 		Name:    "format",
 		Aliases: s1("f"),
-		Value:   defaultFmt.FlagValue,
+		Value:   formatting.Table.FlagValue,
 		Usage:   "Format of the output. One of: " + strings.Join(formatting.FormatFlagValues(), ", "),
 	}
 }

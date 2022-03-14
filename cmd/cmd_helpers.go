@@ -7,6 +7,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -87,4 +88,8 @@ func stateMachineResponseRunner(ctx context.Context, auth client.Auth) func(clie
 		_, err := client.StateMachineResponseRunner(ctx, auth)(st, e)
 		return err
 	}
+}
+
+func printlnif(c *cli.Context, msg string) {
+	formatting.FprintlnNonempty(c.App.Writer, msg)
 }

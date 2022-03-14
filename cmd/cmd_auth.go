@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/prefs"
@@ -20,11 +19,11 @@ var authCmd = &cli.Command{
 			Name:  "whoami",
 			Usage: "Print information about the current user.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				output, err := client.AuthGetMe(ctx, ac.Auth)
+				out, err := client.AuthGetMe(ctx, ac.Auth)
 				if err != nil {
 					return err
 				}
-				output.PrintTo(c.App.Writer)
+				printlnif(c, out.Message)
 				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
@@ -76,7 +75,7 @@ var authCmd = &cli.Command{
 				&cli.BoolFlag{Name: "remove", Aliases: s1("r"), Usage: "If given, remove all WebhookDB preferences."},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				output, err := client.AuthLogout(ctx, ac.Auth)
+				out, err := client.AuthLogout(ctx, ac.Auth)
 				if err != nil {
 					return err
 				}
@@ -90,7 +89,7 @@ var authCmd = &cli.Command{
 						return err
 					}
 				}
-				fmt.Fprintln(c.App.Writer, output.Message)
+				printlnif(c, out.Message)
 				wasmUpdateAuthDisplay(prefs.Prefs{})
 				return nil
 			}),

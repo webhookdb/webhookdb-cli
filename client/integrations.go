@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
@@ -36,11 +35,7 @@ type IntegrationsListInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-type IntegrationsListOutput struct {
-	Data []ServiceIntegrationEntity `json:"items"`
-}
-
-func IntegrationsList(c context.Context, auth Auth, input IntegrationsListInput) (out IntegrationsListOutput, err error) {
+func IntegrationsList(c context.Context, auth Auth, input IntegrationsListInput) (out types.CollectionResponse, err error) {
 	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations", input.OrgIdentifier)
 	return
 }
@@ -57,17 +52,9 @@ func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInpu
 type IntegrationsStatsInput struct {
 	OpaqueId      string              `json:"-"`
 	OrgIdentifier types.OrgIdentifier `json:"-"`
-	Format        formatting.Format   `json:"-"`
 }
 
-type IntegrationsStatsOutput struct {
-	Parsed interface{}
-}
-
-func IntegrationsStats(c context.Context, auth Auth, input IntegrationsStatsInput) (IntegrationsStatsOutput, error) {
-	out := IntegrationsStatsOutput{
-		Parsed: input.Format.ApiResponsePtr(),
-	}
-	err := makeRequest(c, GET, auth, nil, out.Parsed, "/v1/organizations/%v/service_integrations/%v/stats?fmt=%s", input.OrgIdentifier, input.OpaqueId, input.Format.ApiRequestValue)
-	return out, err
+func IntegrationsStats(c context.Context, auth Auth, input IntegrationsStatsInput) (out types.CollectionResponse, err error) {
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/stats", input.OrgIdentifier, input.OpaqueId)
+	return
 }

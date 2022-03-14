@@ -33,3 +33,40 @@ func (o Organization) DisplayString() string {
 	}
 	return fmt.Sprintf("%s (%s)", o.Name, o.Key)
 }
+
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+
+type KeyAndName struct{ Key, Name string }
+
+type CollectionResponse map[string]interface{}
+
+func (cr CollectionResponse) Message() string {
+	msg := cr["message"]
+	strmsg, ok := msg.(string)
+	if !ok {
+		fmt.Println("Expected string message in:", cr)
+		return ""
+	}
+	return strmsg
+}
+
+func (cr CollectionResponse) Items() []map[string]interface{} {
+	raw := cr["items"].([]interface{})
+	maps := make([]map[string]interface{}, len(raw))
+	for i, o := range raw {
+		maps[i] = o.(map[string]interface{})
+	}
+	return maps
+}
+
+func (cr CollectionResponse) DisplayHeaders() []KeyAndName {
+	raw := cr["display_headers"].([]interface{})
+	result := make([]KeyAndName, len(raw))
+	for i, pair := range raw {
+		sl := pair.([]interface{})
+		result[i] = KeyAndName{Key: sl[0].(string), Name: sl[1].(string)}
+	}
+	return result
+}

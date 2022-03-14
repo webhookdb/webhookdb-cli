@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/whbrowser"
 	"github.com/urfave/cli/v2"
 )
@@ -23,7 +22,7 @@ var subscriptionsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				out.PrintTo(c.App.Writer)
+				printlnif(c, out.Message)
 				return nil
 			}),
 		},
@@ -61,18 +60,18 @@ var subscriptionsCmd = &cli.Command{
 			Usage: "Print information about the WebhookDB pricing plans.",
 			Flags: []cli.Flag{
 				orgFlag(),
-				formatFlag(formatting.Table),
+				formatFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SubscriptionPlansInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					Format:        getFormatFlag(c),
 				}
 				out, err := client.SubscriptionPlans(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				return input.Format.WriteApiResponseTo(out.Parsed, c.App.Writer)
+				printlnif(c, out.Message())
+				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
 			}),
 		},
 	},
