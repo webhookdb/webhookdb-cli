@@ -148,10 +148,3 @@ func ToString(i interface{}) string {
 	}
 	return fmt.Sprintf("%v", i)
 }
-
-func FprintlnNonempty(w io.Writer, a ...interface{}) {
-	if len(a) == 0 || (len(a) == 1 && a[0] == "") {
-		return
-	}
-	fmt.Fprintln(w, a...)
-}

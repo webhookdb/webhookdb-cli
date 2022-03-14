@@ -39,8 +39,8 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
-				printlnif(c, strings.Join(out.TableNames, "\n"))
+				printlnif(c, out.Message, true)
+				printlnif(c, strings.Join(out.TableNames, "\n"), false)
 				return nil
 			}),
 		},
@@ -130,7 +130,7 @@ var dbCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},

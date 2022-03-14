@@ -17,6 +17,15 @@ func WebhookCreate(c context.Context, auth Auth, input WebhookCreateInput) (out 
 	return
 }
 
+type WebhookListInput struct {
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+}
+
+func WebhookList(c context.Context, auth Auth, input WebhookListInput) (out types.CollectionResponse, err error) {
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/webhook_subscriptions", input.OrgIdentifier)
+	return
+}
+
 type WebhookOpaqueIdInput struct {
 	// this is the opaque id of the *webhook subscription*
 	OpaqueId string `json:"-"`

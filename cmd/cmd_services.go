@@ -25,7 +25,7 @@ var servicesCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message())
+				printlnif(c, out.Message(), true)
 				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
 			}),
 		},

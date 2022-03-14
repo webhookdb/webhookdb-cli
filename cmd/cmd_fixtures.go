@@ -19,8 +19,8 @@ var fixturesCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		printlnif(c, out.Message)
-		printlnif(c, out.SchemaSql)
+		printlnif(c, out.Message, true)
+		printlnif(c, out.SchemaSql, false)
 		return nil
 	}),
 }

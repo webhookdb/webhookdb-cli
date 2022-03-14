@@ -49,13 +49,13 @@ var integrationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},
 		{
 			Name:  "list",
-			Usage: "list all integrations for the given organization.",
+			Usage: "List all integrations for the given organization.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				formatFlag(),
@@ -68,7 +68,7 @@ var integrationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message())
+				printlnif(c, out.Message(), true)
 				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
 			}),
 		},
@@ -104,7 +104,7 @@ var integrationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message())
+				printlnif(c, out.Message(), true)
 				return getFormatFlag(c).WriteSingle(c.App.Writer, out)
 			}),
 		},

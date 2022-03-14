@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/go-aperitif/logctx"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
-	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/urfave/cli/v2"
 	"os"
 )
@@ -90,9 +90,15 @@ func stateMachineResponseRunner(ctx context.Context, auth client.Auth) func(clie
 	}
 }
 
-func printlnif(c *cli.Context, msg string) {
+func printlnif(c *cli.Context, msg string, linebr bool) {
 	if c.Bool("quiet") {
 		return
 	}
-	formatting.FprintlnNonempty(c.App.Writer, msg)
+	if len(msg) == 0 {
+		return
+	}
+	fmt.Fprintln(c.App.Writer, msg)
+	if linebr {
+		fmt.Fprintln(c.App.Writer)
+	}
 }

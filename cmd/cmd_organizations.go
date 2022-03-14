@@ -58,7 +58,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},
@@ -85,7 +85,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				ac.Prefs.CurrentOrg = out.Organization
 				if err := ac.SavePrefs(); err != nil {
 					return err
@@ -106,7 +106,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},
@@ -124,7 +124,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},
@@ -165,7 +165,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message())
+				printlnif(c, out.Message(), true)
 				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
 			}),
 		},
@@ -182,7 +182,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},
@@ -206,7 +206,7 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},

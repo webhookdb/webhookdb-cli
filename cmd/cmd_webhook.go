@@ -36,13 +36,30 @@ var webhooksCmd = &cli.Command{
 				} else {
 					input.OrgIdentifier = getOrgFlag(c, ac.Prefs)
 				}
-
 				_, err := client.WebhookCreate(ctx, ac.Auth, input)
-
 				if err != nil {
 					return err
 				}
 				return nil
+			}),
+		},
+		{
+			Name:  "list",
+			Usage: "List all created webhooks.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				formatFlag(),
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.WebhookListInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+				}
+				out, err := client.WebhookList(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				printlnif(c, out.Message(), true)
+				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
 			}),
 		},
 		{
@@ -54,7 +71,7 @@ var webhooksCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},
@@ -70,7 +87,7 @@ var webhooksCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				return nil
 			}),
 		},

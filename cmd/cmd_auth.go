@@ -23,7 +23,7 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
@@ -89,7 +89,7 @@ var authCmd = &cli.Command{
 						return err
 					}
 				}
-				printlnif(c, out.Message)
+				printlnif(c, out.Message, false)
 				wasmUpdateAuthDisplay(prefs.Prefs{})
 				return nil
 			}),
