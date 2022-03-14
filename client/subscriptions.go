@@ -9,7 +9,7 @@ type SubscriptionInfoInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-func SubscriptionInfo(c context.Context, auth Auth, input SubscriptionInfoInput) (out types.SingleResponse, err error) {
+func SubscriptionInfo(c context.Context, auth Auth, input SubscriptionInfoInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/subscriptions", input.OrgIdentifier)
 	return
 }

@@ -20,7 +20,6 @@ require (
 	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/sirupsen/logrus v1.8.1
 	github.com/urfave/cli/v2 v2.3.1-0.20220217022915-81cb783759cd
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/term v0.0.0-20210422114643-f5beecf764ed // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
