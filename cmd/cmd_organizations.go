@@ -24,12 +24,9 @@ var organizationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				ac.Prefs = ac.Prefs.ChangeOrg(out.Organization)
-				if err := ac.SavePrefs(); err != nil {
+				if err := activateOrg(c, ac, out.Organization); err != nil {
 					return err
 				}
-				fmt.Fprintln(c.App.Writer, fmt.Sprintf("%s is now your active organization. ", out.Organization.DisplayString()))
-				wasmUpdateAuthDisplay(ac.Prefs)
 				return nil
 			}),
 		},
@@ -86,8 +83,7 @@ var organizationsCmd = &cli.Command{
 					return err
 				}
 				printlnif(c, out.Message, false)
-				ac.Prefs.CurrentOrg = out.Organization
-				if err := ac.SavePrefs(); err != nil {
+				if err := activateOrg(c, ac, out.Organization); err != nil {
 					return err
 				}
 				return nil
@@ -112,7 +108,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:  "join",
-			Usage: "join an organization using a join code.",
+			Usage: "Join an organization using a join code. You can also see your pending invites with `webhookdb org list`.",
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "code", Aliases: s1("c"), Usage: "Invitation code sent to the new member. Has 'join-' prefix."},
 			},
@@ -125,6 +121,9 @@ var organizationsCmd = &cli.Command{
 					return err
 				}
 				printlnif(c, out.Message, false)
+				if err := activateOrg(c, ac, out.Organization); err != nil {
+					return err
+				}
 				return nil
 			}),
 		},
@@ -211,4 +210,14 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 	},
+}
+
+func activateOrg(c *cli.Context, ac appcontext.AppContext, org types.Organization) error {
+	ac.Prefs = ac.Prefs.ChangeOrg(org)
+	if err := ac.SavePrefs(); err != nil {
+		return err
+	}
+	wasmUpdateAuthDisplay(ac.Prefs)
+	fmt.Fprintf(c.App.Writer, "Organization %s is now active.\n", org.DisplayString())
+	return nil
 }

@@ -66,7 +66,7 @@ type OrgJoinInput struct {
 	InvitationCode string `json:"invitation_code"`
 }
 
-func OrgJoin(c context.Context, auth Auth, input OrgJoinInput) (out types.MessageResponse, err error) {
+func OrgJoin(c context.Context, auth Auth, input OrgJoinInput) (out types.HasOrgResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/join")
 	return
 }
