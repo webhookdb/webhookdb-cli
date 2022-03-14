@@ -64,6 +64,15 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "close",
+			Usage: "Close down this organization.",
+			Flags: []cli.Flag{orgFlag()},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.OrgCloseInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)}
+				return stateMachineResponseRunner(ctx, ac.Auth)(client.OrgClose(ctx, ac.Auth, input))
+			}),
+		},
+		{
 			Name:  "create",
 			Usage: "Create and activate an organization.",
 			Flags: []cli.Flag{
@@ -125,21 +134,15 @@ var organizationsCmd = &cli.Command{
 			Usage: "List all organizations that you are a member of.",
 			Flags: []cli.Flag{},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.OrgList(ctx, ac.Auth, client.OrgListInput{})
+				input := client.MeOrgMembershipsInput{
+					ActiveOrgIdentifier: types.OrgIdentifierFromSlug(ac.Prefs.CurrentOrg.Key),
+				}
+				out, err := client.MeOrgMemberships(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
-				orgsLen := len(out.Items)
-				keySlugs := make([]string, orgsLen)
-				for i, value := range out.Items {
-					line := fmt.Sprintf("%s\t%s", value.Name, value.Key)
-					if value.Id == ac.Prefs.CurrentOrg.Id {
-						line += " (active)"
-					}
-					keySlugs[i] = line
-				}
-				fmt.Fprintln(c.App.Writer, strings.Join(keySlugs, "\n"))
-				return nil
+				_, err = out.Blocks.WriteTo(c.App.Writer)
+				return err
 			}),
 		},
 		{
