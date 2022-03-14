@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
+	"reflect"
 	"strings"
 )
 
@@ -74,12 +76,35 @@ var dbCmd = &cli.Command{
 					rowStr := make([]string, len(row))
 					colors := make([]tablewriter.Colors, len(row))
 					for i, cell := range row {
-						if cell == nil {
+						if string(cell) == "null" {
 							rowStr[i] = "<null>"
 							colors[i] = tablewriter.Colors{tablewriter.FgYellowColor}
-						} else {
-							rowStr[i] = fmt.Sprintf("%v", cell)
+						} else if len(cell) == 0 {
+							rowStr[i] = string(cell)
 							colors[i] = tablewriter.Colors{}
+						} else {
+							var deserialized interface{}
+							if err := json.Unmarshal(cell, &deserialized); err != nil {
+								return err
+							}
+							dtype := reflect.TypeOf(deserialized)
+							colors[i] = tablewriter.Colors{}
+							if dtype.Kind() == reflect.Map || dtype.Kind() == reflect.Slice {
+								// Complex types like this should render the raw bytes
+								// and not bother parsing anything.
+								rowStr[i] = string(cell)
+							} else if strgr, ok := deserialized.(fmt.Stringer); ok {
+								// This makes sure the string "hi" renders as 'hi'
+								// and not '"hit"' as it would with %v
+								rowStr[i] = strgr.String()
+							} else {
+								// This is probably a number or something like that,
+								// render the parsed value. NOTE, you may see floats
+								// for integer columns; in this case it's due to the Go side
+								// reading out floats, and putting that into JSON
+								// (that is, instead of '1', you can get '1.00' in the actual json).
+								rowStr[i] = fmt.Sprintf("%v", deserialized)
+							}
 						}
 					}
 					if useColors {
