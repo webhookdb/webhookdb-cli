@@ -91,5 +91,8 @@ func stateMachineResponseRunner(ctx context.Context, auth client.Auth) func(clie
 }
 
 func printlnif(c *cli.Context, msg string) {
+	if c.Bool("quiet") {
+		return
+	}
 	formatting.FprintlnNonempty(c.App.Writer, msg)
 }

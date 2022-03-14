@@ -54,7 +54,7 @@ type IntegrationsStatsInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
-func IntegrationsStats(c context.Context, auth Auth, input IntegrationsStatsInput) (out types.CollectionResponse, err error) {
+func IntegrationsStats(c context.Context, auth Auth, input IntegrationsStatsInput) (out types.SingleResponse, err error) {
 	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/stats", input.OrgIdentifier, input.OpaqueId)
 	return
 }

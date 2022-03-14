@@ -9,16 +9,7 @@ import (
 	"io"
 )
 
-func CollectionResponseHeaders(cr types.CollectionResponse) ([]types.KeyAndName, []string) {
-	hdrs := cr.DisplayHeaders()
-	names := make([]string, len(hdrs))
-	for i, h := range hdrs {
-		names[i] = h.Name
-	}
-	return hdrs, names
-}
-
-func CollectionResponseStringRow(headers []types.KeyAndName, item map[string]interface{}, row []string) {
+func FillRowFromHeaders(headers types.DisplayHeaders, item map[string]interface{}, row []string) {
 	for i, h := range headers {
 		row[i] = ToString(item[h.Key])
 	}
@@ -29,6 +20,10 @@ type Format struct {
 	FlagValue string
 	// Write the API collection response with "display_headers" and "items" to w.
 	WriteCollection func(io.Writer, types.CollectionResponse) error
+	// Write the API response with "display_headers" to w.
+	// Should not have 'items', instead uses display_headers to pluck
+	// fields from the response.
+	WriteSingle func(io.Writer, types.SingleResponse) error
 }
 
 var JSON = Format{
@@ -38,47 +33,67 @@ var JSON = Format{
 		enc.SetIndent("", "  ")
 		return enc.Encode(r.Items())
 	},
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		enc := json.NewEncoder(w)
+		enc.SetIndent("", "  ")
+		return enc.Encode(r.Fields())
+	},
 }
 
 var CSV = Format{
 	FlagValue: "csv",
-	WriteCollection: func(w io.Writer, cr types.CollectionResponse) error {
-		headers, headerNames := CollectionResponseHeaders(cr)
-		cw := csv.NewWriter(w)
-		if err := cw.Write(headerNames); err != nil {
+	WriteCollection: func(w io.Writer, r types.CollectionResponse) error {
+		return writeCsv(w, r.DisplayHeaders(), r.Items())
+	},
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		return writeCsv(w, r.DisplayHeaders(), []map[string]interface{}{r.Fields()})
+	},
+}
+
+func writeCsv(w io.Writer, headers types.DisplayHeaders, items []map[string]interface{}) error {
+	cw := csv.NewWriter(w)
+	if err := cw.Write(headers.Names()); err != nil {
+		return err
+	}
+	row := make([]string, len(headers))
+	for _, item := range items {
+		FillRowFromHeaders(headers, item, row)
+		if err := cw.Write(row); err != nil {
 			return err
 		}
-		row := make([]string, len(headers))
-		for _, item := range cr.Items() {
-			CollectionResponseStringRow(headers, item, row)
-			if err := cw.Write(row); err != nil {
-				return err
-			}
-		}
-		cw.Flush()
-		return cw.Error()
-	},
+	}
+	cw.Flush()
+	return cw.Error()
 }
 
 var Table = Format{
 	FlagValue: "table",
 	WriteCollection: func(w io.Writer, cr types.CollectionResponse) error {
-		items := cr.Items()
-		if len(items) == 0 {
+		return writeTable(w, cr.DisplayHeaders(), cr.Items())
+	},
+	WriteSingle: func(w io.Writer, r types.SingleResponse) error {
+		fields := r.Fields()
+		if len(fields) > 0 {
 			return nil
 		}
-		table := tablewriter.NewWriter(w)
-		headers, headerNames := CollectionResponseHeaders(cr)
-		table.SetHeader(headerNames)
-		ConfigureTableWriter(table)
-		row := make([]string, len(headers))
-		for _, item := range items {
-			CollectionResponseStringRow(headers, item, row)
-			table.Append(row)
-		}
-		table.Render()
-		return nil
+		return writeTable(w, r.DisplayHeaders(), []map[string]interface{}{fields})
 	},
+}
+
+func writeTable(w io.Writer, headers types.DisplayHeaders, items []map[string]interface{}) error {
+	if len(items) == 0 {
+		return nil
+	}
+	table := tablewriter.NewWriter(w)
+	table.SetHeader(headers.Names())
+	ConfigureTableWriter(table)
+	row := make([]string, len(headers))
+	for _, item := range items {
+		FillRowFromHeaders(headers, item, row)
+		table.Append(row)
+	}
+	table.Render()
+	return nil
 }
 
 var Formats = []Format{JSON, CSV, Table}

@@ -105,7 +105,7 @@ var integrationsCmd = &cli.Command{
 					return err
 				}
 				printlnif(c, out.Message())
-				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
+				return getFormatFlag(c).WriteSingle(c.App.Writer, out)
 			}),
 		},
 	},

@@ -40,9 +40,56 @@ type MessageResponse struct {
 
 type KeyAndName struct{ Key, Name string }
 
+type DisplayHeaders []KeyAndName
+
+func (dh DisplayHeaders) Names() []string {
+	names := make([]string, len(dh))
+	for i, h := range dh {
+		names[i] = h.Name
+	}
+	return names
+}
+
 type CollectionResponse map[string]interface{}
 
-func (cr CollectionResponse) Message() string {
+func (r CollectionResponse) Message() string {
+	return respMessage(r)
+}
+
+func (r CollectionResponse) DisplayHeaders() DisplayHeaders {
+	return respDisplayHeaders(r)
+}
+
+func (r CollectionResponse) Items() []map[string]interface{} {
+	raw := r["items"].([]interface{})
+	maps := make([]map[string]interface{}, len(raw))
+	for i, o := range raw {
+		maps[i] = o.(map[string]interface{})
+	}
+	return maps
+}
+
+type SingleResponse map[string]interface{}
+
+func (r SingleResponse) Message() string {
+	return respMessage(r)
+}
+
+func (r SingleResponse) DisplayHeaders() DisplayHeaders {
+	return respDisplayHeaders(r)
+}
+
+func (r SingleResponse) Fields() map[string]interface{} {
+	result := make(map[string]interface{}, len(r))
+	for k, v := range r {
+		if k != "display_headers" && v != "message" {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+func respMessage(cr map[string]interface{}) string {
 	msg := cr["message"]
 	strmsg, ok := msg.(string)
 	if !ok {
@@ -52,18 +99,9 @@ func (cr CollectionResponse) Message() string {
 	return strmsg
 }
 
-func (cr CollectionResponse) Items() []map[string]interface{} {
-	raw := cr["items"].([]interface{})
-	maps := make([]map[string]interface{}, len(raw))
-	for i, o := range raw {
-		maps[i] = o.(map[string]interface{})
-	}
-	return maps
-}
-
-func (cr CollectionResponse) DisplayHeaders() []KeyAndName {
+func respDisplayHeaders(cr map[string]interface{}) DisplayHeaders {
 	raw := cr["display_headers"].([]interface{})
-	result := make([]KeyAndName, len(raw))
+	result := make(DisplayHeaders, len(raw))
 	for i, pair := range raw {
 		sl := pair.([]interface{})
 		result[i] = KeyAndName{Key: sl[0].(string), Name: sl[1].(string)}
