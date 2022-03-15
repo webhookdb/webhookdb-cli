@@ -78,6 +78,18 @@ func getFormatFlag(c *cli.Context) formatting.Format {
 	return f
 }
 
+func webhookFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "webhook",
+		Aliases: s1("w"),
+		Usage:   "Webhook opaque id. Run `webhookdb webhook list` to see a list of all your webhooks.",
+	}
+}
+
+func getWebhookFlagOrArg(c *cli.Context) string {
+	return requireFlagOrArg(c, "webhook", "Use `webhookdb webhook list` to see available webhooks.")
+}
+
 func extractPositional(idx int, c *cli.Context, msg string) string {
 	a := c.Args().Get(idx)
 	if a == "" {
