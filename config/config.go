@@ -10,7 +10,7 @@ import (
 var BuildTime = "1970-01-01T00:00:00Z"
 var BuildSha = "0000000000000000000000000000000000000000"
 
-const Version = "0.1.2"
+const Version = "0.9.0"
 const Repo = "lithictech/webhookdb-cli"
 
 type Config struct {
@@ -29,6 +29,7 @@ type Config struct {
 	// so multiple api hosts can use the same prefs,
 	// like if they are backed by the same DB.
 	PrefsNamespace string
+	Privacy        bool
 	SentryDsn      string
 	WebsiteHost    string
 }
@@ -41,6 +42,7 @@ func LoadConfig(filenames ...string) Config {
 		LogFile:        os.Getenv("WEBHOOKDB_LOG_FILE"),
 		LogFormat:      os.Getenv("WEBHOOKDB_LOG_FORMAT"),
 		LogLevel:       MustEnvStr("WEBHOOKDB_LOG_LEVEL"),
+		Privacy:        os.Getenv("WEBHOOKDB_PRIVACY") != "",
 		PrefsNamespace: os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
 		SentryDsn:      os.Getenv("WEBHOOKDB_SENTRY_DSN"),
 		WebsiteHost:    MustEnvStr("WEBHOOKDB_WEBSITE_HOST"),
@@ -67,6 +69,8 @@ func MustSetEnv(k string, v interface{}) {
 		convext.Must(os.Setenv(k, fmt.Sprintf("%v", v)))
 	}
 }
+
+const SentryDsnProd = "https://3e125fd192c34979b2f1a4a5ceb9abd6@o292308.ingest.sentry.io/6224206"
 
 func init() {
 	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")

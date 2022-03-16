@@ -35,9 +35,12 @@ func Execute() {
 
 func configureSentry() bool {
 	defaultConfig := config.LoadConfig()
+	if defaultConfig.Privacy {
+		return false
+	}
 	dsn := defaultConfig.SentryDsn
 	if dsn == "" && !strings.HasPrefix(defaultConfig.ApiHost, "http://") {
-		dsn = "https://3e125fd192c34979b2f1a4a5ceb9abd6@o292308.ingest.sentry.io/6224206"
+		dsn = config.SentryDsnProd
 	} else if !strings.HasPrefix(dsn, "http") {
 		return false
 	}
