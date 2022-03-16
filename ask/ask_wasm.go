@@ -27,7 +27,7 @@ func (j jsask) HiddenAsk(prompt string) (string, error) {
 }
 
 func (j jsask) ask(prompt string, hidden bool) (string, error) {
-	wasmPrompt := js.Global().Get("wasmPropt")
+	wasmPrompt := js.Global().Get("wasmPrompt")
 	if !wasmPrompt.Truthy() {
 		if promptNotSetWarned {
 			promptNotSetWarned = true

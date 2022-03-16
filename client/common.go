@@ -72,13 +72,13 @@ func makeRequest(c context.Context, method string, auth Auth, body, outPtr inter
 func makeStepRequestWithResponse(c context.Context, auth Auth, body interface{}, urlTmpl string, urlArgs ...interface{}) (Step, error) {
 	var step Step
 	resp, errStep, err := makeRequestWithResponse(c, POST, auth, body, &step, urlTmpl, urlArgs...)
-	if err != nil {
-		return step, err
-	}
 	// This is safe to reprocess, it will early-out if it came from an error step
 	// since we know step endpoints that have a terminated step are finished for good.
 	if errStep != nil {
 		return *errStep, nil
+	}
+	if err != nil {
+		return step, err
 	}
 	// This is the 'true' state machine step (no intercepting error state machine)
 	// so we need to set the RawResponse.
