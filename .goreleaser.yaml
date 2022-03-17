@@ -49,6 +49,6 @@ brews:
     commit_author:
       name: webhookdbreleaser
       email: webhookdb@lithic.tech
-    description: "WebhookDB queries any API in real-time with SQL. More at https://webhookdb.com"
+    description: "Query and store any API in real-time with SQL. More at https://webhookdb.com"
     homepage: "https://webhookdb.com"
     caveats: "❤ Thanks for installing the WebhookDB CLI! Run `webhookdb auth login` to get register or sign in."
