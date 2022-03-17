@@ -1,6 +1,8 @@
 builds:
-  - binary: webhookdb
-    id: webhookdb
+  - id: webhookdb
+    ldflags:
+      - -s -w -X github.com/lithictech/webhookdb-cli/config.Version={{.Version}} -X github.com/lithictech/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/lithictech/webhookdb-cli/config.BuildTime={{.Date}}
+    binary: webhookdb
     goos:
       - linux
       - windows
@@ -8,13 +10,21 @@ builds:
     goarch:
       - amd64
       - arm64
+    ignore:
+    - goos: windows
+      goarch: arm64
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
+  - files:
+      - match-nothing-to-keep-archive-binary-only*
+    replacements:
+      darwin: macos
+      linux: linux
+      windows: windows
       386: i386
       amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -27,3 +37,12 @@ changelog:
       - '^test:'
 signs:
   - artifacts: checksum
+brews:
+  - tap:
+      owner: lithictech
+      name: homebrew-webhookdb
+    commit_author:
+      name: webhookdbreleaser
+      email: webhookdb@lithic.tech
+    description: "Use WebhookDB to query any API, in real-time, with SQL. More at https://webhookdb.com"
+    homepage: "https://webhookdb.com"
