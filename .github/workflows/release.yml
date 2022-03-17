@@ -31,3 +31,4 @@ jobs:
           args: --debug release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAP_GITHUB_TOKEN: ${{ secrets.TAP_TOKEN_ROBG_PAT }}
