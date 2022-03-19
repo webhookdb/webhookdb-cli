@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/lithictech/webhookdb-cli/ask"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -32,8 +33,12 @@ func webhookdbRunGo(arguments []js.Value) {
 	onComplete := arguments[1]
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("stacktrace from panic: \n" + string(debug.Stack()))
-			onComplete.Invoke(fmt.Sprintf(`{"stderr":"Sorry, something went wrong. Check the console for more information, or please try again.", "panic":true}`))
+			if r == ask.ErrBreak {
+				onComplete.Invoke(fmt.Sprintf(`{"break":true}`))
+			} else {
+				fmt.Println("stacktrace from panic: \n" + string(debug.Stack()))
+				onComplete.Invoke(fmt.Sprintf(`{"stderr":"Sorry, something went wrong. Check the console for more information, or please try again.", "panic":true}`))
+			}
 		}
 	}()
 	if err := webhookdbSetenv(arguments[0]); err != nil {
