@@ -89,7 +89,12 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 			Value:              value,
 		}
 		newStep, err := TransitionStep(c, auth, transitionInput)
-		if err != nil {
+		if eresp, ok := err.(ErrorResponse); ok && eresp.Err.Code == "validation_error" {
+			// Print the message and offer the same prompt again for new input.
+			sm.ask.Feedback(eresp.Err.Message)
+			sm.ask.Feedback("")
+			continue
+		} else if err != nil {
 			return newStep, err
 		}
 		step = newStep
