@@ -53,6 +53,9 @@ goreleaser-build: _goreleaser-clean
 goreleaser-run: _goreleaser-clean
 	goreleaser
 
+wasm-server:
+	go run bin/serve-wasm/main.go
+
 build-all: build-arm64 build build-wasm
 
 copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
