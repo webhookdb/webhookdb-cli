@@ -47,7 +47,11 @@ func (j jsask) ask(prompt string, hidden bool) (string, error) {
 	go func() {
 		wasmPrompt.Invoke(prompt, hidden, js.FuncOf(cb))
 	}()
-	return <-ch, nil
+	result := <-ch
+	if result == BreakSentinel {
+		panic(ErrBreak)
+	}
+	return result, nil
 }
 
 func (j jsask) Feedback(line string) {
