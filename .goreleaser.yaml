@@ -1,6 +1,6 @@
 project_name: webhookdb
 builds:
-  - id: webhookdb
+  - id: distrib
     ldflags:
       - -s -w -X github.com/lithictech/webhookdb-cli/config.Version={{.Version}} -X github.com/lithictech/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/lithictech/webhookdb-cli/config.BuildTime={{.Date}}
     binary: webhookdb
@@ -14,8 +14,17 @@ builds:
     ignore:
     - goos: windows
       goarch: arm64
+  - id: wasm
+    ldflags:
+      - -s -w -X github.com/lithictech/webhookdb-cli/config.Version={{.Version}} -X github.com/lithictech/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/lithictech/webhookdb-cli/config.BuildTime={{.Date}}
+    binary: webhookdb
+    targets:
+      - js_wasm
 archives:
-  - files:
+  - id: distrib
+    builds:
+      - distrib
+    files:
       - match-nothing-to-keep-archive-binary-only*
     replacements:
       darwin: macos
@@ -26,10 +35,14 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-release:
-  draft: true
+  - id: wasm
+    builds:
+      - wasm
+    format: binary
 checksum:
   name_template: 'checksums.txt'
+  ids:
+    - distrib
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
 changelog:
@@ -40,12 +53,23 @@ changelog:
       - '^test:'
 signs:
   - artifacts: checksum
+release:
+  draft: true
+blobs:
+  - provider: s3
+    ids:
+      - wasm
+    bucket: static.webhookdb.com
+    region: us-west-2
+    folder: "webhookdb-cli/{{.Version}}"
 brews:
   - tap:
       owner: lithictech
       name: homebrew-webhookdb
       token: "{{ .Env.TAP_GITHUB_TOKEN }}"
       branch: next
+    ids:
+      - distrib
     commit_author:
       name: webhookdbreleaser
       email: webhookdb@lithic.tech

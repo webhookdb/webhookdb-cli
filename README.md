@@ -32,18 +32,24 @@ and any other telemetry we may add in the future.
 ## Releasing
 
 Releases are automated. See `.github/workflows/release.yml`.
-The process for triggering them is:
+There is some additional work for releasing via Homebrew and the web terminal.
+
+The process for releasing is:
 
 - Go to [lithictech/homebrew-webhookdb](https://github.com/lithictech/homebrew-webhookdb)
   and make sure there is an empty `next` branch.
+  You can use `make create-fresh-next-branch` from the `homebrew-webhookdb` repo for this.
 - Tag a commit, ie `git tag 0.9.2`
 - Push the tag, ie `git push origin 0.9.2`
 - When it finishes, a Draft release will be built.
 - A commit will also have been added to the homebrew repo's `next` branch.
-- Edit the release, and publish it.
+- Edit the GitHub release, and publish it.
 - Merge the changes from `homebrew-webhookdb` into `main`.
   - We cannot have goreleaser automatically push to `main`
-    because it will refer to the draft release.
+    because it would refer to the draft release in the active formula.
+    So we have to make the formula change active once the release is published.
+- Update the code [in the WebhookDB website](https://github.com/lithictech/webhookdb-api/blob/main/webhookdb-website/static/webterm/index.html#L33)
+  to refer to the new version. Then merge the change, the website deploys from `main`.
 
 ## Feedback
 

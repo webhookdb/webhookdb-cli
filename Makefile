@@ -43,6 +43,16 @@ build-arm64:
 build-wasm:
 	@GOOS=js GOARCH=wasm go build -ldflags $(BUILDFLAGS) -o webhookdb.wasm
 
+_goreleaser-clean:
+	git tag | grep "0.0.1-rc1" | xargs git tag -d
+	git tag 0.0.1-rc1
+	rm -rf ./dist
+
+goreleaser-build: _goreleaser-clean
+	goreleaser build
+goreleaser-run: _goreleaser-clean
+	goreleaser
+
 build-all: build-arm64 build build-wasm
 
 copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
