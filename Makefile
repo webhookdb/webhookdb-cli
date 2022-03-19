@@ -43,6 +43,9 @@ build-arm64:
 build-wasm:
 	@GOOS=js GOARCH=wasm go build -ldflags $(BUILDFLAGS) -o webhookdb.wasm
 
+wasm-server:
+	go run bin/serve-wasm/main.go
+
 build-all: build-arm64 build build-wasm
 
 copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
