@@ -8,6 +8,7 @@ import (
 type IntegrationsCreateInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 	ServiceName   string              `json:"service_name"`
+	GuardConfirm  *string             `json:"guard_confirm,omitempty"`
 }
 
 func IntegrationsCreate(c context.Context, auth Auth, input IntegrationsCreateInput) (out Step, err error) {
