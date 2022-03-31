@@ -150,7 +150,7 @@ var dbCmd = &cli.Command{
 				&cli.StringFlag{Name: "views-schema", Value: "webhookdb", Usage: "Create materialized views in this schema. You can use 'public' if you do not want to qualify webhookdb tables."},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.OrgFdwInput{
+				input := client.DbFdwInput{
 					OrgIdentifier:    getOrgFlag(c, ac.Prefs),
 					MessageFdw:       c.Bool("fdw"),
 					MessageViews:     c.Bool("views"),
@@ -160,7 +160,7 @@ var dbCmd = &cli.Command{
 					LocalSchema:      c.String("into-schema"),
 					ViewSchema:       c.String("views-schema"),
 				}
-				out, err := client.OrgFdw(ctx, ac.Auth, input)
+				out, err := client.DbFdw(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}

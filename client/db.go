@@ -63,3 +63,21 @@ func DbRollCredentials(c context.Context, auth Auth, input DbRollCredentialsInpu
 	err = makeRequest(c, POST, auth, nil, &out, "/v1/db/%v/roll_credentials", input.OrgIdentifier)
 	return
 }
+
+type DbFdwInput struct {
+	OrgIdentifier    types.OrgIdentifier `json:"-"`
+	MessageFdw       bool                `json:"message_fdw"`
+	MessageViews     bool                `json:"message_views"`
+	MessageAll       bool                `json:"message_all"`
+	RemoteServerName string              `json:"remote_server_name"`
+	FetchSize        string              `json:"fetch_size"`
+	LocalSchema      string              `json:"local_schema"`
+	ViewSchema       string              `json:"view_schema"`
+}
+
+type DbFdwOutput map[string]interface{}
+
+func DbFdw(c context.Context, auth Auth, input DbFdwInput) (out DbFdwOutput, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/db/%v/fdw", input.OrgIdentifier)
+	return
+}
