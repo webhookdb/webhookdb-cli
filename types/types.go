@@ -113,3 +113,7 @@ func respDisplayHeaders(cr map[string]interface{}) DisplayHeaders {
 	}
 	return result
 }
+
+func SPtr(s string) *string {
+	return &s
+}

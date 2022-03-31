@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
+	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
 )
 
@@ -17,11 +18,20 @@ var integrationsCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				serviceFlag(),
+				&cli.BoolFlag{
+					Name:    "confirm",
+					Aliases: s1("c"),
+					Usage: "Confirm that you want to use the same service for more than one integration on an org. " +
+						"Will be prompted if not provided.",
+				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsCreateInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					ServiceName:   requireFlagOrArg(c, "service", "Use `webhookdb services list` to see available integrations."),
+				}
+				if c.IsSet("confirm") {
+					input.GuardConfirm = types.SPtr("y")
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsCreate(ctx, ac.Auth, input))
 			}),
