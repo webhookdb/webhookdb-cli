@@ -172,5 +172,31 @@ var dbCmd = &cli.Command{
 				return nil
 			}),
 		},
+		{
+			Name:  "rename-table",
+			Usage: "Rename the database table associated with the integration",
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+				&cli.StringFlag{
+					Name:    "new-name",
+					Aliases: s1("n"),
+					Usage:   "The new name of the table",
+				},
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.DbRenameTableInput{
+					OpaqueId:      getIntegrationFlagOrArg(c),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					NewName:       c.String("new-name"),
+				}
+				out, err := client.DbRenameTable(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				printlnif(c, out.Message(), false)
+				return nil
+			}),
+		},
 	},
 }

@@ -81,3 +81,14 @@ func DbFdw(c context.Context, auth Auth, input DbFdwInput) (out DbFdwOutput, err
 	err = makeRequest(c, POST, auth, input, &out, "/v1/db/%v/fdw", input.OrgIdentifier)
 	return
 }
+
+type DbRenameTableInput struct {
+	OpaqueId      string              `json:"-"`
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	NewName       string              `json:"new_name"`
+}
+
+func DbRenameTable(c context.Context, auth Auth, input DbRenameTableInput) (out types.SingleResponse, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/rename_table", input.OrgIdentifier, input.OpaqueId)
+	return
+}
