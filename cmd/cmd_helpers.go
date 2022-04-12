@@ -105,3 +105,7 @@ func printlnif(c *cli.Context, msg string, linebr bool) {
 		fmt.Fprintln(c.App.Writer)
 	}
 }
+
+const tableNameRules = "Valid table names must adhere to the following rules: " +
+	"must begin with an ASCII letter, contain only ASCII letters, numbers, underscores, dashes, and spaces, " +
+	"can begin and end with double quotes, and must otherwise be a valid Postgres identifier."

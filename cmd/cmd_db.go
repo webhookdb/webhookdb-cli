@@ -181,7 +181,7 @@ var dbCmd = &cli.Command{
 				&cli.StringFlag{
 					Name:    "new-name",
 					Aliases: s1("n"),
-					Usage:   "The new name of the table",
+					Usage:   "The new name of the table. " + tableNameRules,
 				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {

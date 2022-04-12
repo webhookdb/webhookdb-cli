@@ -54,7 +54,7 @@ func getIntegrationFlagOrArg(c *cli.Context) string {
 func usernameFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "username",
-		Aliases: s1("u"),
+		Aliases: []string{"u", "email"},
 		Usage:   "Takes an email.",
 	}
 }
