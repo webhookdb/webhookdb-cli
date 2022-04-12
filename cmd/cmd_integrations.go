@@ -21,8 +21,9 @@ var integrationsCmd = &cli.Command{
 				&cli.BoolFlag{
 					Name:    "confirm",
 					Aliases: s1("c"),
-					Usage: "Confirm that you want to use the same service for more than one integration on an org. " +
-						"Will be prompted if not provided.",
+					Usage: "If there is already an integration for this service, " +
+						"you will be prompted to confirm you want to create a new integration. " +
+						"Pass --confirm to automatically accept this prompt and always create a new integration.",
 				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
