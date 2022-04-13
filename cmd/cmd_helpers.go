@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/go-aperitif/logctx"
 	"github.com/lithictech/webhookdb-cli/appcontext"
@@ -26,6 +27,12 @@ func newAppCtx(c *cli.Context) appcontext.AppContext {
 	if err != nil {
 		panic(err)
 	}
+	appCtx.Resty.OnAfterResponse(func(rc *resty.Client, r *resty.Response) error {
+		if r.StatusCode() == 404 || r.StatusCode() >= 500 {
+			return onServerError(c, appCtx, r)
+		}
+		return nil
+	})
 	return appCtx
 }
 

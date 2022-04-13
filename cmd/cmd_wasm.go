@@ -7,6 +7,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/go-resty/resty/v2"
+	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/ask"
 	"github.com/lithictech/webhookdb-cli/prefs"
 	"github.com/urfave/cli/v2"
@@ -112,3 +114,8 @@ func wasmUpdateAuthDisplay(p prefs.Prefs) {
 }
 
 var IsTty = false
+
+func onServerError(*cli.Context, appcontext.AppContext, *resty.Response) error {
+	// Eventually we may want to use Sentry from the browser.
+	return nil
+}
