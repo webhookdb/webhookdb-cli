@@ -7,6 +7,7 @@ import (
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/ask"
+	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
 	"time"
@@ -86,6 +87,32 @@ var debugCmd = &cli.Command{
 			Usage: "Test out a panic",
 			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
 				panic("can you see this?")
+			}),
+		},
+		{
+			Name:  "statusz",
+			Usage: "Check the server status.",
+			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
+				r := client.RestyFromContext(ctx)
+				resp, err := r.R().Get("/statusz")
+				if err != nil {
+					return err
+				}
+				fmt.Fprintln(c.App.Writer, string(resp.Body()))
+				return nil
+			}),
+		},
+		{
+			Name:  "fourohfour",
+			Usage: "Make a 404 request to see how the CLI responds.",
+			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
+				r := client.RestyFromContext(ctx)
+				resp, err := r.R().Get("/this-does-not-exist")
+				if err != nil {
+					return err
+				}
+				fmt.Fprintln(c.App.Writer, string(resp.Body()))
+				return nil
 			}),
 		},
 	},
