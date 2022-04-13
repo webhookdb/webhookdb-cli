@@ -57,6 +57,23 @@ var debugCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "printargs",
+			Usage: "Print out positional arguments and flags, to help debug command parsing.",
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "mystr"},
+				&cli.BoolFlag{Name: "mybool"},
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				for _, f := range c.FlagNames() {
+					fmt.Fprintf(c.App.Writer, "Flag %s: %v\n", f, c.String(f))
+				}
+				for i, a := range c.Args().Slice() {
+					fmt.Fprintf(c.App.Writer, "Arg %d: %s\n", i, a)
+				}
+				return nil
+			}),
+		},
+		{
 			Name:  "update-auth-display",
 			Usage: "Used to update the WASM terminal on startup.",
 			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {

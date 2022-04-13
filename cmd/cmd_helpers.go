@@ -10,6 +10,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/urfave/cli/v2"
 	"os"
+	"regexp"
 )
 
 func s1(s string) []string {
@@ -54,6 +55,7 @@ func cliAction(cb cliActionCallback) cli.ActionFunc {
 				}
 			}
 		}()
+		cb = guardInvalidArgs(cb)
 		if err := cb(c, ac, ctx); err != nil {
 			if eresp, ok := err.(client.ErrorResponse); ok {
 				if eresp.Err.Status == 401 {
@@ -73,6 +75,29 @@ func cliAction(cb cliActionCallback) cli.ActionFunc {
 		return nil
 	}
 }
+
+func guardInvalidArgs(cb cliActionCallback) cliActionCallback {
+	return func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+		if ac.Config.SkipArgFlagCheck || c.Args().Len() == 0 {
+			return cb(c, ac, ctx)
+		}
+		for _, arg := range c.Args().Tail() {
+			if isFlagArg.MatchString(arg) {
+				return CliError{
+					Message: fmt.Sprintf("Positional arguments must follow flags, but '%s' looks like a flag. "+
+						"Please re-run the command, putting it before positional arguments (which start with '%s')."+
+						"\nIf this placement is intentional, re-run this command with %s=1.",
+						arg, c.Args().Get(0), config.SkipArgFlagCheckEnv,
+					),
+					Code: 1,
+				}
+			}
+		}
+		return cb(c, ac, ctx)
+	}
+}
+
+var isFlagArg = regexp.MustCompile("^--?[a-z-]+=?$")
 
 type CliError struct {
 	Message string

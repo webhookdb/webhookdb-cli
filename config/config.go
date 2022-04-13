@@ -27,24 +27,28 @@ type Config struct {
 	// It defaults to API_HOST but you can set it to something else
 	// so multiple api hosts can use the same prefs,
 	// like if they are backed by the same DB.
-	PrefsNamespace string
-	Privacy        bool
-	SentryDsn      string
-	WebsiteHost    string
+	PrefsNamespace   string
+	Privacy          bool
+	SentryDsn        string
+	SkipArgFlagCheck bool
+	WebsiteHost      string
 }
+
+const SkipArgFlagCheckEnv = "WEBHOOKDB_SKIP_ARG_FLAG_CHECK"
 
 func LoadConfig(filenames ...string) Config {
 	_ = godotenv.Overload(filenames...)
 	cfg := Config{
-		ApiHost:        MustEnvStr("WEBHOOKDB_API_HOST"),
-		Debug:          os.Getenv("WEBHOOKDB_DEBUG") != "",
-		LogFile:        os.Getenv("WEBHOOKDB_LOG_FILE"),
-		LogFormat:      os.Getenv("WEBHOOKDB_LOG_FORMAT"),
-		LogLevel:       MustEnvStr("WEBHOOKDB_LOG_LEVEL"),
-		Privacy:        os.Getenv("WEBHOOKDB_PRIVACY") != "",
-		PrefsNamespace: os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
-		SentryDsn:      os.Getenv("WEBHOOKDB_SENTRY_DSN"),
-		WebsiteHost:    MustEnvStr("WEBHOOKDB_WEBSITE_HOST"),
+		ApiHost:          MustEnvStr("WEBHOOKDB_API_HOST"),
+		Debug:            os.Getenv("WEBHOOKDB_DEBUG") != "",
+		LogFile:          os.Getenv("WEBHOOKDB_LOG_FILE"),
+		LogFormat:        os.Getenv("WEBHOOKDB_LOG_FORMAT"),
+		LogLevel:         MustEnvStr("WEBHOOKDB_LOG_LEVEL"),
+		Privacy:          os.Getenv("WEBHOOKDB_PRIVACY") != "",
+		PrefsNamespace:   os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
+		SentryDsn:        os.Getenv("WEBHOOKDB_SENTRY_DSN"),
+		SkipArgFlagCheck: convext.MustParseBool(lookupEnv(SkipArgFlagCheckEnv, "0")),
+		WebsiteHost:      MustEnvStr("WEBHOOKDB_WEBSITE_HOST"),
 	}
 	if cfg.PrefsNamespace == "" {
 		cfg.PrefsNamespace = cfg.ApiHost
@@ -69,10 +73,18 @@ func MustSetEnv(k string, v interface{}) {
 	}
 }
 
+func lookupEnv(k, d string) string {
+	e := os.Getenv(k)
+	if e == "" {
+		return d
+	}
+	return e
+}
+
 const SentryDsnProd = "https://3e125fd192c34979b2f1a4a5ceb9abd6@o292308.ingest.sentry.io/6224206"
 
 func init() {
-	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")
 	MustSetEnv("WEBHOOKDB_API_HOST", "https://api.production.webhookdb.com")
+	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")
 	MustSetEnv("WEBHOOKDB_WEBSITE_HOST", "https://webhookdb.com")
 }
