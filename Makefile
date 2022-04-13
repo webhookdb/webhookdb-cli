@@ -44,14 +44,12 @@ build-wasm:
 	@GOOS=js GOARCH=wasm go build -ldflags $(BUILDFLAGS) -o webhookdb.wasm
 
 _goreleaser-clean:
-	git tag | grep "0.0.1-rc1" | xargs git tag -d
-	git tag 0.0.1-rc1
 	rm -rf ./dist
 
 goreleaser-build: _goreleaser-clean
 	goreleaser build
-goreleaser-run: _goreleaser-clean
-	goreleaser
+goreleaser-local: _goreleaser-clean
+	GITHUB_TOKEN=notreal goreleaser
 
 wasm-server:
 	go run bin/serve-wasm/main.go

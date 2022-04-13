@@ -54,6 +54,8 @@ changelog:
 signs:
   - artifacts: checksum
 release:
+  ids:
+    - distrib
   draft: true
 blobs:
   - provider: s3
