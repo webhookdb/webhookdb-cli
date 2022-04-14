@@ -55,7 +55,13 @@ var authCmd = &cli.Command{
 					return err
 				}
 
-				// org information is coming in as a map[string]interface{}
+				// If the state machine finished running, it was probably successful, but maybe not.
+				// If somehow we didn't get real current_customer info, assume it failed, and exit.
+				if result.Extras["current_customer"] == nil || result.Extras["current_customer"]["email"] == nil {
+					return nil
+				}
+
+				// Org information is coming in as a map[string]interface{}
 				defaultOrg := types.Organization{}
 				if err := mapstructure.Decode(result.Extras["current_customer"]["default_organization"], &defaultOrg); err != nil {
 					return err
