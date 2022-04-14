@@ -94,6 +94,10 @@ func newResty(cfg config.Config) *resty.Client {
 		SetHeader("User-Agent", userAgent).
 		SetHeader("Whdb-User-Agent", userAgent).
 		SetHeader("Whdb-Short-Session", shortSession)
+	platformUA := platformUserAgent()
+	if platformUA != "" {
+		r = r.SetHeader("Whdb-Platform-User-Agent", platformUA)
+	}
 	r.Debug = cfg.Debug
 	return r
 }
