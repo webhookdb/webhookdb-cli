@@ -4,3 +4,7 @@
 package appcontext
 
 const shortSession = ""
+
+func platformUserAgent() string {
+	return ""
+}
