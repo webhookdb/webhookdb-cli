@@ -59,6 +59,14 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
+func passwordFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "password",
+		Aliases: s1("p"),
+		Usage:   "Takes a password.",
+	}
+}
+
 func formatFlag() cli.Flag {
 	return &cli.StringFlag{
 		Name:    "format",
@@ -88,6 +96,47 @@ func webhookFlag() *cli.StringFlag {
 
 func getWebhookFlagOrArg(c *cli.Context) string {
 	return requireFlagOrArg(c, "webhook", "Use `webhookdb webhook list` to see available webhooks.")
+}
+
+func syncTargetFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "target",
+		Aliases: s1("st"),
+		Usage:   "Sync target opaque id. Run `webhookdb sync-target list` to see a list of all your sync targets.",
+	}
+}
+
+func getSyncTargetFlagOrArg(c *cli.Context) string {
+	return requireFlagOrArg(c, "target", "Use `webhookdb sync-target list` to see a list of all your sync targets.")
+}
+
+func connectionUrlFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "connection-url",
+		Aliases: s1("url"),
+		Usage:   "The connection string for the database that WebhookDB should sync data to.",
+	}
+}
+
+func periodFlag() *cli.IntFlag {
+	return &cli.IntFlag{
+		Name:  "period",
+		Usage: "Number of seconds between syncs.",
+	}
+}
+
+func schemaFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:  "schema",
+		Usage: "Schema (or namespace) to write the table into. Default to no schema/namespace.",
+	}
+}
+
+func tableFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:  "table",
+		Usage: "Table to create and update. Default to match the table name of the service integration.",
+	}
 }
 
 func extractPositional(idx int, c *cli.Context, msg string) string {

@@ -41,6 +41,7 @@ The CLI also gives you quick access to the WebhookDB documentation:
 			organizationsCmd,
 			servicesCmd,
 			subscriptionsCmd,
+			synctargetCmd,
 			updateCmd,
 			webhooksCmd,
 			versionCmd,
