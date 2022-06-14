@@ -6,14 +6,14 @@ import (
 )
 
 type WebhookCreateInput struct {
+	OrgIdentifier types.OrgIdentifier `json:"-"`
 	WebhookSecret string              `json:"webhook_secret"`
 	Url           string              `json:"url"`
-	OrgIdentifier types.OrgIdentifier `json:"org_identifier"`
 	SintOpaqueId  string              `json:"service_integration_opaque_id"`
 }
 
 func WebhookCreate(c context.Context, auth Auth, input WebhookCreateInput) (out types.MessageResponse, err error) {
-	err = makeRequest(c, POST, auth, input, &out, "/v1/webhook_subscriptions/create")
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/webhook_subscriptions/create", input.OrgIdentifier)
 	return
 }
 
@@ -27,16 +27,17 @@ func WebhookList(c context.Context, auth Auth, input WebhookListInput) (out type
 }
 
 type WebhookOpaqueIdInput struct {
+	OrgIdentifier types.OrgIdentifier `json:"-"`
 	// this is the opaque id of the *webhook subscription*
 	OpaqueId string `json:"-"`
 }
 
 func WebhookTest(c context.Context, auth Auth, input WebhookOpaqueIdInput) (out types.MessageResponse, err error) {
-	err = makeRequest(c, POST, auth, input, &out, "/v1/webhook_subscriptions/%v/test", input.OpaqueId)
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/webhook_subscriptions/%v/test", input.OrgIdentifier, input.OpaqueId)
 	return
 }
 
 func WebhookDelete(c context.Context, auth Auth, input WebhookOpaqueIdInput) (out types.MessageResponse, err error) {
-	err = makeRequest(c, POST, auth, input, &out, "/v1/webhook_subscriptions/%v/delete", input.OpaqueId)
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/webhook_subscriptions/%v/delete", input.OrgIdentifier, input.OpaqueId)
 	return
 }

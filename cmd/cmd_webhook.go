@@ -68,7 +68,10 @@ var webhooksCmd = &cli.Command{
 			Usage: "Send a test event to webhook subscription with the given ID.",
 			Flags: []cli.Flag{webhookFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{OpaqueId: getWebhookFlagOrArg(c)})
+				out, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					OpaqueId:      getWebhookFlagOrArg(c),
+				})
 				if err != nil {
 					return err
 				}
@@ -81,7 +84,10 @@ var webhooksCmd = &cli.Command{
 			Usage: "Delete this webhook subscription, so no future events will be sent.",
 			Flags: []cli.Flag{webhookFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{getWebhookFlagOrArg(c)})
+				out, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					OpaqueId:      getWebhookFlagOrArg(c),
+				})
 				if err != nil {
 					return err
 				}
