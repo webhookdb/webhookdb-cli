@@ -90,7 +90,7 @@ var synctargetCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SyncTargetUpdateInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
+					OpaqueId:      getSyncTargetFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					Period:        c.Int("period"),
 					Schema:        c.String("schema"),
@@ -110,19 +110,21 @@ var synctargetCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				syncTargetFlag(),
-				periodFlag(),
-				schemaFlag(),
-				tableFlag(),
+				&cli.StringFlag{
+					Name:    "user",
+					Aliases: s1("u"),
+					Usage:   "Database username",
+				},
+				passwordFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetUpdateInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
+				input := client.SyncTargetUpdateCredsInput{
+					OpaqueId:      getSyncTargetFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					Period:        c.Int("period"),
-					Schema:        c.String("schema"),
-					Table:         c.String("table"),
+					Username:      c.String("user"),
+					Password:      c.String("password"),
 				}
-				out, err := client.SyncTargetUpdate(ctx, ac.Auth, input)
+				out, err := client.SyncTargetUpdateCreds(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
@@ -139,7 +141,7 @@ var synctargetCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SyncTargetSyncInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
+					OpaqueId:      getSyncTargetFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.SyncTargetSync(ctx, ac.Auth, input)
