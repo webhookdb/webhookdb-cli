@@ -22,7 +22,7 @@ var dbCmd = &cli.Command{
 			Usage: "Print the database connection url for an organization.",
 			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.DbConnection(ctx, ac.Auth, client.DbConnectionInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
+				out, err := client.DbConnection(ctx, ac.Auth, client.DbOrgIdentifierInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
@@ -35,7 +35,7 @@ var dbCmd = &cli.Command{
 			Usage: "List all tables in an organization's database.",
 			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.DbTables(ctx, ac.Auth, client.DbTablesInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
+				out, err := client.DbTables(ctx, ac.Auth, client.DbOrgIdentifierInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
@@ -126,7 +126,7 @@ var dbCmd = &cli.Command{
 			Usage: "Roll the credentials for an organization's database to something newly randomly generated.",
 			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				out, err := client.DbRollCredentials(ctx, ac.Auth, client.DbRollCredentialsInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
+				out, err := client.DbRollCredentials(ctx, ac.Auth, client.DbOrgIdentifierInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
 				if err != nil {
 					return err
 				}
@@ -197,6 +197,58 @@ var dbCmd = &cli.Command{
 				printlnif(c, out.Message(), false)
 				return nil
 			}),
+		},
+		{
+			Name:  "migrations",
+			Usage: "Command namespace for interacting with your organizations database migrations",
+			Subcommands: []*cli.Command{
+				{
+					Name:  "start",
+					Usage: "Create and enqueue a new database migration",
+					Flags: []cli.Flag{
+						orgFlag(),
+						&cli.StringFlag{
+							Name:     "admin-url",
+							Aliases:  s1("a"),
+							Required: false,
+						},
+						&cli.StringFlag{
+							Name:     "readonly-url",
+							Aliases:  s1("r"),
+							Required: false,
+						},
+					},
+					Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+						input := client.DbMigrationsStartInput{
+							OrgIdentifier: getOrgFlag(c, ac.Prefs),
+							AdminUrl:      c.String("admin-url"),
+							ReadonlyUrl:   c.String("readonly-url"),
+						}
+						out, err := client.DbMigrationsStart(ctx, ac.Auth, input)
+						if err != nil {
+							return err
+						}
+						printlnif(c, out.Message, false)
+						return nil
+					}),
+				},
+				{
+					Name:  "list",
+					Usage: "List all database migrations",
+					Flags: []cli.Flag{
+						orgFlag(),
+						formatFlag(),
+					},
+					Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+						out, err := client.DbMigrationsList(ctx, ac.Auth, client.DbOrgIdentifierInput{OrgIdentifier: getOrgFlag(c, ac.Prefs)})
+						if err != nil {
+							return err
+						}
+						printlnif(c, out.Message(), true)
+						return getFormatFlag(c).WriteCollection(c.App.Writer, out)
+					}),
+				},
+			},
 		},
 	},
 }
