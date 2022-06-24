@@ -97,3 +97,15 @@ var webhooksCmd = &cli.Command{
 		},
 	},
 }
+
+func webhookFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "webhook",
+		Aliases: s1("w"),
+		Usage:   "Webhook opaque id. Run `webhookdb webhook list` to see a list of all your webhooks.",
+	}
+}
+
+func getWebhookFlagOrArg(c *cli.Context) string {
+	return requireFlagOrArg(c, "webhook", "Use `webhookdb webhook list` to see available webhooks.")
+}
