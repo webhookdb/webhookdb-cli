@@ -59,14 +59,6 @@ func usernameFlag() *cli.StringFlag {
 	}
 }
 
-func passwordFlag() *cli.StringFlag {
-	return &cli.StringFlag{
-		Name:    "password",
-		Aliases: s1("p"),
-		Usage:   "Takes a password.",
-	}
-}
-
 func formatFlag() cli.Flag {
 	return &cli.StringFlag{
 		Name:    "format",

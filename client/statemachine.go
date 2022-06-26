@@ -2,12 +2,9 @@ package client
 
 import (
 	"context"
-	"errors"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/webhookdb-cli/ask"
 )
-
-var errStepNoInputAndNotComplete = errors.New("step is not complete, and says it needs no input. The endpoint is configuring the step wrong, or a normal response was parsed as a Step")
 
 type Step struct {
 	Message            string                 `json:"message"`
@@ -48,7 +45,8 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 			return step, nil
 		}
 		if !step.NeedsInput {
-			return step, errStepNoInputAndNotComplete
+			// Usually this is because a 422 prompt machine returned success
+			return step, nil
 		}
 		if step.Output != "" {
 			// If the step is the first one, so only prompts, this will be blank.

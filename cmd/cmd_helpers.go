@@ -15,6 +15,9 @@ import (
 )
 
 func s1(s string) []string {
+	if len(s) != 1 {
+		panic(fmt.Sprintf("s1 strings must be one char, got: %s", s))
+	}
 	return []string{s}
 }
 

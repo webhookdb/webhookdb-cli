@@ -8,24 +8,30 @@ import (
 )
 
 var synctargetCmd = &cli.Command{
-	Name:  "sync-target",
+	Name:  "sync",
 	Usage: "Replicate data in a WebhookDB table into another database.",
 	Subcommands: []*cli.Command{
 		{
-			Name:  "create",
-			Usage: "Create a sync target for the specified integration. Data will be automatically synced from the integration's WebhookDB table into the database specified by the connection string. PostgresQL and SnowflakeDB databases are supported.",
+			Name: "create",
+			Usage: "Create a sync target for the specified integration. Data will be automatically synced from " +
+				"the integration's WebhookDB table into the database specified by the connection string. " +
+				"PostgresQL and SnowflakeDB databases are supported.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),
-				connectionUrlFlag(),
-				periodFlag(),
-				schemaFlag(),
-				tableFlag(),
+				&cli.StringFlag{
+					Name:    "connection-url",
+					Aliases: s1("u"),
+					Usage:   "The connection string for the database that WebhookDB should write data to.",
+				},
+				syncPeriodFlag(),
+				syncSchemaFlag(),
+				syncTableFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SyncTargetCreateInput{
 					OrgIdentifier:       getOrgFlag(c, ac.Prefs),
-					IntegrationOpaqueId: c.String("integration"),
+					IntegrationOpaqueId: getIntegrationFlagOrArg(c),
 					ConnectionUrl:       c.String("connection-url"),
 					Period:              c.Int("period"),
 					Schema:              c.String("schema"),
@@ -80,13 +86,13 @@ var synctargetCmd = &cli.Command{
 		},
 		{
 			Name:  "update",
-			Usage: "Update the sync target.",
+			Usage: "Update the sync target. Use `webhookdb sync list` to see all sync targets.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				syncTargetFlag(),
-				periodFlag(),
-				schemaFlag(),
-				tableFlag(),
+				syncPeriodFlag(),
+				syncSchemaFlag(),
+				syncTableFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SyncTargetUpdateInput{
@@ -105,8 +111,9 @@ var synctargetCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:  "update-creds",
-			Usage: "Update credentials for the sync target. If the database URL used to sync is changing, you must use update-creds so WebhookDB can continue to write to it.",
+			Name: "update-creds",
+			Usage: "Update credentials for the sync target. If the database URL used to sync is changing, " +
+				"you must use update-creds so WebhookDB can continue to write to it.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				syncTargetFlag(),
@@ -115,7 +122,11 @@ var synctargetCmd = &cli.Command{
 					Aliases: s1("u"),
 					Usage:   "Database username",
 				},
-				passwordFlag(),
+				&cli.StringFlag{
+					Name:    "password",
+					Aliases: s1("p"),
+					Usage:   "Takes a password.",
+				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SyncTargetUpdateCredsInput{
@@ -133,8 +144,9 @@ var synctargetCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:  "sync",
-			Usage: "Trigger a sync to the sync target. The sync will happen at the earliest possible moment since the last sync, no matter how long the configured period is on the sync target.",
+			Name: "trigger",
+			Usage: "Trigger a sync to the sync target. The sync will happen at the earliest possible moment since " +
+				"the last sync, no matter how long the configured period is on the sync target.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				syncTargetFlag(),
@@ -155,29 +167,21 @@ var synctargetCmd = &cli.Command{
 	},
 }
 
-func connectionUrlFlag() *cli.StringFlag {
-	return &cli.StringFlag{
-		Name:    "connection-url",
-		Aliases: s1("url"),
-		Usage:   "The connection string for the database that WebhookDB should write data to.",
-	}
-}
-
-func periodFlag() *cli.IntFlag {
+func syncPeriodFlag() *cli.IntFlag {
 	return &cli.IntFlag{
 		Name:  "period",
 		Usage: "Number of seconds between syncs.",
 	}
 }
 
-func schemaFlag() *cli.StringFlag {
+func syncSchemaFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:  "schema",
 		Usage: "Schema (or namespace) to write the table into. Default to no schema/namespace.",
 	}
 }
 
-func tableFlag() *cli.StringFlag {
+func syncTableFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:  "table",
 		Usage: "Table to create and update. Default to match the table name of the service integration.",
@@ -187,11 +191,11 @@ func tableFlag() *cli.StringFlag {
 func syncTargetFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "target",
-		Aliases: s1("st"),
-		Usage:   "Sync target opaque id. Run `webhookdb sync-target list` to see a list of all your sync targets.",
+		Aliases: s1("t"),
+		Usage:   "Sync target opaque id. Run `webhookdb sync list` to see a list of all your sync targets.",
 	}
 }
 
 func getSyncTargetFlagOrArg(c *cli.Context) string {
-	return requireFlagOrArg(c, "target", "Use `webhookdb sync-target list` to see a list of all your sync targets.")
+	return requireFlagOrArg(c, "target", "Use `webhookdb sync list` to see a list of all your sync targets.")
 }
