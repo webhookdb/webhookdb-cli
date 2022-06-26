@@ -88,7 +88,7 @@ func DbRenameTable(c context.Context, auth Auth, input DbRenameTableInput) (out 
 type DbMigrationsStartInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 	AdminUrl      string              `json:"admin_url"`
-	ReadonlyUrl   string              `json:"readonly_url"`
+	ReadonlyUrl   *string             `json:"readonly_url,omitempty"`
 }
 
 func DbMigrationsStart(c context.Context, auth Auth, input DbMigrationsStartInput) (out types.MessageResponse, err error) {

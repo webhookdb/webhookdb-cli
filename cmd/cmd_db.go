@@ -222,7 +222,7 @@ var dbCmd = &cli.Command{
 						input := client.DbMigrationsStartInput{
 							OrgIdentifier: getOrgFlag(c, ac.Prefs),
 							AdminUrl:      c.String("admin-url"),
-							ReadonlyUrl:   c.String("readonly-url"),
+							ReadonlyUrl:   stringPtrFlag(c, "readonly-url"),
 						}
 						out, err := client.DbMigrationsStart(ctx, ac.Auth, input)
 						if err != nil {
