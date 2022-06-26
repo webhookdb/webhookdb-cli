@@ -174,7 +174,7 @@ var dbCmd = &cli.Command{
 		},
 		{
 			Name:  "rename-table",
-			Usage: "Rename the database table associated with the integration",
+			Usage: "Rename the database table associated with the integration.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),
@@ -200,11 +200,11 @@ var dbCmd = &cli.Command{
 		},
 		{
 			Name:  "migrations",
-			Usage: "Command namespace for interacting with your organizations database migrations",
+			Usage: "Command namespace for interacting with your organizations database migrations.",
 			Subcommands: []*cli.Command{
 				{
 					Name:  "start",
-					Usage: "Create and enqueue a new database migration",
+					Usage: "Enqueue a migration of all your organization's data to a new database.",
 					Flags: []cli.Flag{
 						orgFlag(),
 						&cli.StringFlag{
@@ -234,7 +234,7 @@ var dbCmd = &cli.Command{
 				},
 				{
 					Name:  "list",
-					Usage: "List all database migrations",
+					Usage: "List all database migrations.",
 					Flags: []cli.Flag{
 						orgFlag(),
 						formatFlag(),
