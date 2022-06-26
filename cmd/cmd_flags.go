@@ -121,3 +121,11 @@ func requireFlagOrArg(c *cli.Context, param, extraMsg string) string {
 	}
 	panic(CliError{Code: 1, Message: msg})
 }
+
+func stringPtrFlag(c *cli.Context, key string) *string {
+	if !c.IsSet(key) {
+		return nil
+	}
+	s := c.String(key)
+	return &s
+}

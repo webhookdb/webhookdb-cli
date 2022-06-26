@@ -6,7 +6,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
-type DbConnectionInput struct {
+type DbOrgIdentifierInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
@@ -14,13 +14,9 @@ type DbConnectionOutput struct {
 	ConnectionUrl string `json:"connection_url"`
 }
 
-func DbConnection(c context.Context, auth Auth, input DbConnectionInput) (out DbConnectionOutput, err error) {
+func DbConnection(c context.Context, auth Auth, input DbOrgIdentifierInput) (out DbConnectionOutput, err error) {
 	err = makeRequest(c, GET, auth, nil, &out, "/v1/db/%v/connection", input.OrgIdentifier)
 	return
-}
-
-type DbTablesInput struct {
-	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
 
 type DbTablesOutput struct {
@@ -28,7 +24,7 @@ type DbTablesOutput struct {
 	TableNames []string `json:"tables"`
 }
 
-func DbTables(c context.Context, auth Auth, input DbTablesInput) (out DbTablesOutput, err error) {
+func DbTables(c context.Context, auth Auth, input DbOrgIdentifierInput) (out DbTablesOutput, err error) {
 	err = makeRequest(c, GET, auth, nil, &out, "/v1/db/%v/tables", input.OrgIdentifier)
 	return
 }
@@ -51,15 +47,11 @@ func DbSql(c context.Context, auth Auth, input DbSqlInput) (out DbSqlOutput, err
 	return
 }
 
-type DbRollCredentialsInput struct {
-	OrgIdentifier types.OrgIdentifier `json:"-"`
-}
-
 type DbRollCredentialsOutput struct {
 	Message string `json:"message"`
 }
 
-func DbRollCredentials(c context.Context, auth Auth, input DbRollCredentialsInput) (out DbRollCredentialsOutput, err error) {
+func DbRollCredentials(c context.Context, auth Auth, input DbOrgIdentifierInput) (out DbRollCredentialsOutput, err error) {
 	err = makeRequest(c, POST, auth, nil, &out, "/v1/db/%v/roll_credentials", input.OrgIdentifier)
 	return
 }
@@ -90,5 +82,21 @@ type DbRenameTableInput struct {
 
 func DbRenameTable(c context.Context, auth Auth, input DbRenameTableInput) (out types.SingleResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/rename_table", input.OrgIdentifier, input.OpaqueId)
+	return
+}
+
+type DbMigrationsStartInput struct {
+	OrgIdentifier types.OrgIdentifier `json:"-"`
+	AdminUrl      string              `json:"admin_url"`
+	ReadonlyUrl   *string             `json:"readonly_url,omitempty"`
+}
+
+func DbMigrationsStart(c context.Context, auth Auth, input DbMigrationsStartInput) (out types.MessageResponse, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/db/%v/migrate_database", input.OrgIdentifier)
+	return
+}
+
+func DbMigrationsList(c context.Context, auth Auth, input DbOrgIdentifierInput) (out types.CollectionResponse, err error) {
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/db/%v/migrations", input.OrgIdentifier)
 	return
 }
