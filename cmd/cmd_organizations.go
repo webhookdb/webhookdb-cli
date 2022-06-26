@@ -92,11 +92,20 @@ var organizationsCmd = &cli.Command{
 		{
 			Name:  "invite",
 			Usage: "Invite a user to your organization.",
-			Flags: []cli.Flag{orgFlag(), usernameFlag()},
+			Flags: []cli.Flag{
+				orgFlag(),
+				usernameFlag(),
+				&cli.StringFlag{
+					Name:    "role",
+					Aliases: s1("r"),
+					Usage:   "Role to assign the new organization member",
+				},
+			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
 					Email:         requireFlagOrArg(c, "username", ""),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					Role:          c.String("role"),
 				}
 				out, err := client.OrgInvite(ctx, ac.Auth, input)
 				if err != nil {

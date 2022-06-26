@@ -55,6 +55,7 @@ func OrgGet(c context.Context, auth Auth, input OrgGetInput) (out OrgGetOutput, 
 type OrgInviteInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 	Email         string              `json:"email"`
+	Role          string              `json:"role_name,omitempty"`
 }
 
 func OrgInvite(c context.Context, auth Auth, input OrgInviteInput) (out types.MessageResponse, err error) {
