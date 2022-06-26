@@ -21,9 +21,6 @@ type Step struct {
 	Output             string                 `json:"output"`
 	Extras             map[string]Extra       `json:"extras"`
 	RawResponse        *resty.Response        `json:"-"`
-	// If true, this step was processed via the automatic error handling state machine
-	// and clients should generally ignore it.
-	processedViaError bool
 }
 
 type Extra map[string]interface{}
@@ -44,25 +41,10 @@ func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) erro
 }
 
 func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep Step) (Step, error) {
-	if startingStep.processedViaError {
-		// We don't want to run this sort of step multiple times.
-		return startingStep, nil
-	}
 	step := startingStep
-	feedbackIfNoError := func(line string) {
-		// This is pretty tricky. The state machine can be recursive, and attempts to transition
-		// will return errors that will be processed at the API level.
-		// If this happens, our step will have been processed via error.
-		// In these cases, we assume a nested state machine will have given us the right output,
-		// and can leave this output out.
-		if step.processedViaError {
-			return
-		}
-		sm.ask.Feedback(line)
-	}
 	for {
 		if step.Complete {
-			feedbackIfNoError(step.Output)
+			sm.ask.Feedback(step.Output)
 			return step, nil
 		}
 		if !step.NeedsInput {
@@ -70,7 +52,7 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		}
 		if step.Output != "" {
 			// If the step is the first one, so only prompts, this will be blank.
-			feedbackIfNoError(step.Output)
+			sm.ask.Feedback(step.Output)
 		}
 		asker := sm.ask.Ask
 		prompt := step.Prompt
@@ -100,7 +82,7 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		step = newStep
 		// Always print a newline after processing input, so the next step output
 		// has a blank line after the input.
-		feedbackIfNoError("")
+		sm.ask.Feedback("")
 	}
 }
 
