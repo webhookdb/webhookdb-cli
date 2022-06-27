@@ -43,7 +43,7 @@ func integrationFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "integration",
 		Aliases: s1("i"),
-		Usage:   "Integration opaque id, starting with 'svi_'. Run `webhookdb integrations list` to see a list of all your integrations.",
+		Usage:   "Integration identifier. This can either be the service name, the table name, or the opaque id, which is a unique code that starts with 'svi_'. Run webhookdb integrations list to see a list of all your integrations.",
 	}
 }
 

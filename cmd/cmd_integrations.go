@@ -52,9 +52,9 @@ var integrationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsDeleteInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					Confirm:       c.String("confirm"),
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+					Confirm:               c.String("confirm"),
 				}
 				out, err := client.IntegrationsDelete(ctx, ac.Auth, input)
 				if err != nil {
@@ -92,8 +92,8 @@ var integrationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsResetInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsReset(ctx, ac.Auth, input))
 			}),
@@ -108,8 +108,8 @@ var integrationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.IntegrationsStatsInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.IntegrationsStats(ctx, ac.Auth, input)
 				if err != nil {
