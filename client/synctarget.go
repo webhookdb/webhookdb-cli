@@ -6,12 +6,12 @@ import (
 )
 
 type SyncTargetCreateInput struct {
-	OrgIdentifier       types.OrgIdentifier `json:"-"`
-	IntegrationOpaqueId string              `json:"service_integration_opaque_id"`
-	ConnectionUrl       string              `json:"connection_url"`
-	Period              int                 `json:"period_seconds,omitempty"`
-	Schema              string              `json:"schema"`
-	Table               string              `json:"table"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+	IntegrationIdentifier string              `json:"service_integration_identifier"`
+	ConnectionUrl         string              `json:"connection_url"`
+	Period                int                 `json:"period_seconds,omitempty"`
+	Schema                string              `json:"schema"`
+	Table                 string              `json:"table"`
 }
 
 func SyncTargetCreate(c context.Context, auth Auth, input SyncTargetCreateInput) (out types.SingleResponse, err error) {

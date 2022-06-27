@@ -186,9 +186,9 @@ var dbCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.DbRenameTableInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					NewName:       c.String("new-name"),
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+					NewName:               c.String("new-name"),
 				}
 				out, err := client.DbRenameTable(ctx, ac.Auth, input)
 				if err != nil {

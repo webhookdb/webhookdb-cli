@@ -6,10 +6,10 @@ import (
 )
 
 type WebhookCreateInput struct {
-	OrgIdentifier types.OrgIdentifier `json:"-"`
-	WebhookSecret string              `json:"webhook_secret"`
-	Url           string              `json:"url"`
-	SintOpaqueId  string              `json:"service_integration_opaque_id"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+	WebhookSecret         string              `json:"webhook_secret"`
+	Url                   string              `json:"url"`
+	IntegrationIdentifier string              `json:"service_integration_identifier"`
 }
 
 func WebhookCreate(c context.Context, auth Auth, input WebhookCreateInput) (out types.MessageResponse, err error) {

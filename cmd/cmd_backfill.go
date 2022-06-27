@@ -16,8 +16,8 @@ var backfillCmd = &cli.Command{
 	},
 	Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 		input := client.BackfillInput{
-			OpaqueId:      getIntegrationFlagOrArg(c),
-			OrgIdentifier: getOrgFlag(c, ac.Prefs),
+			IntegrationIdentifier: getIntegrationFlagOrArg(c),
+			OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 		}
 		return stateMachineResponseRunner(ctx, ac.Auth)(client.Backfill(ctx, ac.Auth, input))
 	}),
@@ -28,8 +28,8 @@ var backfillCmd = &cli.Command{
 			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.BackfillResetInput{
-					OpaqueId:      getIntegrationFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.BackfillReset(ctx, ac.Auth, input))
 			}),

@@ -32,7 +32,7 @@ var webhooksCmd = &cli.Command{
 					WebhookSecret: c.String("secret"),
 				}
 				if c.String("integration") != "" {
-					input.SintOpaqueId = c.String("integration")
+					input.IntegrationIdentifier = c.String("integration")
 				} else {
 					input.OrgIdentifier = getOrgFlag(c, ac.Prefs)
 				}

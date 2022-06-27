@@ -30,12 +30,12 @@ var synctargetCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.SyncTargetCreateInput{
-					OrgIdentifier:       getOrgFlag(c, ac.Prefs),
-					IntegrationOpaqueId: getIntegrationFlagOrArg(c),
-					ConnectionUrl:       c.String("connection-url"),
-					Period:              c.Int("period"),
-					Schema:              c.String("schema"),
-					Table:               c.String("table"),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					ConnectionUrl:         c.String("connection-url"),
+					Period:                c.Int("period"),
+					Schema:                c.String("schema"),
+					Table:                 c.String("table"),
 				}
 				out, err := client.SyncTargetCreate(ctx, ac.Auth, input)
 				if err != nil {

@@ -17,9 +17,9 @@ func IntegrationsCreate(c context.Context, auth Auth, input IntegrationsCreateIn
 }
 
 type IntegrationsDeleteInput struct {
-	OpaqueId      string              `json:"-"`
-	OrgIdentifier types.OrgIdentifier `json:"-"`
-	Confirm       string              `json:"confirm"`
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+	Confirm               string              `json:"confirm"`
 }
 
 type IntegrationsDeleteOutput struct {
@@ -28,7 +28,7 @@ type IntegrationsDeleteOutput struct {
 
 func IntegrationsDelete(c context.Context, auth Auth, input IntegrationsDeleteInput) (IntegrationsDeleteOutput, error) {
 	out := IntegrationsDeleteOutput{}
-	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/delete", input.OrgIdentifier, input.OpaqueId)
+	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/delete", input.OrgIdentifier, input.IntegrationIdentifier)
 	return out, err
 }
 
@@ -42,20 +42,20 @@ func IntegrationsList(c context.Context, auth Auth, input IntegrationsListInput)
 }
 
 type IntegrationsResetInput struct {
-	OpaqueId      string              `json:"-"`
-	OrgIdentifier types.OrgIdentifier `json:"-"`
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
 }
 
 func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInput) (Step, error) {
-	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/reset", input.OrgIdentifier, input.OpaqueId)
+	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/reset", input.OrgIdentifier, input.IntegrationIdentifier)
 }
 
 type IntegrationsStatsInput struct {
-	OpaqueId      string              `json:"-"`
-	OrgIdentifier types.OrgIdentifier `json:"-"`
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
 }
 
 func IntegrationsStats(c context.Context, auth Auth, input IntegrationsStatsInput) (out types.SingleResponse, err error) {
-	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/stats", input.OrgIdentifier, input.OpaqueId)
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/stats", input.OrgIdentifier, input.IntegrationIdentifier)
 	return
 }
