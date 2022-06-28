@@ -76,7 +76,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgCreateInput{
-					OrgName: requireFlagOrArg(c, "name", ""),
+					OrgName: flagOrArg(c, "name"),
 				}
 				out, err := client.OrgCreate(ctx, ac.Auth, input)
 				if err != nil {
@@ -103,7 +103,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgInviteInput{
-					Email:         requireFlagOrArg(c, "username", ""),
+					Email:         flagOrArg(c, "username"),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 					Role:          c.String("role"),
 				}
@@ -123,7 +123,7 @@ var organizationsCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.OrgJoinInput{
-					InvitationCode: requireFlagOrArg(c, "code", ""),
+					InvitationCode: flagOrArg(c, "code"),
 				}
 				out, err := client.OrgJoin(ctx, ac.Auth, input)
 				if err != nil {
@@ -195,22 +195,20 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:  "rename",
-			Usage: "Change the name of the organization. Does not change the org key, which is immutable.",
+			Name:  "update",
+			Usage: "Change the name or billing email of the organization. (Note: the org key is immutable and will not change.)",
 			Flags: []cli.Flag{
 				orgFlag(),
-				&cli.StringFlag{
-					Name:    "name",
-					Aliases: s1("n"),
-					Usage:   "New name of the organization",
-				},
+				fieldFlag(),
+				valueFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.OrgRenameInput{
+				input := client.OrgUpdateInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					Name:          flagOrArg(c, "name"),
+					Field:         c.String("field"),
+					Value:         c.String("value"),
 				}
-				out, err := client.OrgRename(ctx, ac.Auth, input)
+				out, err := client.OrgUpdate(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}

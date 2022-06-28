@@ -95,12 +95,13 @@ func OrgRemove(c context.Context, auth Auth, input OrgRemoveInput) (out OrgRemov
 	return
 }
 
-type OrgRenameInput struct {
+type OrgUpdateInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
-	Name          string              `json:"name"`
+	Field         string              `json:"field"`
+	Value         string              `json:"value"`
 }
 
-func OrgRename(c context.Context, auth Auth, input OrgRenameInput) (out types.MessageResponse, err error) {
-	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/rename", input.OrgIdentifier)
+func OrgUpdate(c context.Context, auth Auth, input OrgUpdateInput) (out types.MessageResponse, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/update", input.OrgIdentifier)
 	return
 }

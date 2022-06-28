@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/convext"
@@ -9,8 +10,10 @@ import (
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/config"
+	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli/v2"
 	"os"
+	"reflect"
 	"regexp"
 )
 
@@ -139,6 +142,67 @@ func printlnif(c *cli.Context, msg string, linebr bool) {
 	if linebr {
 		fmt.Fprintln(c.App.Writer)
 	}
+}
+
+// Print results of a SQL query, with option for rich formatting
+func printSqlOutput(c *cli.Context, res client.DbSqlOutput, useColors bool) error {
+	table := tablewriter.NewWriter(c.App.Writer)
+
+	table.SetHeader(res.Headers)
+	if useColors {
+		headerCols := make([]tablewriter.Colors, len(res.Headers))
+		for i := range res.Headers {
+			headerCols[i] = tablewriter.Colors{tablewriter.FgHiGreenColor}
+		}
+		table.SetHeaderColor(headerCols...)
+	}
+
+	for _, row := range res.Rows {
+		rowStr := make([]string, len(row))
+		colors := make([]tablewriter.Colors, len(row))
+		for i, cell := range row {
+			if string(cell) == "null" {
+				rowStr[i] = "<null>"
+				colors[i] = tablewriter.Colors{tablewriter.FgYellowColor}
+			} else if len(cell) == 0 {
+				rowStr[i] = string(cell)
+				colors[i] = tablewriter.Colors{}
+			} else {
+				var deserialized interface{}
+				if err := json.Unmarshal(cell, &deserialized); err != nil {
+					return err
+				}
+				dtype := reflect.TypeOf(deserialized)
+				colors[i] = tablewriter.Colors{}
+				if dtype.Kind() == reflect.Map || dtype.Kind() == reflect.Slice {
+					// Complex types like this should render the raw bytes
+					// and not bother parsing anything.
+					rowStr[i] = string(cell)
+				} else if strgr, ok := deserialized.(fmt.Stringer); ok {
+					// This makes sure the string "hi" renders as 'hi'
+					// and not '"hit"' as it would with %v
+					rowStr[i] = strgr.String()
+				} else {
+					// This is probably a number or something like that,
+					// render the parsed value. NOTE, you may see floats
+					// for integer columns; in this case it's due to the Go side
+					// reading out floats, and putting that into JSON
+					// (that is, instead of '1', you can get '1.00' in the actual json).
+					rowStr[i] = fmt.Sprintf("%v", deserialized)
+				}
+			}
+		}
+		if useColors {
+			table.Rich(rowStr, colors)
+		} else {
+			table.Append(rowStr)
+		}
+	}
+	if res.MaxRowsReached {
+		table.SetCaption(true, "Results have been truncated.")
+	}
+	table.Render()
+	return nil
 }
 
 const tableNameRules = "Valid table names must adhere to the following rules: " +
