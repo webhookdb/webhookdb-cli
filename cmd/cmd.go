@@ -38,6 +38,7 @@ The CLI also gives you quick access to the WebhookDB documentation:
 			docsCmd,
 			fixturesCmd,
 			integrationsCmd,
+			namedQueriesCmd,
 			organizationsCmd,
 			servicesCmd,
 			subscriptionsCmd,

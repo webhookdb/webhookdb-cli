@@ -78,6 +78,22 @@ func getFormatFlag(c *cli.Context) formatting.Format {
 	return f
 }
 
+func fieldFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "field",
+		Aliases: s1("f"),
+		Usage:   "The field that you want to change.",
+	}
+}
+
+func valueFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "value",
+		Aliases: s1("v"),
+		Usage:   "The new value for the chosen field",
+	}
+}
+
 func extractPositional(idx int, c *cli.Context, msg string) string {
 	a := c.Args().Get(idx)
 	if a == "" {
