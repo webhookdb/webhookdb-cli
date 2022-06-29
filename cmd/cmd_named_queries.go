@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/urfave/cli/v2"
 )
 
@@ -47,19 +48,18 @@ var namedQueriesCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				namedQueryFlag(),
-				formatFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.NamedQueryInfoInput{
-					ShortId:       getNamedQueryFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					QueryIdentifier: getNamedQueryFlagOrArg(c),
+					OrgIdentifier:   getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.NamedQueryInfo(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}
 				printlnif(c, out.Message(), true)
-				return getFormatFlag(c).WriteSingle(c.App.Writer, out)
+				return formatting.Table.WriteSingle(c.App.Writer, out)
 			}),
 		},
 		{
@@ -92,8 +92,8 @@ var namedQueriesCmd = &cli.Command{
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				useColors := c.Bool("color")
 				input := client.NamedQueryRunInput{
-					ShortId:       getNamedQueryFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					QueryIdentifier: getNamedQueryFlagOrArg(c),
+					OrgIdentifier:   getOrgFlag(c, ac.Prefs),
 				}
 				out, err := client.NamedQueryRun(ctx, ac.Auth, input)
 				if err != nil {
@@ -117,10 +117,10 @@ var namedQueriesCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.NamedQueryUpdateInput{
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					ShortId:       getNamedQueryFlagOrArg(c),
-					Field:         c.String("field"),
-					Value:         c.String("value"),
+					OrgIdentifier:   getOrgFlag(c, ac.Prefs),
+					QueryIdentifier: getNamedQueryFlagOrArg(c),
+					Field:           c.String("field"),
+					Value:           c.String("value"),
 				}
 				out, err := client.NamedQueryUpdate(ctx, ac.Auth, input)
 				if err != nil {
@@ -137,7 +137,7 @@ func namedQueryFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "query",
 		Aliases: s1("q"),
-		Usage:   "Named query short id. Run `webhookdb named-query list` to see a list of all your named queries.",
+		Usage:   "Named query identifier. This can either be the short id or the name you've given the query. Run `webhookdb named-query list` to see a list of all your named queries.",
 	}
 }
 

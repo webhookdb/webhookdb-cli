@@ -22,12 +22,12 @@ func NamedQueryCreate(c context.Context, auth Auth, input NamedQueryCreateInput)
 }
 
 type NamedQueryInfoInput struct {
-	OrgIdentifier types.OrgIdentifier `json:"-"`
-	ShortId       string              `json:"-"`
+	OrgIdentifier   types.OrgIdentifier `json:"-"`
+	QueryIdentifier string              `json:"-"`
 }
 
 func NamedQueryInfo(c context.Context, auth Auth, input NamedQueryInfoInput) (out types.SingleResponse, err error) {
-	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/custom_queries/%v", input.OrgIdentifier, input.ShortId)
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/custom_queries/%v", input.OrgIdentifier, input.QueryIdentifier)
 	return
 }
 
@@ -41,23 +41,23 @@ func NamedQueryList(c context.Context, auth Auth, input NamedQueryListInput) (ou
 }
 
 type NamedQueryRunInput struct {
-	OrgIdentifier types.OrgIdentifier `json:"-"`
-	ShortId       string              `json:"-"`
+	OrgIdentifier   types.OrgIdentifier `json:"-"`
+	QueryIdentifier string              `json:"-"`
 }
 
 func NamedQueryRun(c context.Context, auth Auth, input NamedQueryRunInput) (out DbSqlOutput, err error) {
-	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/custom_queries/%v/run", input.OrgIdentifier, input.ShortId)
+	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v/custom_queries/%v/run", input.OrgIdentifier, input.QueryIdentifier)
 	return
 }
 
 type NamedQueryUpdateInput struct {
-	OrgIdentifier types.OrgIdentifier `json:"-"`
-	ShortId       string              `json:"-"`
-	Field         string              `json:"field"`
-	Value         string              `json:"value"`
+	OrgIdentifier   types.OrgIdentifier `json:"-"`
+	QueryIdentifier string              `json:"-"`
+	Field           string              `json:"field"`
+	Value           string              `json:"value"`
 }
 
 func NamedQueryUpdate(c context.Context, auth Auth, input NamedQueryUpdateInput) (out types.MessageResponse, err error) {
-	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/custom_queries/%v/update", input.OrgIdentifier, input.ShortId)
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/custom_queries/%v/update", input.OrgIdentifier, input.QueryIdentifier)
 	return
 }
