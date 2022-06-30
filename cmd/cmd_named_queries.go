@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/urfave/cli/v2"
 )
 
@@ -48,6 +47,7 @@ var namedQueriesCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				namedQueryFlag(),
+				formatFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.NamedQueryInfoInput{
@@ -59,7 +59,7 @@ var namedQueriesCmd = &cli.Command{
 					return err
 				}
 				printlnif(c, out.Message(), true)
-				return formatting.Table.WriteSingle(c.App.Writer, out)
+				return getFormatFlag(c).WriteSingle(c.App.Writer, out)
 			}),
 		},
 		{
