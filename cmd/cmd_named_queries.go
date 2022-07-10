@@ -50,7 +50,7 @@ var namedQueriesCmd = &cli.Command{
 				formatFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.NamedQueryInfoInput{
+				input := client.NamedQueryLookupInput{
 					QueryIdentifier: getNamedQueryFlagOrArg(c),
 					OrgIdentifier:   getOrgFlag(c, ac.Prefs),
 				}
@@ -91,7 +91,7 @@ var namedQueriesCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				useColors := c.Bool("color")
-				input := client.NamedQueryRunInput{
+				input := client.NamedQueryLookupInput{
 					QueryIdentifier: getNamedQueryFlagOrArg(c),
 					OrgIdentifier:   getOrgFlag(c, ac.Prefs),
 				}
@@ -123,6 +123,26 @@ var namedQueriesCmd = &cli.Command{
 					Value:           c.String("value"),
 				}
 				out, err := client.NamedQueryUpdate(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				printlnif(c, out.Message, true)
+				return nil
+			}),
+		},
+		{
+			Name:  "delete",
+			Usage: "Delete the named query.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				namedQueryFlag(),
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.NamedQueryLookupInput{
+					OrgIdentifier:   getOrgFlag(c, ac.Prefs),
+					QueryIdentifier: getNamedQueryFlagOrArg(c),
+				}
+				out, err := client.NamedQueryDelete(ctx, ac.Auth, input)
 				if err != nil {
 					return err
 				}

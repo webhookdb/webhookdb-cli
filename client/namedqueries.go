@@ -21,16 +21,6 @@ func NamedQueryCreate(c context.Context, auth Auth, input NamedQueryCreateInput)
 	return
 }
 
-type NamedQueryInfoInput struct {
-	OrgIdentifier   types.OrgIdentifier `json:"-"`
-	QueryIdentifier string              `json:"query_identifier"`
-}
-
-func NamedQueryInfo(c context.Context, auth Auth, input NamedQueryInfoInput) (out types.SingleResponse, err error) {
-	err = makeRequest(c, GET, auth, input, &out, "/v1/organizations/%v/custom_queries/lookup", input.OrgIdentifier)
-	return
-}
-
 type NamedQueryListInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 }
@@ -40,13 +30,18 @@ func NamedQueryList(c context.Context, auth Auth, input NamedQueryListInput) (ou
 	return
 }
 
-type NamedQueryRunInput struct {
+type NamedQueryLookupInput struct {
 	OrgIdentifier   types.OrgIdentifier `json:"-"`
 	QueryIdentifier string              `json:"query_identifier"`
 }
 
-func NamedQueryRun(c context.Context, auth Auth, input NamedQueryRunInput) (out DbSqlOutput, err error) {
-	err = makeRequest(c, GET, auth, input, &out, "/v1/organizations/%v/custom_queries/run", input.OrgIdentifier)
+func NamedQueryInfo(c context.Context, auth Auth, input NamedQueryLookupInput) (out types.SingleResponse, err error) {
+	err = makeRequest(c, GET, auth, input, &out, "/v1/organizations/%v/custom_queries/lookup?query_identifier=%s", input.OrgIdentifier, input.QueryIdentifier)
+	return
+}
+
+func NamedQueryRun(c context.Context, auth Auth, input NamedQueryLookupInput) (out DbSqlOutput, err error) {
+	err = makeRequest(c, GET, auth, input, &out, "/v1/organizations/%v/custom_queries/run?query_identifier=%s", input.OrgIdentifier, input.QueryIdentifier)
 	return
 }
 
@@ -59,5 +54,10 @@ type NamedQueryUpdateInput struct {
 
 func NamedQueryUpdate(c context.Context, auth Auth, input NamedQueryUpdateInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/custom_queries/update", input.OrgIdentifier)
+	return
+}
+
+func NamedQueryDelete(c context.Context, auth Auth, input NamedQueryLookupInput) (out types.MessageResponse, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/custom_queries/delete", input.OrgIdentifier)
 	return
 }
