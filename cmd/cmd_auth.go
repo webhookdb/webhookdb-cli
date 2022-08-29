@@ -50,9 +50,15 @@ var authCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				result, err := client.NewStateMachine().RunWithOutput(ctx, ac.Auth, authOut)
-				if err != nil {
-					return err
+
+				var result client.Step
+				if authOut.Complete {
+					result = authOut
+				} else {
+					result, err = client.NewStateMachine().RunWithOutput(ctx, ac.Auth, authOut)
+					if err != nil {
+						return err
+					}
 				}
 
 				// If the state machine finished running, it was probably successful, but maybe not.
