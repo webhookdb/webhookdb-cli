@@ -47,11 +47,7 @@ func DbSql(c context.Context, auth Auth, input DbSqlInput) (out DbSqlOutput, err
 	return
 }
 
-type DbRollCredentialsOutput struct {
-	Message string `json:"message"`
-}
-
-func DbRollCredentials(c context.Context, auth Auth, input DbOrgIdentifierInput) (out DbRollCredentialsOutput, err error) {
+func DbRollCredentials(c context.Context, auth Auth, input DbOrgIdentifierInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, nil, &out, "/v1/db/%v/roll_credentials", input.OrgIdentifier)
 	return
 }

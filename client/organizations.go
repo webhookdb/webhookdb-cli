@@ -86,11 +86,7 @@ type OrgRemoveInput struct {
 	Email         string              `json:"email"`
 }
 
-type OrgRemoveOutput struct {
-	Message string `json:"message"`
-}
-
-func OrgRemove(c context.Context, auth Auth, input OrgRemoveInput) (out OrgRemoveOutput, err error) {
+func OrgRemove(c context.Context, auth Auth, input OrgRemoveInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/remove_member", input.OrgIdentifier)
 	return
 }
