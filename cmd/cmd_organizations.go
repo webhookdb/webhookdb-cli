@@ -7,6 +7,7 @@ import (
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
+	"net/url"
 )
 
 var organizationsCmd = &cli.Command{
@@ -19,8 +20,9 @@ var organizationsCmd = &cli.Command{
 			Usage: "Change the default organization for any command you run.",
 			Flags: []cli.Flag{orgFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				identifier := requireFlagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")
 				out, err := client.OrgGet(ctx, ac.Auth, client.OrgGetInput{
-					OrgIdentifier: types.OrgIdentifierFromSlug(requireFlagOrArg(c, "org", "Run `webhookdb org list` to see available orgs.")),
+					OrgIdentifier: types.OrgIdentifierFromSlug(url.QueryEscape(identifier)),
 				})
 				if err != nil {
 					return err
