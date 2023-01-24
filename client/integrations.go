@@ -28,9 +28,15 @@ func IntegrationsDelete(c context.Context, auth Auth, input IntegrationsDeleteIn
 	return out, err
 }
 
-func IntegrationsDelete(c context.Context, auth Auth, input IntegrationsDeleteInput) (IntegrationsDeleteOutput, error) {
-	out := IntegrationsDeleteOutput{}
-	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/delete", input.OrgIdentifier, input.IntegrationIdentifier)
+type IntegrationsInfoInput struct {
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+	Field                 string              `json:"field"`
+}
+
+func IntegrationsInfo(c context.Context, auth Auth, input IntegrationsInfoInput) (types.MessageResponse, error) {
+	out := types.MessageResponse{}
+	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/info", input.OrgIdentifier, input.IntegrationIdentifier)
 	return out, err
 }
 
