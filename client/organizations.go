@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/lithictech/webhookdb-cli/types"
+	"net/url"
 )
 
 type OrgCloseInput struct {
@@ -48,7 +49,9 @@ type OrgGetOutput struct {
 }
 
 func OrgGet(c context.Context, auth Auth, input OrgGetInput) (out OrgGetOutput, err error) {
-	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v", input.OrgIdentifier)
+	values := url.Values{}
+	values.Set("org", string(input.OrgIdentifier))
+	err = makeRequest(c, GET, auth, values, &out, "/v1/organizations/-")
 	return
 }
 
