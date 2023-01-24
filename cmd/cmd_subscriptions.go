@@ -11,7 +11,7 @@ import (
 
 var subscriptionsCmd = &cli.Command{
 	Name:    "subscription",
-	Aliases: []string{"subscriptions"},
+	Aliases: []string{"subscriptions", "sub", "subs"},
 	Usage:   "Work with your WebhookDB subscription.",
 	Subcommands: []*cli.Command{
 		{
