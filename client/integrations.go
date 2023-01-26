@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
@@ -34,9 +35,12 @@ type IntegrationsInfoInput struct {
 	Field                 string              `json:"field"`
 }
 
-func IntegrationsInfo(c context.Context, auth Auth, input IntegrationsInfoInput) (types.MessageResponse, error) {
-	out := types.MessageResponse{}
-	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/info", input.OrgIdentifier, input.IntegrationIdentifier)
+type IntegrationsInfoOutput struct {
+	Blocks formatting.Blocks `json:"blocks"`
+}
+
+func IntegrationsInfo(c context.Context, auth Auth, input IntegrationsInfoInput) (out IntegrationsInfoOutput, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/info", input.OrgIdentifier, input.IntegrationIdentifier)
 	return out, err
 }
 

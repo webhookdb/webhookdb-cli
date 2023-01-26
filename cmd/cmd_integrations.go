@@ -87,8 +87,8 @@ var integrationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				printlnif(c, out.Message, false)
-				return nil
+				_, err = out.Blocks.WriteTo(c.App.Writer)
+				return err
 			}),
 		},
 		{
