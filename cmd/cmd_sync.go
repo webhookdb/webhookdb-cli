@@ -14,6 +14,7 @@ type SyncType struct {
 	FullName             string
 	Destination          string
 	SupportedProtocolMsg string
+	UniqueCreateFlags    []cli.Flag
 }
 
 var DbSyncType = SyncType{
@@ -22,6 +23,7 @@ var DbSyncType = SyncType{
 	FullName:             "database",
 	Destination:          "database",
 	SupportedProtocolMsg: "PostgresQL and SnowflakeDB databases are supported.",
+	UniqueCreateFlags:    []cli.Flag{syncSchemaFlag(), syncTableFlag()},
 }
 
 var HttpSyncType = SyncType{
@@ -30,6 +32,7 @@ var HttpSyncType = SyncType{
 	FullName:             "http",
 	Destination:          "http endpoint",
 	SupportedProtocolMsg: "Only https urls are supported.",
+	UniqueCreateFlags:    []cli.Flag{},
 }
 
 func syncCmd(input SyncType) *cli.Command {
@@ -44,19 +47,20 @@ func syncCmd(input SyncType) *cli.Command {
 					"automatically synced from the integration's WebhookDB table into the %v specified by the "+
 					"connection string. %v",
 					input.FullName, input.Destination, input.SupportedProtocolMsg),
-				Flags: []cli.Flag{
-					orgFlag(),
-					integrationFlag(),
-					&cli.StringFlag{
-						Name:    "connection-url",
-						Aliases: s1("u"),
-						Usage: fmt.Sprintf("The connection string for the %v that WebhookDB should write "+
-							"data to.", input.Destination),
+				Flags: append(
+					[]cli.Flag{
+						orgFlag(),
+						integrationFlag(),
+						&cli.StringFlag{
+							Name:    "connection-url",
+							Aliases: s1("u"),
+							Usage: fmt.Sprintf("The connection string for the %v that WebhookDB should write "+
+								"data to.", input.Destination),
+						},
+						syncPeriodFlag(),
 					},
-					syncPeriodFlag(),
-					syncSchemaFlag(),
-					syncTableFlag(),
-				},
+					input.UniqueCreateFlags...,
+				),
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetCreateInput{
 						OrgIdentifier:         getOrgFlag(c, ac.Prefs),
@@ -215,17 +219,15 @@ func syncPeriodFlag() *cli.IntFlag {
 
 func syncSchemaFlag() *cli.StringFlag {
 	return &cli.StringFlag{
-		Name: "schema",
-		Usage: "Schema (or namespace) to write the table into. Default to no schema/namespace. Can only be modified " +
-			"on database sync targets.",
+		Name:  "schema",
+		Usage: "Schema (or namespace) to write the table into. Default to no schema/namespace.",
 	}
 }
 
 func syncTableFlag() *cli.StringFlag {
 	return &cli.StringFlag{
-		Name: "table",
-		Usage: "Table to create and update. Default to match the table name of the service integration. Can only be " +
-			"modified on database sync targets.",
+		Name:  "table",
+		Usage: "Table to create and update. Default to match the table name of the service integration.",
 	}
 }
 
