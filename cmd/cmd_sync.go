@@ -16,7 +16,7 @@ type SyncType struct {
 	SupportedProtocolMsg string
 }
 
-var DbSyncType SyncType = SyncType{
+var DbSyncType = SyncType{
 	Slug:                 "db",
 	Aliases:              []string{"sync"},
 	FullName:             "database",
@@ -24,7 +24,7 @@ var DbSyncType SyncType = SyncType{
 	SupportedProtocolMsg: "PostgresQL and SnowflakeDB databases are supported.",
 }
 
-var HttpSyncType SyncType = SyncType{
+var HttpSyncType = SyncType{
 	Slug:                 "http",
 	Aliases:              []string{},
 	FullName:             "http",
@@ -65,7 +65,7 @@ func syncCmd(input SyncType) *cli.Command {
 						Period:                c.Int("period"),
 						Schema:                c.String("schema"),
 						Table:                 c.String("table"),
-						SyncTypePathSlug:      input.Slug,
+						SyncTypeSlug:          input.Slug,
 					}
 					out, err := client.SyncTargetCreate(ctx, ac.Auth, input)
 					if err != nil {
@@ -85,9 +85,9 @@ func syncCmd(input SyncType) *cli.Command {
 				},
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetDeleteInput{
-						OpaqueId:         getSyncTargetFlagOrArg(c, input),
-						OrgIdentifier:    getOrgFlag(c, ac.Prefs),
-						SyncTypePathSlug: "db",
+						OpaqueId:      getSyncTargetFlagOrArg(c, input),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						SyncTypeSlug:  "db",
 					}
 					out, err := client.SyncTargetDelete(ctx, ac.Auth, input)
 					if err != nil {
@@ -106,8 +106,8 @@ func syncCmd(input SyncType) *cli.Command {
 				},
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetListInput{
-						OrgIdentifier:    getOrgFlag(c, ac.Prefs),
-						SyncTypePathSlug: input.Slug,
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						SyncTypeSlug:  input.Slug,
 					}
 					out, err := client.SyncTargetList(ctx, ac.Auth, input)
 					if err != nil {
@@ -130,12 +130,12 @@ func syncCmd(input SyncType) *cli.Command {
 				},
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetUpdateInput{
-						OpaqueId:         getSyncTargetFlagOrArg(c, input),
-						OrgIdentifier:    getOrgFlag(c, ac.Prefs),
-						Period:           c.Int("period"),
-						Schema:           c.String("schema"),
-						Table:            c.String("table"),
-						SyncTypePathSlug: input.Slug,
+						OpaqueId:      getSyncTargetFlagOrArg(c, input),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						Period:        c.Int("period"),
+						Schema:        c.String("schema"),
+						Table:         c.String("table"),
+						SyncTypeSlug:  input.Slug,
 					}
 					out, err := client.SyncTargetUpdate(ctx, ac.Auth, input)
 					if err != nil {
@@ -165,11 +165,11 @@ func syncCmd(input SyncType) *cli.Command {
 				},
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetUpdateCredsInput{
-						OpaqueId:         getSyncTargetFlagOrArg(c, input),
-						OrgIdentifier:    getOrgFlag(c, ac.Prefs),
-						Username:         c.String("user"),
-						Password:         c.String("password"),
-						SyncTypePathSlug: input.Slug,
+						OpaqueId:      getSyncTargetFlagOrArg(c, input),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						Username:      c.String("user"),
+						Password:      c.String("password"),
+						SyncTypeSlug:  input.Slug,
 					}
 					out, err := client.SyncTargetUpdateCreds(ctx, ac.Auth, input)
 					if err != nil {
@@ -190,9 +190,9 @@ func syncCmd(input SyncType) *cli.Command {
 				},
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetSyncInput{
-						OpaqueId:         getSyncTargetFlagOrArg(c, input),
-						OrgIdentifier:    getOrgFlag(c, ac.Prefs),
-						SyncTypePathSlug: input.Slug,
+						OpaqueId:      getSyncTargetFlagOrArg(c, input),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						SyncTypeSlug:  input.Slug,
 					}
 					out, err := client.SyncTargetSync(ctx, ac.Auth, input)
 					if err != nil {
@@ -226,14 +226,6 @@ func syncTableFlag() *cli.StringFlag {
 		Name: "table",
 		Usage: "Table to create and update. Default to match the table name of the service integration. Can only be " +
 			"modified on database sync targets.",
-	}
-}
-
-func runListMsg(syncTypePathSlug string) string {
-	if syncTypePathSlug == "db" {
-		return "Use `webhookdb dbsync list` to see a list of all your database sync targets."
-	} else {
-		return "Use `webhookdb httpsync list` to see a list of all your http sync targets."
 	}
 }
 
