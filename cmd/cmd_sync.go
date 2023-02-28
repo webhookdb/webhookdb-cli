@@ -14,7 +14,7 @@ type syncType struct {
 	FullName             string
 	Destination          string
 	SupportedProtocolMsg string
-	UniqueCreateFlags    []cli.Flag
+	UniqueFieldFlags     []cli.Flag
 }
 
 func (st syncType) Cmd() string {
@@ -27,7 +27,7 @@ var dbSyncType = syncType{
 	FullName:             "database",
 	Destination:          "database",
 	SupportedProtocolMsg: "PostgresQL and SnowflakeDB databases are supported.",
-	UniqueCreateFlags:    []cli.Flag{syncSchemaFlag(), syncTableFlag()},
+	UniqueFieldFlags:     []cli.Flag{syncSchemaFlag(), syncTableFlag()},
 }
 
 var httpSyncType = syncType{
@@ -36,7 +36,7 @@ var httpSyncType = syncType{
 	FullName:             "http",
 	Destination:          "http endpoint",
 	SupportedProtocolMsg: "Only https urls are supported.",
-	UniqueCreateFlags:    []cli.Flag{},
+	UniqueFieldFlags:     []cli.Flag{syncPageSizeFlag()},
 }
 
 func syncCmd(st syncType) *cli.Command {
@@ -63,13 +63,14 @@ func syncCmd(st syncType) *cli.Command {
 						},
 						syncPeriodFlag(),
 					},
-					st.UniqueCreateFlags...,
+					st.UniqueFieldFlags...,
 				),
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetCreateInput{
 						OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 						IntegrationIdentifier: getIntegrationFlagOrArg(c),
 						ConnectionUrl:         c.String("connection-url"),
+						PageSize:              c.Int("pagesize"),
 						Period:                c.Int("period"),
 						Schema:                c.String("schema"),
 						Table:                 c.String("table"),
@@ -131,17 +132,18 @@ func syncCmd(st syncType) *cli.Command {
 				Usage: fmt.Sprintf(
 					"Update the %s sync target. Use `webhookdb %s list` to see all %s sync targets.",
 					st.FullName, st.Cmd(), st.FullName),
-				Flags: []cli.Flag{
-					orgFlag(),
-					syncTargetFlag(st),
-					syncPeriodFlag(),
-					syncSchemaFlag(),
-					syncTableFlag(),
-				},
+				Flags: append(
+					[]cli.Flag{
+						orgFlag(),
+						syncTargetFlag(st),
+						syncPeriodFlag(),
+					},
+					st.UniqueFieldFlags...),
 				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 					input := client.SyncTargetUpdateInput{
 						OpaqueId:      getSyncTargetFlagOrArg(c, st),
 						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						PageSize:      c.Int("pagesize"),
 						Period:        c.Int("period"),
 						Schema:        c.String("schema"),
 						Table:         c.String("table"),
@@ -217,10 +219,19 @@ func syncCmd(st syncType) *cli.Command {
 	}
 }
 
+func syncPageSizeFlag() *cli.IntFlag {
+	return &cli.IntFlag{
+		Name:        "pagesize",
+		Usage:       "Max number of rows WebhookDB sends the sync target in each call.",
+		DefaultText: "unset",
+	}
+}
+
 func syncPeriodFlag() *cli.IntFlag {
 	return &cli.IntFlag{
-		Name:  "period",
-		Usage: "Number of seconds between syncs.",
+		Name:        "period",
+		Usage:       "Number of seconds between syncs.",
+		DefaultText: "unset",
 	}
 }
 
