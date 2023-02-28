@@ -12,8 +12,9 @@ import (
 )
 
 var updateCmd = &cli.Command{
-	Name:  "update",
-	Usage: "Update the version of the CLI in-place.",
+	Name:    "update",
+	Aliases: []string{"upgrade"},
+	Usage:   "Update the version of the CLI in-place.",
 	Flags: []cli.Flag{
 		&cli.StringFlag{Name: "version", Usage: "Use a specific version rather than latest. Can be used to downgrade."},
 		&cli.PathFlag{Name: "path", Usage: "Download the new version to the given path. Default to the current executable."},

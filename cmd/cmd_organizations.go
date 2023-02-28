@@ -10,8 +10,9 @@ import (
 )
 
 var organizationsCmd = &cli.Command{
-	Name:  "org",
-	Usage: "Create and activate an organization, invite new members, and change membership roles.",
+	Name:    "org",
+	Aliases: []string{"orgs", "organization", "organizations"},
+	Usage:   "Create and activate an organization, invite new members, and change membership roles.",
 	Subcommands: []*cli.Command{
 		{
 			Name:  "activate",
@@ -31,8 +32,9 @@ var organizationsCmd = &cli.Command{
 			}),
 		},
 		{
-			Name:  "changerole",
-			Usage: "Change the role of members of your organization.",
+			Name:    "changerole",
+			Aliases: []string{"change-role"},
+			Usage:   "Change the role of members of your organization.",
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:    "usernames",

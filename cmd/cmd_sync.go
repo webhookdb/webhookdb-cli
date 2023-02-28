@@ -41,7 +41,7 @@ var httpSyncType = syncType{
 
 func syncCmd(st syncType) *cli.Command {
 	return &cli.Command{
-		Name:    st.Slug + "sync",
+		Name:    st.Cmd(),
 		Aliases: st.Aliases,
 		Usage:   fmt.Sprintf("Replicate data in a WebhookDB table to another %s.", st.Destination),
 		Subcommands: []*cli.Command{

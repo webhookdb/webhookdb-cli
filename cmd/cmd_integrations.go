@@ -9,8 +9,9 @@ import (
 )
 
 var integrationsCmd = &cli.Command{
-	Name:  "integrations",
-	Usage: "Make sure that you're working on the correct organization when you create an integration.",
+	Name:    "integrations",
+	Aliases: []string{"integration"},
+	Usage:   "Make sure that you're working on the correct organization when you create an integration.",
 	Subcommands: []*cli.Command{
 		{
 			Name:  "create",

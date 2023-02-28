@@ -8,8 +8,9 @@ import (
 )
 
 var servicesCmd = &cli.Command{
-	Name:  "services",
-	Usage: "Work with available services that can be hooked up to reflect data to WebhookDB.",
+	Name:    "services",
+	Aliases: []string{"service"},
+	Usage:   "Work with available services that can be hooked up to reflect data to WebhookDB.",
 	Subcommands: []*cli.Command{
 		{
 			Name:  "list",

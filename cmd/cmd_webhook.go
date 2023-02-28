@@ -8,8 +8,9 @@ import (
 )
 
 var webhooksCmd = &cli.Command{
-	Name:  "webhook",
-	Usage: "Manage webhooks that will be notified when WebhookDB data is updated.",
+	Name:    "webhook",
+	Aliases: []string{"webhooks"},
+	Usage:   "Manage webhooks that will be notified when WebhookDB data is updated.",
 	Subcommands: []*cli.Command{
 		{
 			Name:  "create",
