@@ -24,6 +24,7 @@ var synctargetCmd = &cli.Command{
 					Aliases: s1("u"),
 					Usage:   "The connection string for the database that WebhookDB should write data to.",
 				},
+				syncPageSizeFlag(),
 				syncPeriodFlag(),
 				syncSchemaFlag(),
 				syncTableFlag(),
@@ -33,6 +34,7 @@ var synctargetCmd = &cli.Command{
 					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 					IntegrationIdentifier: getIntegrationFlagOrArg(c),
 					ConnectionUrl:         c.String("connection-url"),
+					PageSize:              c.Int("pagesize"),
 					Period:                c.Int("period"),
 					Schema:                c.String("schema"),
 					Table:                 c.String("table"),
@@ -90,6 +92,7 @@ var synctargetCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				syncTargetFlag(),
+				syncPageSizeFlag(),
 				syncPeriodFlag(),
 				syncSchemaFlag(),
 				syncTableFlag(),
@@ -98,6 +101,7 @@ var synctargetCmd = &cli.Command{
 				input := client.SyncTargetUpdateInput{
 					OpaqueId:      getSyncTargetFlagOrArg(c),
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
+					PageSize:      c.Int("pagesize"),
 					Period:        c.Int("period"),
 					Schema:        c.String("schema"),
 					Table:         c.String("table"),
@@ -165,6 +169,13 @@ var synctargetCmd = &cli.Command{
 			}),
 		},
 	},
+}
+
+func syncPageSizeFlag() *cli.IntFlag {
+	return &cli.IntFlag{
+		Name:  "pagesize",
+		Usage: "Max number of rows to retrieve in a single call.",
+	}
 }
 
 func syncPeriodFlag() *cli.IntFlag {
