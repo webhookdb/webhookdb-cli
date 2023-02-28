@@ -9,6 +9,7 @@ type SyncTargetCreateInput struct {
 	OrgIdentifier         types.OrgIdentifier `json:"-"`
 	IntegrationIdentifier string              `json:"service_integration_identifier"`
 	ConnectionUrl         string              `json:"connection_url"`
+	PageSize              int                 `json:"page_size,omitempty"`
 	Period                int                 `json:"period_seconds,omitempty"`
 	Schema                string              `json:"schema"`
 	Table                 string              `json:"table"`
@@ -50,6 +51,7 @@ func SyncTargetList(c context.Context, auth Auth, input SyncTargetListInput) (ou
 type SyncTargetUpdateInput struct {
 	OrgIdentifier types.OrgIdentifier `json:"-"`
 	OpaqueId      string              `json:"-"`
+	PageSize      int                 `json:"page_size,omitempty"`
 	Period        int                 `json:"period_seconds,omitempty"`
 	Schema        string              `json:"schema"`
 	Table         string              `json:"table"`

@@ -36,7 +36,7 @@ var httpSyncType = syncType{
 	FullName:             "http",
 	Destination:          "http endpoint",
 	SupportedProtocolMsg: "Only https urls are supported.",
-	UniqueCreateFlags:    []cli.Flag{},
+	UniqueCreateFlags:    []cli.Flag{syncPageSizeFlag()},
 }
 
 func syncCmd(st syncType) *cli.Command {
@@ -70,6 +70,7 @@ func syncCmd(st syncType) *cli.Command {
 						OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 						IntegrationIdentifier: getIntegrationFlagOrArg(c),
 						ConnectionUrl:         c.String("connection-url"),
+						PageSize:              c.Int("pagesize"),
 						Period:                c.Int("period"),
 						Schema:                c.String("schema"),
 						Table:                 c.String("table"),
@@ -142,6 +143,7 @@ func syncCmd(st syncType) *cli.Command {
 					input := client.SyncTargetUpdateInput{
 						OpaqueId:      getSyncTargetFlagOrArg(c, st),
 						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						PageSize:      c.Int("pagesize"),
 						Period:        c.Int("period"),
 						Schema:        c.String("schema"),
 						Table:         c.String("table"),
@@ -214,6 +216,13 @@ func syncCmd(st syncType) *cli.Command {
 				}),
 			},
 		},
+	}
+}
+
+func syncPageSizeFlag() *cli.IntFlag {
+	return &cli.IntFlag{
+		Name:  "pagesize",
+		Usage: "Max number of rows WebhookDB sends the sync target in each call.",
 	}
 }
 
