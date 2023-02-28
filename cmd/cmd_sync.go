@@ -174,7 +174,7 @@ var synctargetCmd = &cli.Command{
 func syncPageSizeFlag() *cli.IntFlag {
 	return &cli.IntFlag{
 		Name:  "pagesize",
-		Usage: "Max number of rows to retrieve in a single call.",
+		Usage: "Max number of rows to retrieve in a single call. This is only relevant for HTTPS sync targets.",
 	}
 }
 
