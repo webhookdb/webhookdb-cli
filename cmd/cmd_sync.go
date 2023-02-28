@@ -2,169 +2,219 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/lithictech/webhookdb-cli/appcontext"
 	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/urfave/cli/v2"
 )
 
-var synctargetCmd = &cli.Command{
-	Name:  "sync",
-	Usage: "Replicate data in a WebhookDB table into another database.",
-	Subcommands: []*cli.Command{
-		{
-			Name: "create",
-			Usage: "Create a sync target for the specified integration. Data will be automatically synced from " +
-				"the integration's WebhookDB table into the database specified by the connection string. " +
-				"PostgresQL and SnowflakeDB databases are supported.",
-			Flags: []cli.Flag{
-				orgFlag(),
-				integrationFlag(),
-				&cli.StringFlag{
-					Name:    "connection-url",
-					Aliases: s1("u"),
-					Usage:   "The connection string for the database that WebhookDB should write data to.",
+type syncType struct {
+	Slug                 string
+	Aliases              []string
+	FullName             string
+	Destination          string
+	SupportedProtocolMsg string
+	UniqueCreateFlags    []cli.Flag
+}
+
+func (st syncType) Cmd() string {
+	return fmt.Sprintf("%ssync", st.Slug)
+}
+
+var dbSyncType = syncType{
+	Slug:                 "db",
+	Aliases:              []string{"sync"},
+	FullName:             "database",
+	Destination:          "database",
+	SupportedProtocolMsg: "PostgresQL and SnowflakeDB databases are supported.",
+	UniqueCreateFlags:    []cli.Flag{syncSchemaFlag(), syncTableFlag()},
+}
+
+var httpSyncType = syncType{
+	Slug:                 "http",
+	Aliases:              []string{},
+	FullName:             "http",
+	Destination:          "http endpoint",
+	SupportedProtocolMsg: "Only https urls are supported.",
+	UniqueCreateFlags:    []cli.Flag{},
+}
+
+func syncCmd(st syncType) *cli.Command {
+	return &cli.Command{
+		Name:    st.Slug + "sync",
+		Aliases: st.Aliases,
+		Usage:   fmt.Sprintf("Replicate data in a WebhookDB table to another %s.", st.Destination),
+		Subcommands: []*cli.Command{
+			{
+				Name: "create",
+				Usage: fmt.Sprintf("Create a %s sync target for the specified integration. Data will be "+
+					"automatically synced from the integration's WebhookDB table into the %s specified by the "+
+					"connection string. %s",
+					st.FullName, st.Destination, st.SupportedProtocolMsg),
+				Flags: append(
+					[]cli.Flag{
+						orgFlag(),
+						integrationFlag(),
+						&cli.StringFlag{
+							Name:    "connection-url",
+							Aliases: s1("u"),
+							Usage: fmt.Sprintf(
+								"The connection string for the %s that WebhookDB should write data to.", st.Destination),
+						},
+						syncPeriodFlag(),
+					},
+					st.UniqueCreateFlags...,
+				),
+				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+					input := client.SyncTargetCreateInput{
+						OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+						IntegrationIdentifier: getIntegrationFlagOrArg(c),
+						ConnectionUrl:         c.String("connection-url"),
+						Period:                c.Int("period"),
+						Schema:                c.String("schema"),
+						Table:                 c.String("table"),
+						SyncTypeSlug:          st.Slug,
+					}
+					out, err := client.SyncTargetCreate(ctx, ac.Auth, input)
+					if err != nil {
+						return err
+					}
+					printlnif(c, out.Message(), false)
+					return nil
+				}),
+			},
+			{
+				Name: "delete",
+				Usage: fmt.Sprintf(
+					"Delete the %s sync target and stop any further syncing. The %s being synced to is not modified.",
+					st.FullName, st.Destination),
+				Flags: []cli.Flag{
+					orgFlag(),
+					syncTargetFlag(st),
 				},
-				syncPeriodFlag(),
-				syncSchemaFlag(),
-				syncTableFlag(),
+				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+					input := client.SyncTargetDeleteInput{
+						OpaqueId:      getSyncTargetFlagOrArg(c, st),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						SyncTypeSlug:  st.Slug,
+					}
+					out, err := client.SyncTargetDelete(ctx, ac.Auth, input)
+					if err != nil {
+						return err
+					}
+					printlnif(c, out.Message, false)
+					return nil
+				}),
 			},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetCreateInput{
-					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
-					IntegrationIdentifier: getIntegrationFlagOrArg(c),
-					ConnectionUrl:         c.String("connection-url"),
-					Period:                c.Int("period"),
-					Schema:                c.String("schema"),
-					Table:                 c.String("table"),
-				}
-				out, err := client.SyncTargetCreate(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				printlnif(c, out.Message(), false)
-				return nil
-			}),
-		},
-		{
-			Name:  "delete",
-			Usage: "Delete the sync target and stop any further syncing. The table being synced to is not modified.",
-			Flags: []cli.Flag{
-				orgFlag(),
-				syncTargetFlag(),
-			},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetDeleteInput{
-					OpaqueId:      getSyncTargetFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-				}
-				out, err := client.SyncTargetDelete(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				printlnif(c, out.Message, false)
-				return nil
-			}),
-		},
-		{
-			Name:  "list",
-			Usage: "List all sync targets for the given organization.",
-			Flags: []cli.Flag{
-				orgFlag(),
-				formatFlag(),
-			},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetListInput{
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-				}
-				out, err := client.SyncTargetList(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				printlnif(c, out.Message(), true)
-				return getFormatFlag(c).WriteCollection(c.App.Writer, out)
-			}),
-		},
-		{
-			Name:  "update",
-			Usage: "Update the sync target. Use `webhookdb sync list` to see all sync targets.",
-			Flags: []cli.Flag{
-				orgFlag(),
-				syncTargetFlag(),
-				syncPeriodFlag(),
-				syncSchemaFlag(),
-				syncTableFlag(),
-			},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetUpdateInput{
-					OpaqueId:      getSyncTargetFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					Period:        c.Int("period"),
-					Schema:        c.String("schema"),
-					Table:         c.String("table"),
-				}
-				out, err := client.SyncTargetUpdate(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				printlnif(c, out.Message(), true)
-				return nil
-			}),
-		},
-		{
-			Name: "update-creds",
-			Usage: "Update credentials for the sync target. If the database URL used to sync is changing, " +
-				"you must use update-creds so WebhookDB can continue to write to it.",
-			Flags: []cli.Flag{
-				orgFlag(),
-				syncTargetFlag(),
-				&cli.StringFlag{
-					Name:    "user",
-					Aliases: s1("u"),
-					Usage:   "Database username",
+			{
+				Name:  "list",
+				Usage: fmt.Sprintf("List all %s sync targets for the given organization.", st.FullName),
+				Flags: []cli.Flag{
+					orgFlag(),
+					formatFlag(),
 				},
-				&cli.StringFlag{
-					Name:    "password",
-					Aliases: s1("p"),
-					Usage:   "Takes a password.",
+				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+					input := client.SyncTargetListInput{
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						SyncTypeSlug:  st.Slug,
+					}
+					out, err := client.SyncTargetList(ctx, ac.Auth, input)
+					if err != nil {
+						return err
+					}
+					printlnif(c, out.Message(), true)
+					return getFormatFlag(c).WriteCollection(c.App.Writer, out)
+				}),
+			},
+			{
+				Name: "update",
+				Usage: fmt.Sprintf(
+					"Update the %s sync target. Use `webhookdb %s list` to see all %s sync targets.",
+					st.FullName, st.Cmd(), st.FullName),
+				Flags: []cli.Flag{
+					orgFlag(),
+					syncTargetFlag(st),
+					syncPeriodFlag(),
+					syncSchemaFlag(),
+					syncTableFlag(),
 				},
+				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+					input := client.SyncTargetUpdateInput{
+						OpaqueId:      getSyncTargetFlagOrArg(c, st),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						Period:        c.Int("period"),
+						Schema:        c.String("schema"),
+						Table:         c.String("table"),
+						SyncTypeSlug:  st.Slug,
+					}
+					out, err := client.SyncTargetUpdate(ctx, ac.Auth, input)
+					if err != nil {
+						return err
+					}
+					printlnif(c, out.Message(), true)
+					return nil
+				}),
 			},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetUpdateCredsInput{
-					OpaqueId:      getSyncTargetFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					Username:      c.String("user"),
-					Password:      c.String("password"),
-				}
-				out, err := client.SyncTargetUpdateCreds(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				printlnif(c, out.Message(), true)
-				return nil
-			}),
-		},
-		{
-			Name: "trigger",
-			Usage: "Trigger a sync to the sync target. The sync will happen at the earliest possible moment since " +
-				"the last sync, no matter how long the configured period is on the sync target.",
-			Flags: []cli.Flag{
-				orgFlag(),
-				syncTargetFlag(),
+			{
+				Name: "update-creds",
+				Usage: fmt.Sprintf(
+					"Update the username and password used to connect to the %s being synced to.",
+					st.Destination),
+				Flags: []cli.Flag{
+					orgFlag(),
+					syncTargetFlag(st),
+					&cli.StringFlag{
+						Name:    "user",
+						Aliases: s1("u"),
+						Usage:   "Takes a username.",
+					},
+					&cli.StringFlag{
+						Name:    "password",
+						Aliases: s1("p"),
+						Usage:   "Takes a password.",
+					},
+				},
+				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+					input := client.SyncTargetUpdateCredsInput{
+						OpaqueId:      getSyncTargetFlagOrArg(c, st),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						Username:      c.String("user"),
+						Password:      c.String("password"),
+						SyncTypeSlug:  st.Slug,
+					}
+					out, err := client.SyncTargetUpdateCreds(ctx, ac.Auth, input)
+					if err != nil {
+						return err
+					}
+					printlnif(c, out.Message(), true)
+					return nil
+				}),
 			},
-			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				input := client.SyncTargetSyncInput{
-					OpaqueId:      getSyncTargetFlagOrArg(c),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-				}
-				out, err := client.SyncTargetSync(ctx, ac.Auth, input)
-				if err != nil {
-					return err
-				}
-				printlnif(c, out.Message(), true)
-				return nil
-			}),
+			{
+				Name: "trigger",
+				Usage: fmt.Sprintf("Trigger a %s sync to the sync target. The %s sync will happen at the "+
+					"earliest possible moment since the last sync, no matter how long the configured period is on the "+
+					"sync target.", st.FullName, st.FullName),
+				Flags: []cli.Flag{
+					orgFlag(),
+					syncTargetFlag(st),
+				},
+				Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+					input := client.SyncTargetSyncInput{
+						OpaqueId:      getSyncTargetFlagOrArg(c, st),
+						OrgIdentifier: getOrgFlag(c, ac.Prefs),
+						SyncTypeSlug:  st.Slug,
+					}
+					out, err := client.SyncTargetSync(ctx, ac.Auth, input)
+					if err != nil {
+						return err
+					}
+					printlnif(c, out.Message(), true)
+					return nil
+				}),
+			},
 		},
-	},
+	}
 }
 
 func syncPeriodFlag() *cli.IntFlag {
@@ -188,14 +238,22 @@ func syncTableFlag() *cli.StringFlag {
 	}
 }
 
-func syncTargetFlag() *cli.StringFlag {
+func syncTargetFlag(input syncType) *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "target",
 		Aliases: s1("t"),
-		Usage:   "Sync target opaque id. Run `webhookdb sync list` to see a list of all your sync targets.",
+		Usage: fmt.Sprintf(
+			"Sync target opaque id. Use `webhookdb %s list` to see a list of all your %s sync targets.",
+			input.Cmd(), input.FullName),
 	}
 }
 
-func getSyncTargetFlagOrArg(c *cli.Context) string {
-	return requireFlagOrArg(c, "target", "Use `webhookdb sync list` to see a list of all your sync targets.")
+func getSyncTargetFlagOrArg(c *cli.Context, input syncType) string {
+	return requireFlagOrArg(
+		c,
+		"target",
+		fmt.Sprintf(
+			"Use `webhookdb %s list` to see a list of all your %s sync targets.",
+			input.Cmd(), input.FullName),
+	)
 }
