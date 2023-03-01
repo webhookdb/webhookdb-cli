@@ -39,7 +39,7 @@ var subscriptionsCmd = &cli.Command{
 					Name:     "plan",
 					Aliases:  s1("p"),
 					Required: false,
-					Usage:    "Plan name, like 'yearly', 'monthly', etc. Use `webhookdb subscription plans` to see available plans.",
+					Usage:    usage("Plan name, like 'yearly', 'monthly', etc. Use `webhookdb subscription plans` to see available plans."),
 				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {

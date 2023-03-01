@@ -119,7 +119,7 @@ var organizationsCmd = &cli.Command{
 		},
 		{
 			Name:  "join",
-			Usage: "Join an organization using a join code. You can also see your pending invites with `webhookdb org list`.",
+			Usage: usage("Join an organization using a join code. You can also see your pending invites with `webhookdb org list`."),
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "code", Aliases: s1("c"), Usage: "Invitation code sent to the new member. Has 'join-' prefix."},
 			},
