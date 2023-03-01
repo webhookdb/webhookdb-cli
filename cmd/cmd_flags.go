@@ -10,12 +10,11 @@ import (
 )
 
 func orgFlag() *cli.StringFlag {
-	// takes the org key
 	return &cli.StringFlag{
 		Name:     "org",
 		Aliases:  s1("o"),
 		Required: false,
-		Usage:    "Takes an org key. Run `webhook org list` to see a list of all your org keys.",
+		Usage:    usage("Takes an org key. Run `webhook org list` to see a list of all your org keys."),
 	}
 }
 
@@ -31,7 +30,7 @@ func serviceFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "service",
 		Aliases: s1("s"),
-		Usage:   "Name of the service. Run `webhookdb services list` to see a list of all services available to your organization.",
+		Usage:   usage("Name of the service. Run `webhookdb services list` to see a list of all services available to your organization."),
 	}
 }
 

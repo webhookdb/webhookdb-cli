@@ -103,7 +103,7 @@ func webhookFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "webhook",
 		Aliases: s1("w"),
-		Usage:   "Webhook opaque id. Run `webhookdb webhook list` to see a list of all your webhooks.",
+		Usage:   usage("Webhook opaque id. Run `webhookdb webhook list` to see a list of all your webhooks."),
 	}
 }
 

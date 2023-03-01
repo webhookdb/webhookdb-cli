@@ -89,9 +89,9 @@ var dbCmd = &cli.Command{
 				&cli.BoolFlag{Name: "fdw", Usage: "Write the FDW SQL to stdout"},
 				&cli.BoolFlag{Name: "views", Usage: "Write the SQL to create the materialized views to stdout"},
 				&cli.BoolFlag{Name: "all", Usage: "Write a single SQL statement containing FDW and view creation code. Default if neither --fdw or --views are passed."},
-				&cli.StringFlag{Name: "remote", Value: "webhookdb_remote", Usage: "The remote server name, used in the `CREATE SERVER <remote>` call"},
+				&cli.StringFlag{Name: "remote", Value: "webhookdb_remote", Usage: usage("The remote server name, used in the `CREATE SERVER <remote>` call")},
 				&cli.StringFlag{Name: "fetch", Value: "50000", Usage: "fetch_size option used during server creation"},
-				&cli.StringFlag{Name: "into-schema", Value: "webhookdb_remote", Usage: "Name of the schema to import the remote tables into (in `IMPORT FOREIGN SCHEMA public INTO <into schema>` call)."},
+				&cli.StringFlag{Name: "into-schema", Value: "webhookdb_remote", Usage: usage("Name of the schema to import the remote tables into (in `IMPORT FOREIGN SCHEMA public INTO <into schema>` call).")},
 				&cli.StringFlag{Name: "views-schema", Value: "webhookdb", Usage: "Create materialized views in this schema. You can use 'public' if you do not want to qualify webhookdb tables."},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {

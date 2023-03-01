@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"github.com/lithictech/webhookdb-cli/formatting"
 	"github.com/lithictech/webhookdb-cli/types"
 )
 
@@ -22,13 +23,24 @@ type IntegrationsDeleteInput struct {
 	Confirm               string              `json:"confirm"`
 }
 
-type IntegrationsDeleteOutput struct {
-	Message string `json:"message"`
+func IntegrationsDelete(c context.Context, auth Auth, input IntegrationsDeleteInput) (types.MessageResponse, error) {
+	out := types.MessageResponse{}
+	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/delete", input.OrgIdentifier, input.IntegrationIdentifier)
+	return out, err
 }
 
-func IntegrationsDelete(c context.Context, auth Auth, input IntegrationsDeleteInput) (IntegrationsDeleteOutput, error) {
-	out := IntegrationsDeleteOutput{}
-	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/delete", input.OrgIdentifier, input.IntegrationIdentifier)
+type IntegrationsInfoInput struct {
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+	Field                 string              `json:"field"`
+}
+
+type IntegrationsInfoOutput struct {
+	Blocks formatting.Blocks `json:"blocks"`
+}
+
+func IntegrationsInfo(c context.Context, auth Auth, input IntegrationsInfoInput) (out IntegrationsInfoOutput, err error) {
+	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/service_integrations/%v/info", input.OrgIdentifier, input.IntegrationIdentifier)
 	return out, err
 }
 

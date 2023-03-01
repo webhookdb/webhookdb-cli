@@ -129,9 +129,9 @@ func syncCmd(st syncType) *cli.Command {
 			},
 			{
 				Name: "update",
-				Usage: fmt.Sprintf(
+				Usage: usage(fmt.Sprintf(
 					"Update the %s sync target. Use `webhookdb %s list` to see all %s sync targets.",
-					st.FullName, st.Cmd(), st.FullName),
+					st.FullName, st.Cmd(), st.FullName)),
 				Flags: append(
 					[]cli.Flag{
 						orgFlag(),
@@ -253,9 +253,9 @@ func syncTargetFlag(input syncType) *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "target",
 		Aliases: s1("t"),
-		Usage: fmt.Sprintf(
+		Usage: usage(fmt.Sprintf(
 			"Sync target opaque id. Use `webhookdb %s list` to see a list of all your %s sync targets.",
-			input.Cmd(), input.FullName),
+			input.Cmd(), input.FullName)),
 	}
 }
 

@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/lithictech/webhookdb-cli/types"
+	"net/url"
 )
 
 type OrgCloseInput struct {
@@ -48,7 +49,9 @@ type OrgGetOutput struct {
 }
 
 func OrgGet(c context.Context, auth Auth, input OrgGetInput) (out OrgGetOutput, err error) {
-	err = makeRequest(c, GET, auth, nil, &out, "/v1/organizations/%v", input.OrgIdentifier)
+	values := url.Values{}
+	values.Set("org", string(input.OrgIdentifier))
+	err = makeRequest(c, GET, auth, values, &out, "/v1/organizations/-")
 	return
 }
 
@@ -86,11 +89,7 @@ type OrgRemoveInput struct {
 	Email         string              `json:"email"`
 }
 
-type OrgRemoveOutput struct {
-	Message string `json:"message"`
-}
-
-func OrgRemove(c context.Context, auth Auth, input OrgRemoveInput) (out OrgRemoveOutput, err error) {
+func OrgRemove(c context.Context, auth Auth, input OrgRemoveInput) (out types.MessageResponse, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/remove_member", input.OrgIdentifier)
 	return
 }

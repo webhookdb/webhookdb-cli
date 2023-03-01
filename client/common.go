@@ -7,6 +7,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/webhookdb-cli/types"
 	"net/http"
+	"net/url"
 )
 
 const RestyKey = "client.resty"
@@ -70,9 +71,11 @@ func makeStepRequestWithResponse(c context.Context, auth Auth, body interface{},
 // but the recursive state machine eventually succeeds, we will return that successful result.
 func makeRequestWithResponse(c context.Context, method string, auth Auth, body, outPtr interface{}, urlTmpl string, urlArgs ...interface{}) (*resty.Response, error) {
 	r := RestyFromContext(c)
-	url := fmt.Sprintf(urlTmpl, urlArgs...)
+	urlstr := fmt.Sprintf(urlTmpl, urlArgs...)
 	req := r.R().SetError(&ErrorResponse{})
-	if body != nil {
+	if queryParams, ok := body.(url.Values); ok {
+		req.SetQueryParamsFromValues(queryParams)
+	} else if body != nil {
 		req = req.SetBody(body)
 	}
 	if outPtr != nil {
@@ -81,7 +84,7 @@ func makeRequestWithResponse(c context.Context, method string, auth Auth, body, 
 	if auth.Token != "" {
 		req = req.SetHeader(AuthTokenHeader, string(auth.Token))
 	}
-	resp, err := req.Execute(method, url)
+	resp, err := req.Execute(method, urlstr)
 	if err != nil {
 		return resp, err
 	}

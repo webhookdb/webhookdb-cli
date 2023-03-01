@@ -28,12 +28,8 @@ type SyncTargetDeleteInput struct {
 	SyncTypeSlug  string              `json:"-"`
 }
 
-type SyncTargetDeleteOutput struct {
-	Message string `json:"message"`
-}
-
-func SyncTargetDelete(c context.Context, auth Auth, input SyncTargetDeleteInput) (SyncTargetDeleteOutput, error) {
-	out := SyncTargetDeleteOutput{}
+func SyncTargetDelete(c context.Context, auth Auth, input SyncTargetDeleteInput) (types.MessageResponse, error) {
+	out := types.MessageResponse{}
 	err := makeRequest(c, POST, auth, input, &out, "/v1/organizations/%v/sync_targets/%v/%v/delete", input.OrgIdentifier, input.SyncTypeSlug, input.OpaqueId)
 	return out, err
 }

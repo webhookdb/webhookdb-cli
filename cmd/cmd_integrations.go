@@ -66,6 +66,32 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "info",
+			Usage: "Display information about given integration.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+				&cli.StringFlag{
+					Name:    "field",
+					Aliases: s1("f"),
+					Usage:   "The field that you want information about.",
+				},
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.IntegrationsInfoInput{
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+					Field:                 c.String("field"),
+				}
+				out, err := client.IntegrationsInfo(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				_, err = out.Blocks.WriteTo(c.App.Writer)
+				return err
+			}),
+		},
+		{
 			Name:  "list",
 			Usage: "List all integrations for the given organization.",
 			Flags: []cli.Flag{
