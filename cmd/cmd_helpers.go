@@ -217,6 +217,9 @@ const tableNameRules = "Valid table names must adhere to the following rules: " 
 //
 // To avoid this workaround and get the urfave behavior, don't use this method.
 func usage(s string) string {
+	if os.Getenv("DOCBUILD") != "" {
+		return s
+	}
 	if strings.Contains(s, "`") {
 		return "``" + s
 	}

@@ -61,7 +61,7 @@ copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
 	@go run bin/copy-manual/main.go
 
 docs-write: build ## Write a new copy of MANUAL.md.
-	@$(BIN) docs build | grep -v '^%!(' > MANUAL.md
+	@DOCBUILD=true $(BIN) docs build | grep -v '^%!(' > MANUAL.md
 
 build-and-copy-to-web: docs-write build-wasm copy-to-web
 
