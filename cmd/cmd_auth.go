@@ -55,7 +55,7 @@ var authCmd = &cli.Command{
 				if authOut.Complete {
 					result = authOut
 				} else {
-					result, err = client.NewStateMachine().RunWithOutput(ctx, ac.Auth, authOut)
+					result, err = client.NewStateMachine().Run(ctx, ac.Auth, authOut)
 					if err != nil {
 						return err
 					}

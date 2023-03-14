@@ -213,7 +213,7 @@ const tableNameRules = "Valid table names must adhere to the following rules: " 
 // urfave/cli/flag.go#unquoteUsage looks for backticks and uses the value within the backticks
 // as the usage value, like `Usage: "hello `there`" would print `--flag there` instead of `--flag value`.
 // This is bad when you want to use a command like `webhookdb foo` in the usage string, you'd get `--flag webhookdb foo`.
-// If there is a backtick in s, then prepend '``' to short-circuit the unquote behavior.
+// If there is a backtick in s, then prepend '\`\`' to short-circuit the unquote behavior.
 //
 // To avoid this workaround and get the urfave behavior, don't use this method.
 func usage(s string) string {
