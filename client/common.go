@@ -28,10 +28,12 @@ const AuthTokenHeader = "Whdb-Auth-Token"
 
 type ErrorResponse struct {
 	Err struct {
-		Message          string `json:"message"`
-		Code             string `json:"code"`
-		Status           int    `json:"status"`
-		StateMachineStep *Step  `json:"state_machine_step"`
+		Message          string              `json:"message"`
+		Code             string              `json:"code"`
+		Status           int                 `json:"status"`
+		Errors           []string            `json:"errors"`
+		FieldErrors      map[string][]string `json:"field_errors"`
+		StateMachineStep *Step               `json:"state_machine_step"`
 	} `json:"error"`
 }
 
@@ -90,7 +92,7 @@ func makeRequestWithResponse(c context.Context, method string, auth Auth, body, 
 	}
 	if err := CoerceError(resp); err != nil {
 		if eresp, ok := err.(ErrorResponse); ok && eresp.Err.StateMachineStep != nil {
-			errStep, err := NewStateMachine().RunWithOutput(c, auth, *eresp.Err.StateMachineStep)
+			errStep, err := NewStateMachine().Run(c, auth, *eresp.Err.StateMachineStep)
 			if err != nil {
 				return errStep.RawResponse, err
 			}

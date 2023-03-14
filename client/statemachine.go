@@ -32,12 +32,13 @@ type StateMachine struct {
 	ask ask.Ask
 }
 
-func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) error {
-	_, err := sm.RunWithOutput(c, auth, startingStep)
-	return err
-}
-
-func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep Step) (Step, error) {
+// Run processes the input step until it succeeds or the processing errors (from the API, or ctrl+c, etc).
+func (sm StateMachine) Run(c context.Context, auth Auth, startingStep Step) (Step, error) {
+	if startingStep.Complete {
+		// If we pass in a complete step, assume the caller took car of printing the output.
+		// Otherwise we can end up wish a finished step from a 422 statemachine, and then re-print the result.
+		return startingStep, nil
+	}
 	step := startingStep
 	for {
 		if step.Complete {
@@ -70,10 +71,17 @@ func (sm StateMachine) RunWithOutput(c context.Context, auth Auth, startingStep 
 		}
 		newStep, err := TransitionStep(c, auth, transitionInput)
 		if eresp, ok := err.(ErrorResponse); ok && eresp.Err.Code == "validation_error" {
-			// Print the message and offer the same prompt again for new input.
-			sm.ask.Feedback(eresp.Err.Message)
-			sm.ask.Feedback("")
-			continue
+			// If the field that fails validation is not the one we submitted, it probably means that
+			// something from the commandline failed. There's no sense re-prompting if the current field is valid,
+			// since we can't fix the cause of the 400 through this transition.
+			if _, newValueIsInvalid := eresp.Err.FieldErrors[step.PostParamsValueKey]; newValueIsInvalid {
+				// Print the message and offer the same prompt again for new input.
+				sm.ask.Feedback(eresp.Err.Message)
+				sm.ask.Feedback("")
+				continue
+			} else {
+				return newStep, err
+			}
 		} else if err != nil {
 			return newStep, err
 		}
@@ -91,9 +99,10 @@ func StateMachineResponseRunner(ctx context.Context, auth Auth) func(Step, error
 		if err != nil {
 			return step, err
 		}
-		if err := NewStateMachine().Run(ctx, auth, step); err != nil {
+		newStep, newErr := NewStateMachine().Run(ctx, auth, step)
+		if newErr != nil {
 			return step, err
 		}
-		return step, nil
+		return newStep, nil
 	}
 }
