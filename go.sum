@@ -146,6 +146,8 @@ github.com/labstack/gommon v0.3.0/go.mod h1:MULnywXg0yavhxWKc+lOruYdAhDwPK9wf0OL
 github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lithictech/go-aperitif v0.0.0-20201008180713-efd6b162b762 h1:s7OCOmbrOEW0rk8qzWWsH+xOUG1ZyP/x9R/DJYyYfno=
 github.com/lithictech/go-aperitif v0.0.0-20201008180713-efd6b162b762/go.mod h1:JyoOuP6CbJXF6XzzDEVTJ+d5ZX6q9eAuM7R3bztenfk=
+github.com/lithictech/go-github-selfupdate v0.0.0-20230518052140-7c524dc488c0 h1:SXeXqZoG4X4vNDZzSIsn9KhtmPyWPeo5gIZ2axTTTU8=
+github.com/lithictech/go-github-selfupdate v0.0.0-20230518052140-7c524dc488c0/go.mod h1:mp/N8zj6jFfBQy/XMYoWsmfzxazpPAODuqarmPDe2Rg=
 github.com/lucasb-eyer/go-colorful v1.0.3/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/lucasb-eyer/go-colorful v1.2.0 h1:1nnpGOrhyZZuNyfu1QjKiUICQ74+3FNCN69Aj6K7nkY=
 github.com/lucasb-eyer/go-colorful v1.2.0/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
@@ -213,8 +215,6 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rgalanakis/golangal v0.0.0-20200710064529-eb44ace1b187/go.mod h1:/7+rdrUijPGl0ZorwYZjZg8jwNXSGfQWTHS+sPE+Plc=
 github.com/rgalanakis/validator v0.0.0-20180731224108-4a34a8927f7c/go.mod h1:qIw2dAd/4wMHHnINySB5+y9HPKQXUKmga0oZHSluPKE=
-github.com/rhysd/go-github-selfupdate v1.2.3 h1:iaa+J202f+Nc+A8zi75uccC8Wg3omaM7HDeimXA22Ag=
-github.com/rhysd/go-github-selfupdate v1.2.3/go.mod h1:mp/N8zj6jFfBQy/XMYoWsmfzxazpPAODuqarmPDe2Rg=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=

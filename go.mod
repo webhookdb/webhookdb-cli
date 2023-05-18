@@ -18,6 +18,8 @@ require (
 	github.com/urfave/cli/v2 v2.3.1-0.20220217022915-81cb783759cd
 )
 
+replace github.com/rhysd/go-github-selfupdate => github.com/lithictech/go-github-selfupdate v0.0.0-20230518052140-7c524dc488c0
+
 require (
 	github.com/MichaelMure/go-term-text v0.3.1 // indirect
 	github.com/alecthomas/chroma v0.8.2 // indirect
