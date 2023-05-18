@@ -32,3 +32,7 @@ func (w whrelease) Version() semver.Version {
 func (w whrelease) AssetURL() string {
 	return w.r.AssetURL
 }
+
+func init() {
+	selfupdate.AssetGoOSAliases["darwin"] = []string{"macos"}
+}
