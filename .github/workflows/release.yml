@@ -28,7 +28,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: --debug release --rm-dist
+          args: --debug release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAP_GITHUB_TOKEN: ${{ secrets.TAP_TOKEN_ROBG_PAT }}

@@ -66,7 +66,7 @@ blobs:
     region: us-west-2
     folder: "webhookdb-cli/{{.Version}}"
 brews:
-  - tap:
+  - repository:
       owner: lithictech
       name: homebrew-webhookdb
       token: "{{ .Env.TAP_GITHUB_TOKEN }}"
