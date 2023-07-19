@@ -99,7 +99,13 @@ func StateMachineResponseRunner(ctx context.Context, auth Auth) func(Step, error
 		if err != nil {
 			return step, err
 		}
-		newStep, newErr := NewStateMachine().Run(ctx, auth, step)
+		sm := NewStateMachine()
+		if step.Complete {
+			// Run assumes that the step passed in isn't complete.
+			sm.ask.Feedback(step.Output)
+			return step, nil
+		}
+		newStep, newErr := sm.Run(ctx, auth, step)
 		if newErr != nil {
 			return step, err
 		}
