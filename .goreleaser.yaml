@@ -12,8 +12,8 @@ builds:
       - amd64
       - arm64
     ignore:
-    - goos: windows
-      goarch: arm64
+      - goos: windows
+        goarch: arm64
   - id: wasm
     ldflags:
       - -s -w -X github.com/lithictech/webhookdb-cli/config.Version={{.Version}} -X github.com/lithictech/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/lithictech/webhookdb-cli/config.BuildTime={{.Date}}
@@ -26,12 +26,13 @@ archives:
       - distrib
     files:
       - match-nothing-to-keep-archive-binary-only*
-    replacements:
-      darwin: macos
-      linux: linux
-      windows: windows
-      386: i386
-      amd64: x86_64
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else if eq .Arch "darwin" }}macos
+      {{- else }}{{ .Arch }}{{ end }}
     format_overrides:
       - goos: windows
         format: zip
