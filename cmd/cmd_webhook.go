@@ -31,11 +31,10 @@ var webhooksCmd = &cli.Command{
 				input := client.WebhookCreateInput{
 					Url:           c.String("url"),
 					WebhookSecret: c.String("secret"),
+					OrgIdentifier: getOrgFlag(c, ac.Prefs),
 				}
 				if c.String("integration") != "" {
 					input.IntegrationIdentifier = c.String("integration")
-				} else {
-					input.OrgIdentifier = getOrgFlag(c, ac.Prefs)
 				}
 				out, err := client.WebhookCreate(ctx, ac.Auth, input)
 				if err != nil {
