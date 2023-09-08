@@ -29,12 +29,10 @@ var webhooksCmd = &cli.Command{
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				input := client.WebhookCreateInput{
-					Url:           c.String("url"),
-					WebhookSecret: c.String("secret"),
-					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-				}
-				if c.String("integration") != "" {
-					input.IntegrationIdentifier = c.String("integration")
+					Url:                   c.String("url"),
+					WebhookSecret:         c.String("secret"),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+					IntegrationIdentifier: flagOrArg(c, "integration"),
 				}
 				out, err := client.WebhookCreate(ctx, ac.Auth, input)
 				if err != nil {
