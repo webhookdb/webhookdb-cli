@@ -8,13 +8,13 @@ import (
 )
 
 var webhooksCmd = &cli.Command{
-	Name:    "webhook",
-	Aliases: []string{"webhooks"},
-	Usage:   "Manage webhooks that will be notified when WebhookDB data is updated.",
+	Name:    "notification",
+	Aliases: []string{"notification", "notifications", "webhook", "webhooks"},
+	Usage:   "Manage endpoints that will be notified when WebhookDB data is updated.",
 	Subcommands: []*cli.Command{
 		{
 			Name:  "create",
-			Usage: "Create a new webhook that WebhookDB will call on every data update.",
+			Usage: "Create a new notification that WebhookDB will call on every data update.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				integrationFlag(),
@@ -24,7 +24,7 @@ var webhooksCmd = &cli.Command{
 				},
 				&cli.StringFlag{
 					Name:  "secret",
-					Usage: "Random secure secret to use to sign webhooks coming from WebhookDB.",
+					Usage: "Random secure secret to use to sign notifications coming from WebhookDB.",
 				},
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
@@ -44,7 +44,7 @@ var webhooksCmd = &cli.Command{
 		},
 		{
 			Name:  "list",
-			Usage: "List all created webhooks.",
+			Usage: "List all created notifications.",
 			Flags: []cli.Flag{
 				orgFlag(),
 				formatFlag(),
@@ -63,12 +63,12 @@ var webhooksCmd = &cli.Command{
 		},
 		{
 			Name:  "test",
-			Usage: "Send a test event to webhook subscription with the given ID.",
-			Flags: []cli.Flag{webhookFlag()},
+			Usage: "Send a test event to the notification subscription with the given ID.",
+			Flags: []cli.Flag{notificationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.WebhookTest(ctx, ac.Auth, client.WebhookOpaqueIdInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					OpaqueId:      getWebhookFlagOrArg(c),
+					OpaqueId:      getNotificationArgOrFlag(c),
 				})
 				if err != nil {
 					return err
@@ -79,12 +79,12 @@ var webhooksCmd = &cli.Command{
 		},
 		{
 			Name:  "delete",
-			Usage: "Delete this webhook subscription, so no future events will be sent.",
-			Flags: []cli.Flag{webhookFlag()},
+			Usage: "Delete this notification subscription, so no future events will be sent.",
+			Flags: []cli.Flag{notificationFlag()},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				out, err := client.WebhookDelete(ctx, ac.Auth, client.WebhookOpaqueIdInput{
 					OrgIdentifier: getOrgFlag(c, ac.Prefs),
-					OpaqueId:      getWebhookFlagOrArg(c),
+					OpaqueId:      getNotificationArgOrFlag(c),
 				})
 				if err != nil {
 					return err
@@ -96,14 +96,14 @@ var webhooksCmd = &cli.Command{
 	},
 }
 
-func webhookFlag() *cli.StringFlag {
+func notificationFlag() *cli.StringFlag {
 	return &cli.StringFlag{
-		Name:    "webhook",
-		Aliases: s1("w"),
-		Usage:   usage("Webhook opaque id. Run `webhookdb webhook list` to see a list of all your webhooks."),
+		Name:    "notification",
+		Aliases: s1("n"),
+		Usage:   usage("Notification opaque id. Run `webhookdb notification list` to see a list of all your notification subscriptions."),
 	}
 }
 
-func getWebhookFlagOrArg(c *cli.Context) string {
-	return requireFlagOrArg(c, "webhook", "Use `webhookdb webhook list` to see available webhooks.")
+func getNotificationArgOrFlag(c *cli.Context) string {
+	return requireFlagOrArg(c, "notification", "Use `webhookdb notification list` to see available notifications.")
 }
