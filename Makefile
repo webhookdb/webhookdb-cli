@@ -62,14 +62,12 @@ wasm-server:
 
 build-all: build-arm64 build build-wasm
 
-copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
-	@cp webhookdb.wasm $(WEBSITE)/static/webterm
-	@$(GO) run bin/copy-manual/main.go
-
+docs: build
+	@DOCBUILD=true $(BIN) docs build
 docs-write: build ## Write a new copy of MANUAL.md.
-	@DOCBUILD=true $(BIN) docs build | grep -v '^%!(' > MANUAL.md
-
-build-and-copy-to-web: docs-write build-wasm copy-to-web
+	@DOCBUILD=true $(BIN) docs build > MANUAL.md
+docs-site: build ## Write MANUAL.md to the docs site.
+	@DOCBUILD=true $(BIN) docs build --docsite > ../webhookdb/docs/docs/cli-reference.md
 
 update-lithic-deps:
 	$(GO) get github.com/rgalanakis/golangal@latest
