@@ -3,6 +3,12 @@ ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
 BUILDFLAGS = "-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`"
 WEBSITE = ../webhookdb-api/webhookdb-website
 
+ifdef GOROOT
+GO := $(GOROOT)/bin/go
+else
+GO := go
+endif
+
 guardcmd-%:
 	@hash $(*) > /dev/null 2>&1 || \
 		(echo "ERROR: '$(*)' must be installed and available on your PATH."; exit 1)
@@ -17,10 +23,10 @@ lint: guardcmd-gofmt
 	@test -z $$(gofmt -d -l . | tee /dev/stderr) && echo "gofmt ok"
 
 vet:
-	@go vet && echo "go vet ok"
+	@$(GO) vet && echo "go vet ok"
 
 test:
-	go test .
+	$(GO) test .
 	@WEBHOOKDB_LOG_LEVEL=fatal ginkgo -r --trace --race --progress --skipMeasurements
 
 test-watch:
@@ -35,13 +41,13 @@ bench:
 check: vet lint
 
 build:
-	@go build -ldflags $(BUILDFLAGS) -o webhookdb
+	@$(GO) build -ldflags $(BUILDFLAGS) -o webhookdb
 
 build-arm64:
-	@GOOS=darwin go build -ldflags $(BUILDFLAGS) -o webhookdb
+	@GOOS=darwin $(GO) build -ldflags $(BUILDFLAGS) -o webhookdb
 
 build-wasm:
-	@GOOS=js GOARCH=wasm go build -ldflags $(BUILDFLAGS) -o webhookdb.wasm
+	@GOOS=js GOARCH=wasm $(GO) build -ldflags $(BUILDFLAGS) -o webhookdb.wasm
 
 _goreleaser-clean:
 	rm -rf ./dist
@@ -52,13 +58,13 @@ goreleaser-local: _goreleaser-clean
 	GITHUB_TOKEN=notreal goreleaser
 
 wasm-server:
-	go run bin/serve-wasm/main.go
+	$(GO) run bin/serve-wasm/main.go
 
 build-all: build-arm64 build build-wasm
 
 copy-to-web: ## Copy the WASM and MANUAL.md to the website directory.
 	@cp webhookdb.wasm $(WEBSITE)/static/webterm
-	@go run bin/copy-manual/main.go
+	@$(GO) run bin/copy-manual/main.go
 
 docs-write: build ## Write a new copy of MANUAL.md.
 	@DOCBUILD=true $(BIN) docs build | grep -v '^%!(' > MANUAL.md
@@ -66,11 +72,11 @@ docs-write: build ## Write a new copy of MANUAL.md.
 build-and-copy-to-web: docs-write build-wasm copy-to-web
 
 update-lithic-deps:
-	go get github.com/rgalanakis/golangal@latest
-	go get github.com/lithictech/go-aperitif@latest
+	$(GO) get github.com/rgalanakis/golangal@latest
+	$(GO) get github.com/lithictech/go-aperitif@latest
 
 help:
-	@go run ./main.go help
+	@$(GO) run ./main.go help
 
 itest-auth-login: build
 	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech
