@@ -111,6 +111,21 @@ var integrationsCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "setup",
+			Usage: "Ensure all the necessary fields are set to receive webhooks.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				input := client.IntegrationsSetupInput{
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+				}
+				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsSetup(ctx, ac.Auth, input))
+			}),
+		},
+		{
 			Name:  "reset",
 			Usage: "Reset the webhook secret for this integration.",
 			Flags: []cli.Flag{
