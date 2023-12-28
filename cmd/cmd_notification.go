@@ -9,7 +9,7 @@ import (
 
 var webhooksCmd = &cli.Command{
 	Name:    "notification",
-	Aliases: []string{"notification", "notifications", "webhook", "webhooks"},
+	Aliases: []string{"notifications", "webhook", "webhooks"},
 	Usage:   "Manage endpoints that will be notified when WebhookDB data is updated.",
 	Subcommands: []*cli.Command{
 		{
