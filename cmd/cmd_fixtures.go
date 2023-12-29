@@ -8,7 +8,8 @@ import (
 )
 
 var fixturesCmd = &cli.Command{
-	Name: "fixtures",
+	Name:    "fixtures",
+	Aliases: []string{"fixture"},
 	Usage: "Output the SQL DDL (CREATE TABLE command) to create a DB table that matches what is in WebhookDB. " +
 		"This can be used to generate .sql files that can be run as part of test database fixturing.",
 	Flags: []cli.Flag{serviceFlag()},

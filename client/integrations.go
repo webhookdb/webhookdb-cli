@@ -53,6 +53,15 @@ func IntegrationsList(c context.Context, auth Auth, input IntegrationsListInput)
 	return
 }
 
+type IntegrationsSetupInput struct {
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+}
+
+func IntegrationsSetup(c context.Context, auth Auth, input IntegrationsSetupInput) (Step, error) {
+	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/setup", input.OrgIdentifier, input.IntegrationIdentifier)
+}
+
 type IntegrationsResetInput struct {
 	IntegrationIdentifier string              `json:"-"`
 	OrgIdentifier         types.OrgIdentifier `json:"-"`
