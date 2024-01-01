@@ -39,6 +39,7 @@ The CLI also gives you quick access to the WebhookDB documentation:
 			fixturesCmd,
 			integrationsCmd,
 			organizationsCmd,
+			replayCmd,
 			servicesCmd,
 			subscriptionsCmd,
 			syncCmd(dbSyncType),
