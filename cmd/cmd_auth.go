@@ -54,6 +54,8 @@ var authCmd = &cli.Command{
 				var result client.Step
 				if authOut.Complete {
 					result = authOut
+					// Auth can have special conditions, like demo mode.
+					printlnif(c, authOut.Message, true)
 				} else {
 					result, err = client.NewStateMachine().Run(ctx, ac.Auth, authOut)
 					if err != nil {

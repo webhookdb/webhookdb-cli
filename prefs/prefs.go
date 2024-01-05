@@ -2,6 +2,7 @@ package prefs
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/lithictech/go-aperitif/convext"
 	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/lithictech/webhookdb-cli/whfs"
@@ -65,7 +66,11 @@ func Load(pfs whfs.FS) (*GlobalPrefs, error) {
 		return p, errors.Wrap(err, "reading "+path)
 	}
 	if err := json.Unmarshal(b, &p); err != nil {
-		return p, errors.Wrap(err, "unmarshalling into prefs: "+string(b))
+		// We may not have a context with a logger at this point,
+		// so just use the standard logger. Should not see this under normal use anyway,
+		// only during development or if someone was mucking around.
+		fmt.Printf("Could not unmarshal prefs JSON at %s: %s\n", path, string(b))
+		return p, nil
 	}
 	return p, nil
 }
