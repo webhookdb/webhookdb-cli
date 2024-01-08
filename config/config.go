@@ -7,9 +7,11 @@ import (
 	"os"
 )
 
+const UnknownVersion = "?.?.?"
+
 var BuildTime = "1970-01-01T00:00:00Z"
 var BuildSha = "0000000000000000000000000000000000000000"
-var Version = "?.?.?"
+var Version = UnknownVersion
 var Repo = "lithictech/webhookdb-cli"
 
 type Config struct {
@@ -31,7 +33,6 @@ type Config struct {
 	Privacy          bool
 	SentryDsn        string
 	SkipArgFlagCheck bool
-	WebsiteHost      string
 }
 
 const SkipArgFlagCheckEnv = "WEBHOOKDB_SKIP_ARG_FLAG_CHECK"
@@ -48,7 +49,6 @@ func LoadConfig(filenames ...string) Config {
 		PrefsNamespace:   os.Getenv("WEBHOOKDB_PREFS_NAMESPACE"),
 		SentryDsn:        os.Getenv("WEBHOOKDB_SENTRY_DSN"),
 		SkipArgFlagCheck: convext.MustParseBool(lookupEnv(SkipArgFlagCheckEnv, "0")),
-		WebsiteHost:      MustEnvStr("WEBHOOKDB_WEBSITE_HOST"),
 	}
 	if cfg.PrefsNamespace == "" {
 		cfg.PrefsNamespace = cfg.ApiHost
@@ -86,5 +86,4 @@ const SentryDsnProd = "https://3e125fd192c34979b2f1a4a5ceb9abd6@o292308.ingest.s
 func init() {
 	MustSetEnv("WEBHOOKDB_API_HOST", "https://api.production.webhookdb.com")
 	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")
-	MustSetEnv("WEBHOOKDB_WEBSITE_HOST", "https://webhookdb.com")
 }

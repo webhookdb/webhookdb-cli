@@ -8,19 +8,24 @@ func BuildApp() *cli.App {
 	app := &cli.App{
 		Name:     "webhookdb",
 		HelpName: helpName,
-		Usage: `CLI for the WebhookDB (https://webhookdb.com) application. WebhookDB allows you
-to query any API in real-time with SQL.
+		Usage: `CLI for WebhookDB <https://github.com/webhookdb/webhookdb>.
+WebhookDB replicates any API into a database,
+so you have immediate, reliable access to all your data.
 
 To create an account and get started, run:
 
-	webhookdb auth login
+    webhookdb auth login
 
 The CLI will guide you from there.
 
 The CLI also gives you quick access to the WebhookDB documentation:
 
-	webhookdb docs html
-	webhookdb docs tui
+    webhookdb docs html # Open a browser to https://docs.webhookdb.com
+    webhookdb docs tui # Display the CLI Reference in the terminal
+
+Source code: <https://github.com/webhookdb/webhookdb-cli>
+
+Documentation: <https://docs.webhookdb.com/docs/cli-reference.md>
 `,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "debug", Value: false},

@@ -1,10 +1,12 @@
 # webhookdb-cli
 
 _Don't want to install this yourself?_
-_Run [the WebhookDB CLI from the browser](https://webhookdb.com/terminal/)._
+_Run [the WebhookDB CLI from the browser](https://webhookdb.com/terminal/)
+or at the `/terminal` route of your self-hosted WebhookDB instance._
 
-Command Line Interface for WebhookDB ([https://webhookdb.com](https://webhookdb.com)).
-WebhookDB allows you to query any API in real-time with SQL.
+Command Line Interface for WebhookDB ([https://github.com/webhookdb/webhookdb](https://github.com/webhookdb/webhookdb)).
+WebhookDB replicates any API into a database,
+so you have immediate, reliable access to all your data.
 
 To create an account and get started, run:
 
@@ -45,11 +47,12 @@ The process for releasing is:
 - A commit will also have been added to the homebrew repo's `next` branch.
 - Edit the GitHub release, and publish it.
 - Merge the changes from `homebrew-webhookdb` into `main`.
-  - We cannot have goreleaser automatically push to `main`
-    because it would refer to the draft release in the active formula.
-    So we have to make the formula change active once the release is published.
-- Update the code [in the WebhookDB website](https://github.com/lithictech/webhookdb-api/blob/main/webhookdb-website/static/webterm/index.html#L33)
-  to refer to the new version. Then merge the change, the website deploys from `main`.
+    - We cannot have goreleaser automatically push to `main`
+      because it would refer to the draft release in the active formula.
+      So we have to make the formula change active once the release is published.
+- Update the code
+  [used to serve the terminal](https://github.com/webhookdb/webhookdb/blob/main/lib/webterm/static/index.html#L54)
+  to refer to the new version. Then deploy the change.
 
 ## Feedback
 
