@@ -1,8 +1,16 @@
+[![Latest Release](https://img.shields.io/github/v/release/webhookdb/webhookdb-cli?color=blue&sort=semver)](https://github.com/webhookdb/webhookdb-cli/releases/latest)
+[![Docker](https://github.com/webhookdb/webhookdb-cli/actions/workflows/deploy-dockerhub.yml/badge.svg)](https://hub.docker.com/r/webhookdb/webhookdb-cli/tags)
+[![Tests](https://github.com/webhookdb/webhookdb-cli/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/webhookdb/webhookdb-cli/actions/workflows/pr-checks.yml)
+[![Release](https://github.com/webhookdb/webhookdb-cli/actions/workflows/release.yml/badge.svg)](https://github.com/webhookdb/webhookdb-cli/actions/workflows/release.yml)
+[![Docs](https://img.shields.io/badge/docs-purple)](https://docs.webhookdb.com/docs/cli-reference.html)
+
 # webhookdb-cli
 
 _Don't want to install this yourself?_
 _Run [the WebhookDB CLI from the browser](https://webhookdb.com/terminal/)
 or at the `/terminal` route of your self-hosted WebhookDB instance._
+
+_Self-hosting? Visit `https://<webhookdb host>/terminal` to run against your own WebhookDB server._
 
 Command Line Interface for WebhookDB ([https://github.com/webhookdb/webhookdb](https://github.com/webhookdb/webhookdb)).
 WebhookDB replicates any API into a database,
@@ -16,14 +24,11 @@ The CLI will guide you from there.
 
 You also have quick access to the WebhookDB documentation:
 
-	webhookdb docs html
-	webhookdb docs tui
-
-Use `webhookdb docs html` or
-visit [https://webhookdb.com/docs/cli](https://webhookdb.com/docs/cli) for usage instructions.
-
-Or check out [MANUAL.md](https://github.com/webhookdb/webhookdb-cli/blob/main/MANUAL.md)
-to see every command and option.
+- `webhookdb docs guide` to go to <https://docs.webhookdb.com/docs/getting-started/>.
+- `webhookdb docs manual` or `webhookdb docs html` to go
+  to [the CLI Reference](https://docs.webhookdb.com/docs/cli-reference.html).
+- `webhookdb docs tui` to render [MANUAL.md](https://github.com/webhookdb/webhookdb-cli/blob/main/MANUAL.md)
+  in your terminal.
 
 ## Privacy and Telemetry
 

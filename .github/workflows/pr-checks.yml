@@ -1,5 +1,8 @@
-name: PR Checks
-on: pull_request
+name: Tests
+on:
+  pull_request:
+  push:
+    branches: [ main ]
 jobs:
   run-tests:
     runs-on: ubuntu-latest
