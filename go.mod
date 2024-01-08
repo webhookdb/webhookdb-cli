@@ -1,4 +1,4 @@
-module github.com/lithictech/webhookdb-cli
+module github.com/webhookdb/webhookdb-cli
 
 go 1.17
 

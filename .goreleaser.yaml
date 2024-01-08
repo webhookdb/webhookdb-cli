@@ -2,7 +2,7 @@ project_name: webhookdb
 builds:
   - id: distrib
     ldflags:
-      - -s -w -X github.com/lithictech/webhookdb-cli/config.Version={{.Version}} -X github.com/lithictech/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/lithictech/webhookdb-cli/config.BuildTime={{.Date}}
+      - -s -w -X github.com/webhookdb/webhookdb-cli/config.Version={{.Version}} -X github.com/webhookdb/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/webhookdb/webhookdb-cli/config.BuildTime={{.Date}}
     binary: webhookdb
     goos:
       - linux
@@ -16,7 +16,7 @@ builds:
         goarch: arm64
   - id: wasm
     ldflags:
-      - -s -w -X github.com/lithictech/webhookdb-cli/config.Version={{.Version}} -X github.com/lithictech/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/lithictech/webhookdb-cli/config.BuildTime={{.Date}}
+      - -s -w -X github.com/webhookdb/webhookdb-cli/config.Version={{.Version}} -X github.com/webhookdb/webhookdb-cli/config.BuildSha={{.Commit}} -X github.com/webhookdb/webhookdb-cli/config.BuildTime={{.Date}}
     binary: webhookdb
     targets:
       - js_wasm
@@ -67,7 +67,7 @@ blobs:
     folder: "webhookdb-cli/{{.Version}}"
 brews:
   - repository:
-      owner: lithictech
+      owner: webhookdb
       name: homebrew-webhookdb
       token: "{{ .Env.TAP_GITHUB_TOKEN }}"
       branch: next
@@ -75,7 +75,7 @@ brews:
       - distrib
     commit_author:
       name: webhookdbreleaser
-      email: webhookdb@lithic.tech
+      email: hello@webhookdb.com
     description: "Query and store any API in real-time with SQL. More at https://webhookdb.com"
     homepage: "https://webhookdb.com"
     caveats: "❤ Thanks for installing the WebhookDB CLI! Run `webhookdb auth login` to get register or sign in."

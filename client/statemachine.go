@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"github.com/go-resty/resty/v2"
-	"github.com/lithictech/webhookdb-cli/ask"
+	"github.com/webhookdb/webhookdb-cli/ask"
 )
 
 type Step struct {

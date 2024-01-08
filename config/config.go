@@ -12,7 +12,7 @@ const UnknownVersion = "?.?.?"
 var BuildTime = "1970-01-01T00:00:00Z"
 var BuildSha = "0000000000000000000000000000000000000000"
 var Version = UnknownVersion
-var Repo = "lithictech/webhookdb-cli"
+var Repo = "webhookdb/webhookdb-cli"
 
 type Config struct {
 	// ApiHost is the URL of the service, like

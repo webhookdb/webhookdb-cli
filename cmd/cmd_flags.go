@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/lithictech/webhookdb-cli/formatting"
-	"github.com/lithictech/webhookdb-cli/prefs"
-	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/formatting"
+	"github.com/webhookdb/webhookdb-cli/prefs"
+	"github.com/webhookdb/webhookdb-cli/types"
 	"strings"
 )
 

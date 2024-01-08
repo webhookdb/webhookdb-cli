@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/lithictech/go-aperitif/convext"
-	"github.com/lithictech/webhookdb-cli/appcontext"
-	"github.com/lithictech/webhookdb-cli/ask"
-	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/appcontext"
+	"github.com/webhookdb/webhookdb-cli/ask"
+	"github.com/webhookdb/webhookdb-cli/client"
+	"github.com/webhookdb/webhookdb-cli/types"
 	"time"
 )
 

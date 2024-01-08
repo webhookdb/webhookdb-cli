@@ -22,7 +22,7 @@ You also have quick access to the WebhookDB documentation:
 Use `webhookdb docs html` or
 visit [https://webhookdb.com/docs/cli](https://webhookdb.com/docs/cli) for usage instructions.
 
-Or check out [MANUAL.md](https://github.com/lithictech/webhookdb-cli/blob/main/MANUAL.md)
+Or check out [MANUAL.md](https://github.com/webhookdb/webhookdb-cli/blob/main/MANUAL.md)
 to see every command and option.
 
 ## Privacy and Telemetry
@@ -38,7 +38,7 @@ There is some additional work for releasing via Homebrew and the web terminal.
 
 The process for releasing is:
 
-- Go to [lithictech/homebrew-webhookdb](https://github.com/lithictech/homebrew-webhookdb)
+- Go to [webhookdb/homebrew-webhookdb](https://github.com/webhookdb/homebrew-webhookdb)
   and make sure there is an empty `next` branch.
   You can use `make create-fresh-next-branch` from the `homebrew-webhookdb` repo for this.
 - Tag a commit, ie `git tag 0.9.2`
@@ -56,11 +56,11 @@ The process for releasing is:
 
 ## Feedback
 
-Please send us an email, [webhookdb@lithic.tech](mailto:webhookdb@lithic.tech)
-Got feedback for us? Please don't hesitate to tell us on feedback.
+Please send us an email to [hello@webhookdb.com](mailto:hello@webhookdb.com)
+or open an issue in one of the [webhookdb repositories](https://github.com/webhookdb).
 
 ## License
 
-Copyright (c) Lithic Technology LLC. All rights reserved.
+Licensed under the [Apache License 2.0 license](https://github.com/webhookdb/webhookdb-cli/blob/main/LICENSE).
 
-Licensed under the [Apache License 2.0 license](https://github.com/lithictech/webhookdb-cli/blob/main/LICENSE).
+Copyright (c) Lithic Technology LLC. All rights reserved.

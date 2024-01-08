@@ -4,8 +4,8 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/olekukonko/tablewriter"
+	"github.com/webhookdb/webhookdb-cli/types"
 	"io"
 )
 

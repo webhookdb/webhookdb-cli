@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/appcontext"
-	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/types"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/appcontext"
+	"github.com/webhookdb/webhookdb-cli/client"
+	"github.com/webhookdb/webhookdb-cli/types"
 )
 
 var integrationsCmd = &cli.Command{

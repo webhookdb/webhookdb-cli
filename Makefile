@@ -1,6 +1,6 @@
 BIN := ./webhookdb
 ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
-BUILDFLAGS = "-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`"
+BUILDFLAGS = "-X github.com/webhookdb/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/webhookdb/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`"
 WEBSITE = ../webhookdb-api/webhookdb-website
 
 ifdef GOROOT
@@ -77,10 +77,10 @@ help:
 	@$(GO) run ./main.go help
 
 itest-auth-login: build
-	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech
+	$(ARGS) $(BIN) auth login --username=alpha@webhookdb.com
 
 itest-auth-otp-%: build
-	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech --token=$(*)
+	$(ARGS) $(BIN) auth login --username=alpha@webhookdb.com --token=$(*)
 
 itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout

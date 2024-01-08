@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/lithictech/webhookdb-cli/config"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/config"
 )
 
 var versionCmd = &cli.Command{

@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/lithictech/webhookdb-cli/appcontext"
-	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/appcontext"
+	"github.com/webhookdb/webhookdb-cli/client"
 )
 
 type syncType struct {
