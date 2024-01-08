@@ -20,6 +20,14 @@ Source code: <https://github.com/webhookdb/webhookdb-cli>
 Documentation: <https://docs.webhookdb.com/docs/cli-reference.md>
 
 
+# SYNOPSIS
+
+webhookdb
+
+```
+[--debug]
+[--quiet|-q]
+```
 
 **Usage**:
 
@@ -30,8 +38,6 @@ webhookdb [GLOBAL OPTIONS] command [COMMAND OPTIONS] [ARGUMENTS...]
 # GLOBAL OPTIONS
 
 `--debug`: 
-
-`--help, -h`: show help
 
 `--quiet, -q`: Do not print messages. Mostly used for collection endpoints, where you just want the returned data, not the help message.
 
@@ -46,7 +52,7 @@ These commands control the auth process.
 
 Print information about the current user.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 ## `login`, `signup`, `signin`, `register`
 
@@ -116,19 +122,19 @@ Write out commands that can be used to generate a FDW against your WebhookDB dat
 
 `--fdw`: Write the FDW SQL to stdout
 
-`--fetch=""`: fetch_size option used during server creation (default: "50000")
+`--fetch=""`: fetch_size option used during server creation (default: 50000)
 
-`--into-schema=""`: Name of the schema to import the remote tables into (in `IMPORT FOREIGN SCHEMA public INTO <into schema>` call). (default: "webhookdb_remote")
+`--into-schema=""`: Name of the schema to import the remote tables into (in `IMPORT FOREIGN SCHEMA public INTO <into schema>` call). (default: webhookdb_remote)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
 `--raw`: If given, print the raw SQL returned from the server. Useful if you want to pipe through jq or something similar.
 
-`--remote=""`: The remote server name, used in the `CREATE SERVER <remote>` call (default: "webhookdb_remote")
+`--remote=""`: The remote server name, used in the `CREATE SERVER <remote>` call (default: webhookdb_remote)
 
 `--views`: Write the SQL to create the materialized views to stdout
 
-`--views-schema=""`: Create materialized views in this schema. You can use 'public' if you do not want to qualify webhookdb tables. (default: "webhookdb")
+`--views-schema=""`: Create materialized views in this schema. You can use 'public' if you do not want to qualify webhookdb tables. (default: webhookdb)
 
 ## `rename-table`
 
@@ -158,7 +164,7 @@ Enqueue a migration of all your organization's data to a new database.
 
 List all database migrations.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -166,35 +172,23 @@ List all database migrations.
 
 Work with the WebhookDB docs and guide.
 
-`--help, -h`: show help
+## `guide`
 
-## `html`
+Open a browser to the WebhookDB Getting Started guide.
 
-Open a browser to the WebhookDB HTML guide.
+## `manual`, `html`
 
-## `tui`
-
-Render the WebhookDB guide into a local Markdown viewer.
-
-`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+Open a browser to the WebhookDB CLI reference.
 
 ## `build`
 
 Build the docs for the app.
 
+`--docsite`: If given, format this for use on docs.webhookdb.com
+
 `--format=""`: One of: markdown, man
 
-`--frontmatter`: If given, include frontmatter needed for docs.webhookdb.com source
-
 `--help, -h`: show help
-
-### `help`, `h`
-
-Shows a list of commands or help for one command
-
-## `help`, `h`
-
-Shows a list of commands or help for one command
 
 # `fixtures`, `fixture`
 
@@ -240,7 +234,15 @@ Display information about given integration.
 
 List all integrations for the given organization.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
+## `setup`
+
+Ensure all the necessary fields are set to receive webhooks.
+
+`--integration, -i=""`: Integration identifier. This can either be the service name, the table name, or the opaque id, which is a unique code that starts with 'svi_'. Run webhookdb integrations list to see a list of all your integrations.
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -256,7 +258,7 @@ Reset the webhook secret for this integration.
 
 Get statistics about webhooks for this integration.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--integration, -i=""`: Integration identifier. This can either be the service name, the table name, or the opaque id, which is a unique code that starts with 'svi_'. Run webhookdb integrations list to see a list of all your integrations.
 
@@ -320,7 +322,7 @@ Display the name and slug of the currently active organization.
 
 List all members of the given organization.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -342,6 +344,22 @@ Change the name or billing email of the organization. (Note: the org key is immu
 
 `--value, -v=""`: The new value for the chosen field
 
+# `replay`, `replays`
+
+Replay webhooks received by WebhookDB. Useful if webhooks were rejected due to invalid secrets/verification and need to be re-processed.
+
+Note that the maximum window that can be replayed is managed by the server, and is normally 4 hours. To replay a larger window, issue multiple `webhookdb replay` calls.
+
+`--after, -a=""`: Replay webhooks received after this time. Takes precedence over --hours. If neither are given, use 1 hour.
+
+`--before, -b=""`: Replay webhooks received before this time. Timestamp can be anything time-like, preferably ISO8601 (ie, 2012-11-22T06:00:00Z). Defaults to now.
+
+`--hours, -r=""`: Number of hours before now (or the --before value) to replay webhooks. (default: 0)
+
+`--integration, -i=""`: Integration identifier. This can either be the service name, the table name, or the opaque id, which is a unique code that starts with 'svi_'. If not given, replay webhooks for all integrations in the current organization.
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
 # `services`, `service`
 
 Work with available services that can be hooked up to reflect data to WebhookDB.
@@ -350,7 +368,7 @@ Work with available services that can be hooked up to reflect data to WebhookDB.
 
 List all available services.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -362,7 +380,7 @@ Work with your WebhookDB subscription.
 
 Get information about an organization's software subscription.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -378,7 +396,7 @@ Open stripe portal to edit subscription.
 
 Print information about the WebhookDB pricing plans.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -396,7 +414,7 @@ Create a database sync target for the specified integration. Data will be automa
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
-`--period=""`: Number of seconds between syncs. (default: unset)
+`--period=""`: Number of seconds between syncs. (default: 0)
 
 `--schema=""`: Schema (or namespace) to write the table into. Default to no schema/namespace.
 
@@ -414,7 +432,7 @@ Delete the database sync target and stop any further syncing. The database being
 
 List all database sync targets for the given organization.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -424,7 +442,7 @@ Update the database sync target. Use `webhookdb dbsync list` to see all database
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
-`--period=""`: Number of seconds between syncs. (default: unset)
+`--period=""`: Number of seconds between syncs. (default: 0)
 
 `--schema=""`: Schema (or namespace) to write the table into. Default to no schema/namespace.
 
@@ -466,9 +484,9 @@ Create a http sync target for the specified integration. Data will be automatica
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
-`--pagesize=""`: Max number of rows WebhookDB sends the sync target in each call. (default: unset)
+`--pagesize=""`: Max number of rows WebhookDB sends the sync target in each call. (default: 0)
 
-`--period=""`: Number of seconds between syncs. (default: unset)
+`--period=""`: Number of seconds between syncs. (default: 0)
 
 ## `delete`
 
@@ -482,7 +500,7 @@ Delete the http sync target and stop any further syncing. The http endpoint bein
 
 List all http sync targets for the given organization.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -492,9 +510,9 @@ Update the http sync target. Use `webhookdb httpsync list` to see all http sync 
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
-`--pagesize=""`: Max number of rows WebhookDB sends the sync target in each call. (default: unset)
+`--pagesize=""`: Max number of rows WebhookDB sends the sync target in each call. (default: 0)
 
-`--period=""`: Number of seconds between syncs. (default: unset)
+`--period=""`: Number of seconds between syncs. (default: 0)
 
 `--target, -t=""`: Sync target opaque id. Use `webhookdb httpsync list` to see a list of all your http sync targets.
 
@@ -546,7 +564,7 @@ Create a new notification that WebhookDB will call on every data update.
 
 List all created notifications.
 
-`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: "table")
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
@@ -565,8 +583,4 @@ Delete this notification subscription, so no future events will be sent.
 # `version`
 
 Print version and exit.
-
-# `help`, `h`
-
-Shows a list of commands or help for one command
 

@@ -3,14 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	markdown "github.com/MichaelMure/go-term-markdown"
 	"github.com/urfave/cli/v2"
 	"github.com/webhookdb/webhookdb-cli/appcontext"
-	"github.com/webhookdb/webhookdb-cli/config"
 	"github.com/webhookdb/webhookdb-cli/whbrowser"
 	"io"
-	"os"
-	"os/exec"
 	"regexp"
 	"strings"
 )
@@ -20,43 +16,18 @@ var docsCmd = &cli.Command{
 	Usage: "Work with the WebhookDB docs and guide.",
 	Subcommands: []*cli.Command{
 		{
-			Name:  "html",
-			Usage: "Open a browser to the WebhookDB HTML guide.",
+			Name:  "guide",
+			Usage: "Open a browser to the WebhookDB Getting Started guide.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				return whbrowser.OpenURL("https://webhookdb.com/docs/cli")
+				return whbrowser.OpenURL("https://docs.webhookdb.com/docs/getting-started/")
 			}),
 		},
 		{
-			Name:  "tui",
-			Usage: "Render the WebhookDB guide into a local Markdown viewer.",
-			Flags: []cli.Flag{orgFlag()},
+			Name:    "manual",
+			Aliases: []string{"html"},
+			Usage:   "Open a browser to the WebhookDB CLI reference.",
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
-				version := config.Version
-				if version == config.UnknownVersion {
-					version = "main"
-				}
-				manualUrl := fmt.Sprintf("https://raw.githubusercontent.com/lithictech/webhookdb-cli/%s/MANUAL.md", version)
-				fmt.Println(manualUrl)
-				resp, err := ac.Resty.R().Get(manualUrl)
-				if err != nil {
-					return err
-				}
-				if resp.StatusCode() >= 400 {
-					return CliError{Message: "Sorry, could not fetch the guide Markdown: " + resp.String(), Code: 2}
-				}
-				md := resp.String()
-				md = regexp.MustCompile("\\A---(.|\n)*?---").ReplaceAllString(md, "")
-				md = regexp.MustCompile("<a id=\".*\"></a>").ReplaceAllString(md, "")
-				result := markdown.Render(md, 80, 0)
-				if pager := getPager(); pager != "" {
-					pa := strings.Split(pager, " ")
-					cm := exec.Command(pa[0], pa[1:]...)
-					cm.Stdin = strings.NewReader(string(result))
-					cm.Stdout = c.App.Writer
-					return cm.Run()
-				}
-				fmt.Fprint(c.App.Writer, string(result))
-				return nil
+				return whbrowser.OpenURL("https://docs.webhookdb.com/docs/cli-reference.html")
 			}),
 		},
 		{
@@ -93,17 +64,6 @@ func init() {
 	}
 }
 
-func getPager() string {
-	pager := os.Getenv("PAGER")
-	if pager != "" {
-		return pager
-	}
-	if _, err := exec.LookPath("less"); err == nil {
-		return "less -r"
-	}
-	return ""
-}
-
 func toMarkdown(w io.Writer, c *cli.Context) error {
 	writestr := func(s string, i ...interface{}) {
 		w.Write([]byte(fmt.Sprintf(s, i...)))
@@ -121,7 +81,9 @@ func toMarkdown(w io.Writer, c *cli.Context) error {
 		writeln("---")
 		writeln("")
 	}
-	md, err := c.App.ToMarkdown()
+	// c.App only has the 'docs' commands and I cannot find a way to get the root
+	app := BuildApp()
+	md, err := app.ToMarkdown()
 	if err != nil {
 		return err
 	}
