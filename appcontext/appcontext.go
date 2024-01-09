@@ -106,5 +106,5 @@ var userAgent string
 
 func init() {
 	userAgent = fmt.Sprintf("WebhookDB/v1 webhookdb-cli/%s (%s; %s) Built/%s https://webhookdb.com",
-		config.BuildSha[:8], runtime.GOOS, runtime.GOARCH, config.BuildTime)
+		config.BuildShaShort, runtime.GOOS, runtime.GOARCH, config.BuildTime)
 }

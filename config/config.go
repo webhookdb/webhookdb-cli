@@ -11,6 +11,7 @@ const UnknownVersion = "?.?.?"
 
 var BuildTime = "1970-01-01T00:00:00Z"
 var BuildSha = "0000000000000000000000000000000000000000"
+var BuildShaShort = ""
 var Version = UnknownVersion
 var Repo = "webhookdb/webhookdb-cli"
 
@@ -84,6 +85,10 @@ func lookupEnv(k, d string) string {
 const SentryDsnProd = "https://3e125fd192c34979b2f1a4a5ceb9abd6@o292308.ingest.sentry.io/6224206"
 
 func init() {
+	BuildShaShort = BuildSha
+	if len(BuildShaShort) > 8 {
+		BuildShaShort = BuildShaShort[0:8]
+	}
 	MustSetEnv("WEBHOOKDB_API_HOST", "https://api.production.webhookdb.com")
 	MustSetEnv("WEBHOOKDB_LOG_LEVEL", "error")
 }
