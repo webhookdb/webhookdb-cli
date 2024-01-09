@@ -5,6 +5,9 @@ on:
     tags:
       - '*'
 
+permissions:
+  contents: write # Needed to create a release
+
 jobs:
   goreleaser:
     runs-on: macos-latest
@@ -30,7 +33,7 @@ jobs:
           version: latest
           args: --debug release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAP_GITHUB_TOKEN: ${{ secrets.TAP_TOKEN_ROBG_PAT }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needs write access to webhookdb-cli contents
+          TAP_GITHUB_TOKEN: ${{ secrets.BREWTAPS_GITHUB_TOKEN }} # Needs write access to homebrew-webhookdb contents (and PRs?)
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} # Needs write access to S3
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
