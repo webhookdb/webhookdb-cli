@@ -1,6 +1,6 @@
 BIN := ./webhookdb
 ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
-BUILDFLAGS = "-X github.com/webhookdb/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/webhookdb/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD` -X github.com/webhookdb/webhookdb-cli/config.Version=`git rev-parse --abbrev-ref HEAD`"
+BUILDFLAGS = "-X github.com/webhookdb/webhookdb-cli/config.BuildTime=`date +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/webhookdb/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD` -X github.com/webhookdb/webhookdb-cli/config.Version=`git rev-parse --abbrev-ref HEAD`"
 WEBSITE = ../webhookdb-api/webhookdb-website
 
 ifdef GOROOT
@@ -66,7 +66,7 @@ docker-build:
 	docker build -f Dockerfile -t webhookdb-cli \
     		--build-arg GIT_SHA=`git rev-list --abbrev-commit -1 HEAD` \
     		--build-arg GIT_REF=`git rev-parse --abbrev-ref HEAD` \
-    		--build-arg RELEASED_AT=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    		--build-arg RELEASED_AT=`date +"%Y-%m-%dT%H:%M:%SZ"` \
     		.
 
 docker-run-version:
