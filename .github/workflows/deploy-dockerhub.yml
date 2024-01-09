@@ -35,4 +35,3 @@ jobs:
           build-args: |
             GIT_REF=${{ github.ref }}
             GIT_SHA=${{ github.sha }}
-            RELEASED_AT=$(date +"%Y-%m-%dT%H:%M:%SZ")
