@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/types"
+	"github.com/webhookdb/webhookdb-cli/types"
 	"net/url"
 )
 

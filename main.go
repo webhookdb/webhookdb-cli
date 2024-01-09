@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/lithictech/webhookdb-cli/cmd"
+	"github.com/webhookdb/webhookdb-cli/cmd"
 )
 
 func main() {

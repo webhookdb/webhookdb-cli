@@ -1,6 +1,6 @@
 package client
 
-import "github.com/lithictech/webhookdb-cli/types"
+import "github.com/webhookdb/webhookdb-cli/types"
 
 type OrganizationMembershipEntity struct {
 	CustomerEmail string             `json:"email"`

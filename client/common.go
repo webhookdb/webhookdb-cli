@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"github.com/lithictech/webhookdb-cli/types"
+	"github.com/webhookdb/webhookdb-cli/types"
 	"net/http"
 	"net/url"
 )

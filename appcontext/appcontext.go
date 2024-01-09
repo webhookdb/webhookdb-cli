@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/lithictech/go-aperitif/logctx"
-	"github.com/lithictech/webhookdb-cli/client"
-	"github.com/lithictech/webhookdb-cli/config"
-	"github.com/lithictech/webhookdb-cli/prefs"
-	"github.com/lithictech/webhookdb-cli/whfs"
 	"github.com/sirupsen/logrus"
+	"github.com/webhookdb/webhookdb-cli/client"
+	"github.com/webhookdb/webhookdb-cli/config"
+	"github.com/webhookdb/webhookdb-cli/prefs"
+	"github.com/webhookdb/webhookdb-cli/whfs"
 	"os"
 	"runtime"
 )
@@ -106,5 +106,5 @@ var userAgent string
 
 func init() {
 	userAgent = fmt.Sprintf("WebhookDB/v1 webhookdb-cli/%s (%s; %s) Built/%s https://webhookdb.com",
-		config.BuildSha[:8], runtime.GOOS, runtime.GOARCH, config.BuildTime)
+		config.BuildShaShort, runtime.GOOS, runtime.GOARCH, config.BuildTime)
 }

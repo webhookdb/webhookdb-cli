@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"github.com/lithictech/webhookdb-cli/formatting"
-	"github.com/lithictech/webhookdb-cli/types"
+	"github.com/webhookdb/webhookdb-cli/formatting"
+	"github.com/webhookdb/webhookdb-cli/types"
 )
 
 type IntegrationsCreateInput struct {

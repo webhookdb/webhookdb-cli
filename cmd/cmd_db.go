@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/lithictech/go-aperitif/convext"
-	"github.com/lithictech/webhookdb-cli/appcontext"
-	"github.com/lithictech/webhookdb-cli/client"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/appcontext"
+	"github.com/webhookdb/webhookdb-cli/client"
 	"strings"
 )
 

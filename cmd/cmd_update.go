@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/blang/semver"
-	"github.com/lithictech/webhookdb-cli/appcontext"
-	"github.com/lithictech/webhookdb-cli/config"
-	"github.com/lithictech/webhookdb-cli/whselfupdate"
 	"github.com/urfave/cli/v2"
+	"github.com/webhookdb/webhookdb-cli/appcontext"
+	"github.com/webhookdb/webhookdb-cli/config"
+	"github.com/webhookdb/webhookdb-cli/whselfupdate"
 	"os"
 )
 

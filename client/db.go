@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"github.com/lithictech/webhookdb-cli/types"
+	"github.com/webhookdb/webhookdb-cli/types"
 )
 
 type DbOrgIdentifierInput struct {

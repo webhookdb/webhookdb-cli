@@ -1,6 +1,6 @@
 BIN := ./webhookdb
 ARGS := WEBHOOKDB_API_HOST=http://localhost:18001
-BUILDFLAGS = "-X github.com/lithictech/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/lithictech/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD`"
+BUILDFLAGS = "-X github.com/webhookdb/webhookdb-cli/config.BuildTime=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -X github.com/webhookdb/webhookdb-cli/config.BuildSha=`git rev-list -1 HEAD` -X github.com/webhookdb/webhookdb-cli/config.Version=`git rev-parse --abbrev-ref HEAD`"
 WEBSITE = ../webhookdb-api/webhookdb-website
 
 ifdef GOROOT
@@ -62,6 +62,19 @@ wasm-server:
 
 build-all: build-arm64 build build-wasm
 
+docker-build:
+	docker build -f Dockerfile -t webhookdb-cli \
+    		--build-arg GIT_SHA=`git rev-list --abbrev-commit -1 HEAD` \
+    		--build-arg GIT_REF=`git rev-parse --abbrev-ref HEAD` \
+    		--build-arg RELEASED_AT=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    		.
+
+docker-run-version:
+	@docker run -it webhookdb-cli version --time
+
+docker-run-%:
+	@docker run -it webhookdb-cli $(*)
+
 docs: build
 	@DOCBUILD=true $(BIN) docs build
 docs-write: build ## Write a new copy of MANUAL.md.
@@ -77,10 +90,10 @@ help:
 	@$(GO) run ./main.go help
 
 itest-auth-login: build
-	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech
+	$(ARGS) $(BIN) auth login --username=alpha@webhookdb.com
 
 itest-auth-otp-%: build
-	$(ARGS) $(BIN) auth login --username=alpha@lithic.tech --token=$(*)
+	$(ARGS) $(BIN) auth login --username=alpha@webhookdb.com --token=$(*)
 
 itest-auth-logout: build
 	$(ARGS) $(BIN) auth logout
