@@ -74,6 +74,9 @@ docker-run-version:
 docker-run-%:
 	@docker run -it webhookdb-cli $(*)
 
+dockerhub-run-version:
+	@docker run -it webhookdb/webhookdb-cli:latest version --time
+
 docs: build
 	@DOCBUILD=true $(BIN) docs build
 docs-write: build ## Write a new copy of MANUAL.md.

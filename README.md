@@ -16,6 +16,37 @@ Command Line Interface for WebhookDB ([https://github.com/webhookdb/webhookdb](h
 WebhookDB replicates any API into a database,
 so you have immediate, reliable access to all your data.
 
+## Installing
+
+Use the docker container:
+
+```
+$ docker run -it webhookdb/webhookdb-cli:latest version
+0.13.0 (acb64d0f)
+```
+
+On MacOS, install from Homebrew:
+
+```
+$ brew install webhookdb/webhookdb-cli/webhookdb
+$ webhookdb version
+0.13.0 (acb64d0f)
+```
+
+On Linux, grab the binary from the latest release (package managers coming soon):
+
+- Download the latest Linux `tar.gz` file from <https://github.com/webhookdb/webhookdb-cli/releases/latest>
+- Unzip the file: `tar -xvf webhookdb_X.X.X_linux_x86_64.tar.gz`
+- Move `./webhookdb` to your execution path, like `/usr/local/bin`.
+
+On Windows, grab the executable from the zip file:
+
+- Download the latest Windows `zip` file from <https://github.com/webhookdb/webhookdb-cli/releases/latest>
+- Unzip the `webhookdb_X.X.X_windows_x86_64.zip` file.
+- Run the unzipped `webhookdb.exe` file.
+
+## Usage
+
 To create an account and get started, run:
 
 	webhookdb auth login
@@ -39,20 +70,25 @@ and any other telemetry we may add in the future.
 ## Releasing
 
 Releases are automated. See `.github/workflows/release.yml`.
+A new release is automatically drafted when a tag is (manually) pushed;
+when the release is committed, a Dockerhub build is triggered.
+
 There is some additional work for releasing via Homebrew and the web terminal.
 
 The process for releasing is:
 
-- Go to [webhookdb/homebrew-webhookdb](https://github.com/webhookdb/homebrew-webhookdb)
+- Go to [webhookdb/homebrew-webhookdb-cli](https://github.com/webhookdb/homebrew-webhookdb-cli)
   and make sure there is an empty `next` branch.
-  You can use `make create-fresh-next-branch` from the `homebrew-webhookdb` repo for this.
+  You can use `make create-fresh-next-branch` from the `homebrew-webhookdb-cli` repo for this.
 - Tag a commit, ie `git tag 0.9.2`
 - Push the tag, ie `git push origin 0.9.2`
 - When it finishes, a Draft release will be built.
 - A commit will also have been added to the homebrew repo's `next` branch.
 - Edit the GitHub release, and publish it.
-- Merge the changes from `homebrew-webhookdb` into `main`.
-    - We cannot have goreleaser automatically push to `main`
+    - This deploys to Dockerhub (
+      see [deploy-dockerhub.yml](https://github.com/webhookdb/webhookdb-cli/blob/main/.github/workflows/deploy-dockerhub.yml)).
+- Merge the changes from `homebrew-webhookdb-cli` into `main`.
+    - We cannot have goreleaser automatically push to the tap's `main`
       because it would refer to the draft release in the active formula.
       So we have to make the formula change active once the release is published.
 - Update the code
