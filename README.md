@@ -18,11 +18,12 @@ so you have immediate, reliable access to all your data.
 
 ## Installing
 
-Use the docker container:
+Use the docker container (note you need to mount `/root` to persist auth info between invocations):
 
 ```
 $ docker run -it webhookdb/webhookdb-cli:latest version
 0.13.0 (acb64d0f)
+$ docker run -v ~/.webhookdb/dockercli:/root -it webhookdb/webhookdb-cli:latest auth login
 ```
 
 On MacOS, install from Homebrew:

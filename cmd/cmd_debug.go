@@ -75,6 +75,18 @@ var debugCmd = &cli.Command{
 			}),
 		},
 		{
+			Name:  "platform",
+			Usage: "Print out information about the current platform.",
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				home, err := ac.FS.UserHomeDir()
+				if err != nil {
+					home = fmt.Sprintf("error: %s", err)
+				}
+				fmt.Fprintf(c.App.Writer, "Home: %s\n", home)
+				return nil
+			}),
+		},
+		{
 			Name:  "update-auth-display",
 			Usage: "Used to update the WASM terminal on startup.",
 			Action: cliAction(func(c *cli.Context, appContext appcontext.AppContext, ctx context.Context) error {
