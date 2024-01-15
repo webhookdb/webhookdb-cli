@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"github.com/webhookdb/webhookdb-cli/appcontext"
 	"github.com/webhookdb/webhookdb-cli/client"
@@ -138,6 +139,27 @@ var integrationsCmd = &cli.Command{
 					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
 				}
 				return stateMachineResponseRunner(ctx, ac.Auth)(client.IntegrationsReset(ctx, ac.Auth, input))
+			}),
+		},
+		{
+			Name:  "roll-key",
+			Usage: "Roll the API key used to access this integration. Only relevant for certain integrations.",
+			Flags: []cli.Flag{
+				orgFlag(),
+				integrationFlag(),
+			},
+			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
+				// This get some more work if it becomes more widely needed, but for now, it should be very rare.
+				input := client.IntegrationsRollKeyInput{
+					IntegrationIdentifier: getIntegrationFlagOrArg(c),
+					OrgIdentifier:         getOrgFlag(c, ac.Prefs),
+				}
+				out, err := client.IntegrationsRollKey(ctx, ac.Auth, input)
+				if err != nil {
+					return err
+				}
+				fmt.Fprint(c.App.Writer, out.WebhookdbApiKey)
+				return nil
 			}),
 		},
 		{

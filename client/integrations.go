@@ -71,6 +71,20 @@ func IntegrationsReset(c context.Context, auth Auth, input IntegrationsResetInpu
 	return makeStepRequestWithResponse(c, auth, nil, "/v1/organizations/%v/service_integrations/%v/reset", input.OrgIdentifier, input.IntegrationIdentifier)
 }
 
+type IntegrationsRollKeyInput struct {
+	IntegrationIdentifier string              `json:"-"`
+	OrgIdentifier         types.OrgIdentifier `json:"-"`
+}
+
+func IntegrationsRollKey(c context.Context, auth Auth, input IntegrationsRollKeyInput) (out IntegrationsRollKeyOutput, err error) {
+	err = makeRequest(c, POST, auth, nil, &out, "/v1/organizations/%v/service_integrations/%v/roll_api_key", input.OrgIdentifier, input.IntegrationIdentifier)
+	return
+}
+
+type IntegrationsRollKeyOutput struct {
+	WebhookdbApiKey string `json:"webhookdb_api_key"`
+}
+
 type IntegrationsStatsInput struct {
 	IntegrationIdentifier string              `json:"-"`
 	OrgIdentifier         types.OrgIdentifier `json:"-"`
