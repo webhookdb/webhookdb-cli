@@ -254,6 +254,14 @@ Reset the webhook secret for this integration.
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
 
+## `roll-key`
+
+Roll the API key used to access this integration. Only relevant for certain integrations.
+
+`--integration, -i=""`: Integration identifier. This can either be the service name, the table name, or the opaque id, which is a unique code that starts with 'svi_'. Run webhookdb integrations list to see a list of all your integrations.
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
 ## `stats`
 
 Get statistics about webhooks for this integration.
@@ -359,6 +367,66 @@ Note that the maximum window that can be replayed is managed by the server, and 
 `--integration, -i=""`: Integration identifier. This can either be the service name, the table name, or the opaque id, which is a unique code that starts with 'svi_'. If not given, replay webhooks for all integrations in the current organization.
 
 `--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
+# `saved-query`, `saved-queries`, `custom-query`, `custom-queries`
+
+Manage your library of saved queries, including ones that can be accessed publicly.
+
+## `create`
+
+Create a new saved query.
+
+`--description, -d, --desc=""`: Explain what this query is used for.
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
+`--public`: If true, the query can be accessed publicly, without authentication. Allows a saved query to be used on public dashboards or websites, without exposing a database connection string or allowing public access to a database.
+
+`--sql=""`: SQL statement to run.
+
+## `list`
+
+List all saved queries.
+
+`--format, -f=""`: Format of the output. One of: json, csv, table, raw (default: table)
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
+## `update`, `edit`, `modify`
+
+Update a new saved query.
+
+`--field, -f=""`: The field that you want to change.
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
+`--saved-query, -q=""`: Saved query opaque id. Run `webhookdb saved-query list` to see a list of all your saved queries.
+
+`--value, -v=""`: The new value for the chosen field
+
+## `info`
+
+Display information about given saved query.
+
+`--field, -f=""`: The field that you want information about.
+
+`--org, -o=""`: Takes an org key. Run `webhook org list` to see a list of all your org keys.
+
+`--saved-query, -q=""`: Saved query opaque id. Run `webhookdb saved-query list` to see a list of all your saved queries.
+
+## `run`
+
+Run the query.
+
+`--color, -c`: Display colors. Default true if tty.
+
+`--saved-query, -q=""`: Saved query opaque id. Run `webhookdb saved-query list` to see a list of all your saved queries.
+
+## `delete`
+
+Delete this saved query.
+
+`--saved-query, -q=""`: Saved query opaque id. Run `webhookdb saved-query list` to see a list of all your saved queries.
 
 # `services`, `service`
 
@@ -583,4 +651,6 @@ Delete this notification subscription, so no future events will be sent.
 # `version`
 
 Print version and exit.
+
+`--time`: Print the build time as well.
 
