@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/webhookdb/webhookdb-cli/types"
 )
 
@@ -34,13 +33,7 @@ type DbSqlInput struct {
 	Query         string              `json:"query"`
 }
 
-type DbSqlOutput struct {
-	// Use RawMessage to avoid deserializing the JSON right away.
-	// This allows us to render maps and certain other types verbatim.
-	Rows           [][]json.RawMessage `json:"rows"`
-	Headers        []string            `json:"headers"`
-	MaxRowsReached bool                `json:"max_rows_reached"`
-}
+type DbSqlOutput = types.RunQueryOutput
 
 func DbSql(c context.Context, auth Auth, input DbSqlInput) (out DbSqlOutput, err error) {
 	err = makeRequest(c, POST, auth, input, &out, "/v1/db/%v/sql", input.OrgIdentifier)

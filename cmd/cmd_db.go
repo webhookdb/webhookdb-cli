@@ -47,7 +47,7 @@ var dbCmd = &cli.Command{
 			Flags: []cli.Flag{
 				orgFlag(),
 				&cli.StringFlag{Name: "query", Aliases: s1("u"), Usage: "Query string to execute using your connection."},
-				&cli.BoolFlag{Name: "color", Aliases: s1("c"), Usage: "Display colors. Default true if tty.", Value: IsTty},
+				colorFlag(),
 			},
 			Action: cliAction(func(c *cli.Context, ac appcontext.AppContext, ctx context.Context) error {
 				useColors := c.Bool("color")

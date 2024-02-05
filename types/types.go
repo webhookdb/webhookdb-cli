@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 )
@@ -116,4 +117,12 @@ func respDisplayHeaders(cr map[string]interface{}) DisplayHeaders {
 
 func SPtr(s string) *string {
 	return &s
+}
+
+type RunQueryOutput struct {
+	// Use RawMessage to avoid deserializing the JSON right away.
+	// This allows us to render maps and certain other types verbatim.
+	Rows           [][]json.RawMessage `json:"rows"`
+	Headers        []string            `json:"headers"`
+	MaxRowsReached bool                `json:"max_rows_reached"`
 }
