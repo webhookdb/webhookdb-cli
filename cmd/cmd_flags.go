@@ -132,3 +132,7 @@ func stringPtrFlag(c *cli.Context, key string) *string {
 	s := c.String(key)
 	return &s
 }
+
+func colorFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{Name: "color", Aliases: s1("c"), Usage: "Display colors. Default true if tty.", Value: IsTty}
+}

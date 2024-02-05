@@ -17,10 +17,3 @@ type ServiceIntegrationEntity struct {
 	ServiceName string `json:"service_name"`
 	TableName   string `json:"table_name"`
 }
-
-type WebhookSubscriptionEntity struct {
-	OpaqueId           string                   `json:"opaque_id"`
-	DeliverToUrl       string                   `json:"deliver_to_url"`
-	Organization       types.Organization       `json:"organization"`
-	ServiceIntegration ServiceIntegrationEntity `json:"service_integration"`
-}
