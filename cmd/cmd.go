@@ -46,6 +46,7 @@ Documentation: <https://docs.webhookdb.com/docs/cli-reference.md>
 			organizationsCmd,
 			replayCmd,
 			savedQueriesCmd,
+			savedViewsCmd,
 			servicesCmd,
 			subscriptionsCmd,
 			syncCmd(dbSyncType),
