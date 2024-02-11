@@ -11,32 +11,36 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
 func New() Ask {
+	globalIOOnce.Do(func() {
+		g := globalIO{
+			Chan: make(chan []byte, 4),
+		}
+		tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
+		if err == nil {
+			g.IsInteractive = true
+			g.Input = tty
+			g.Output = tty
+		} else {
+			g.IsInteractive = false
+			g.Input = os.Stdin
+			g.Output = os.Stdout
+		}
+		g.run()
+		globalIOInst = &g
+	})
 	a := ioasker{
-		ch: make(chan []byte, 4),
+		g: globalIOInst,
 	}
-	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
-	if err == nil {
-		a.isInteractive = true
-		a.input = tty
-		a.output = tty
-	} else {
-		a.isInteractive = false
-		a.input = os.Stdin
-		a.output = os.Stdout
-	}
-	a.runReader()
 	return &a
 }
 
 type ioasker struct {
-	isInteractive bool
-	input         *os.File
-	output        *os.File
-	ch            chan []byte
+	g *globalIO
 }
 
 func (i *ioasker) Ask(prompt string) (string, error) {
@@ -66,14 +70,14 @@ func (i *ioasker) HiddenAsk(prompt string) (string, error) {
 }
 
 func (i *ioasker) Feedback(line string) {
-	fmt.Fprintln(i.output, line)
+	fmt.Fprintln(i.g.Output, line)
 }
 
 func (i *ioasker) print(str string) error {
 	if strings.HasSuffix(str, ":") {
 		str += " "
 	}
-	_, err := fmt.Fprint(i.output, str)
+	_, err := fmt.Fprint(i.g.Output, str)
 	return err
 }
 
@@ -97,7 +101,7 @@ func (i *ioasker) readinput() (string, error) {
 readloop:
 	for {
 		select {
-		case readBytes, closed := <-i.ch:
+		case readBytes, closed := <-i.g.Chan:
 			if !closed {
 				// Exit the loop if the reader closed the channel.
 				break readloop
@@ -132,7 +136,7 @@ readloop:
 // Code taken and adapted from https://github.com/miquella/ask
 func (i *ioasker) stty(args ...string) error {
 	// don't do anything if we're non-interactive
-	if !i.isInteractive {
+	if !i.g.IsInteractive {
 		return nil
 	}
 	cmd := exec.Command("stty", args...)
@@ -140,21 +144,38 @@ func (i *ioasker) stty(args ...string) error {
 	if filepath.Base(cmd.Path) == cmd.Path {
 		cmd.Path = "/bin/stty"
 	}
-	cmd.Stdin = i.input
-	cmd.Stdout = i.output
+	cmd.Stdin = i.g.Input
+	cmd.Stdout = i.g.Output
 	return cmd.Run()
 }
 
-func (i *ioasker) runReader() {
-	reader := bufio.NewReader(i.input)
+var globalIOInst *globalIO
+var globalIOOnce = &sync.Once{}
+
+// We can only set up ONE reader for the input, since it uses ReadBytes which is blocking.
+// If we set up multiple readers in ReadBytes, they end up all listening for the prompt;
+// then for example by the third Ask call, we have a third reader,
+// and the input is lost.
+// So we need a single global reader for whatever we're using for input/output.
+// This should be global for the process anyway (ask.New() takes no arguments),
+// so is not a big deal.
+type globalIO struct {
+	IsInteractive bool
+	Input         *os.File
+	Output        *os.File
+	Chan          chan []byte
+}
+
+func (g *globalIO) run() {
+	reader := bufio.NewReader(g.Input)
 	go func() {
 		for {
 			s, err := reader.ReadBytes('\n')
 			if err != nil {
-				close(i.ch)
+				close(g.Chan)
 				return
 			}
-			i.ch <- s
+			g.Chan <- s
 		}
 	}()
 }
