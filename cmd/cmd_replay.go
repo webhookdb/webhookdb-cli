@@ -11,7 +11,7 @@ var replayCmd = &cli.Command{
 	Name:    "replay",
 	Aliases: []string{"replays"},
 	Usage: "Replay webhooks received by WebhookDB. Useful if webhooks were rejected due to " +
-		"invalid secrets/verification and need to be re-processed.\n\n" +
+		"invalid secrets/verification and need to be re-processed. " +
 		"Note that the maximum window that can be replayed is managed by the server, and is normally 4 hours. " +
 		"To replay a larger window, issue multiple `webhookdb replay` calls.",
 	Flags: []cli.Flag{
