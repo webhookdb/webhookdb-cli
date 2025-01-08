@@ -30,7 +30,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           distribution: goreleaser
-          version: latest
+          version: '~> v1'
           args: --debug release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needs write access to webhookdb-cli contents
