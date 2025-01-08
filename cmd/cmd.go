@@ -41,6 +41,7 @@ Documentation: <https://docs.webhookdb.com/docs/cli-reference.md>
 			dbCmd,
 			debugCmd,
 			docsCmd,
+			errorHandlersCmd,
 			fixturesCmd,
 			integrationsCmd,
 			organizationsCmd,
